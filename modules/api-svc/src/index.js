@@ -411,7 +411,7 @@ async function start(config) {
 
     const svr = new Server(config, logger);
     svr.on('error', (err) => {
-        logger.push({ err }).error('Unhandled server error');
+        logger.push({ error: err }).error('Unhandled server error');
         process.exit(2);
     });
 
@@ -423,7 +423,7 @@ async function start(config) {
     });
 
     await svr.start().catch(err => {
-        logger.push({ err }).error('Error starting server');
+        logger.push({ error: err }).error('Error starting server');
         process.exit(1);
     });
 

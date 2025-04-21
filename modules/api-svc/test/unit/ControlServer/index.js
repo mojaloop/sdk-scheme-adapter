@@ -113,7 +113,7 @@ class Server extends ws.Server {
         this._clientData = new Map();
 
         this.on('error', err => {
-            this._logger.push({ err }).error('Unhandled websocket error occurred. Shutting down.');
+            this._logger.push({ error: err }).error('Unhandled websocket error occurred. Shutting down.');
             process.exit(1);
         });
 

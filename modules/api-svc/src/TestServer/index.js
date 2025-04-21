@@ -77,7 +77,7 @@ class WsServer extends ws.Server {
         this._cache = cache;
 
         this.on('error', err => {
-            this._logger.isErrorEnabled && this._logger.push({ err })
+            this._logger.isErrorEnabled && this._logger.push({ error: err })
                 .error('Unhandled websocket error occurred. Shutting down.');
             process.exit(1);
         });

@@ -123,7 +123,7 @@ class Server extends ws.Server {
     this._isConfigUpdated = false;
 
     this.on('error', (err) => {
-      this._logger.push({ err }).log('Unhandled websocket error occurred. Shutting down.');
+      this._logger.push({ error: err }).log('Unhandled websocket error occurred. Shutting down.');
       process.exit(1);
     });
 

@@ -36,7 +36,7 @@ async function saveToCache() {
         logger.isDebugEnabled && logger.push({ res }).debug(`Persisted model in cache: ${key}`);
     }
     catch(err) {
-        logger.isErrorEnabled && logger.push({ err }).error(`Error saving model: ${key}`);
+        logger.isErrorEnabled && logger.push({ error: err }).error(`Error saving model: ${key}`);
         throw err;
     }
 }
@@ -100,7 +100,7 @@ async function loadFromCache(cache, key, logger, stateMachineSpec, optCreate) {
         return createPSM(data, cache, key, logger, stateMachineSpec);
     }
     catch(err) {
-        logger.isErrorEnabled &&logger.push({ err }).error(`Error loading data: ${key}`);
+        logger.isErrorEnabled &&logger.push({ error: err }).error(`Error loading data: ${key}`);
         throw err;
     }
 }

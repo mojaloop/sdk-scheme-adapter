@@ -370,7 +370,7 @@ class AccountsModel {
             this._logger.isDebugEnabled && this._logger.push({ res }).debug('Persisted account model in cache');
         }
         catch(err) {
-            this._logger.push({ err }).error('Error saving account model');
+            this._logger.push({ error: err }).error('Error saving account model');
             throw err;
         }
     }
@@ -391,7 +391,7 @@ class AccountsModel {
             this._logger.isDebugEnabled && this._logger.push({ cache: this._data }).debug('Account model loaded from cached state');
         }
         catch(err) {
-            this._logger.push({ err }).error('Error loading account model');
+            this._logger.push({ error: err }).error('Error loading account model');
             throw err;
         }
     }

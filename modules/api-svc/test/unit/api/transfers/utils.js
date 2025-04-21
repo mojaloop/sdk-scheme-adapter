@@ -254,7 +254,7 @@ function createPostTransfersTester({
         const responseValidator = new OpenAPIResponseValidator(apiSpecsOutbound.paths['/transfers'].post);
         const err = responseValidator.validateResponse(responseCode, body);
         if (err) {
-            logger.push({ err }).error('validateResponse error');
+            logger.push({ error: err }).error('validateResponse error');
             throw err;
         }
         await pendingRequest;

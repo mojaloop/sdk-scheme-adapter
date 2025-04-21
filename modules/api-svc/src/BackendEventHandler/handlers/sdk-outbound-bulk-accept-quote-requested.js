@@ -42,6 +42,6 @@ module.exports.handleSDKOutboundBulkAcceptQuoteRequestedDmEvt = async (
             currentState: BulkTransactionState.WAITING_FOR_QUOTE_ACCEPTANCE,
         });
     } catch (err) {
-        logger.isErrorEnabled && logger.push({ err }).error('Error in handleSDKOutboundBulkAcceptQuoteRequested');
+        logger.isErrorEnabled && logger.push({ error: err }).error('Error in handleSDKOutboundBulkAcceptQuoteRequested');
     }
 };

@@ -277,7 +277,7 @@ class BackendRequests {
             this.logger.isVerboseEnabled && this.logger.push({ data }).verbose('Received HTTP response data');
             return data;
         } catch (err) {
-            this.logger.push({ err }).error(`Error attempting ${reqOptions?.method} ${reqOptions?.uri}`);
+            this.logger.push({ error: err }).error(`Error attempting ${reqOptions?.method} ${reqOptions?.uri}`);
             const { data, headers, status } = err.response || err;
             throw new HTTPResponseError({
                 res: { data, headers, status },

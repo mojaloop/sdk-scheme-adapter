@@ -426,7 +426,7 @@ class OutboundBulkQuotesModel {
             this._logger.isDebugEnabled && this._logger.push({ res }).debug('Persisted bulk quote model in cache');
         }
         catch(err) {
-            this._logger.push({ err }).error('Error saving bulk quote model');
+            this._logger.push({ error: err }).error('Error saving bulk quote model');
             throw err;
         }
     }
@@ -446,7 +446,7 @@ class OutboundBulkQuotesModel {
             this._logger.isDebugEnabled && this._logger.push({ cache: this.data }).debug('Bulk quote model loaded from cached state');
         }
         catch(err) {
-            this._logger.push({ err }).error('Error loading bulk quote model');
+            this._logger.push({ error: err }).error('Error loading bulk quote model');
             throw err;
         }
     }
@@ -486,7 +486,7 @@ class OutboundBulkQuotesModel {
             return this.run();
         }
         catch(err) {
-            log.isErrorEnabled && log.push({ err }).error(`Error running bulk quote model: ${err?.message}`);
+            log.isErrorEnabled && log.push({ error: err }).error(`Error running bulk quote model: ${err?.message}`);
 
             // as this function is recursive, we dont want to error the state machine multiple times
             if(this.data.currentState !== 'errored') {

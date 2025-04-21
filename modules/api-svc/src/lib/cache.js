@@ -289,7 +289,7 @@ class Cache {
         if (channelKey && typeof subId === 'number') {
             return this.unsubscribe(channelKey, subId)
                 .catch(err => {
-                    this._logger.push({ err }).warn(`Unsubscribing cache error [${channelKey} ${subId}]: ${err.stack}`);
+                    this._logger.push({ error: err }).warn(`Unsubscribing cache error [${channelKey} ${subId}]: ${err.stack}`);
                 });
         }
     }
@@ -307,11 +307,11 @@ class Cache {
         const client = redis.createClient({ url: this._url });
 
         client.on('error', (err) => {
-            this._logger.isErrorEnabled && this._logger.push({ err }).error('Error from REDIS client getting subscriber');
+            this._logger.isErrorEnabled && this._logger.push({ error: err }).error('Error from REDIS client getting subscriber');
         });
 
         client.on('reconnecting', (err) => {
-            this._logger.isDebugEnabled &&  this._logger.push({ err }).debug('REDIS client Reconnecting');
+            this._logger.isDebugEnabled &&  this._logger.push({ error: err }).debug('REDIS client Reconnecting');
         });
 
         client.on('subscribe', (channel, count) => {
@@ -408,7 +408,7 @@ class Cache {
                 value = JSON.parse(value);
             }
             catch(err) {
-                this._logger.isErrorEnabled && this._logger.push({ err }).error('Error parsing JSON cache value');
+                this._logger.isErrorEnabled && this._logger.push({ error: err }).error('Error parsing JSON cache value');
             }
         }
         return value;
