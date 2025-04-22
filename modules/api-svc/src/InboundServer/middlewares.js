@@ -25,8 +25,8 @@
  --------------
  ******/
 const { env } = require('node:process');
-const coBody = require('co-body');
 const { generateSlug } = require('random-word-slugs');
+const coBody = require('co-body');
 
 const { Jws, Errors, common } = require('@mojaloop/sdk-standard-components');
 const { ReturnCodes } = require('@mojaloop/central-services-shared').Enum.Http;
@@ -58,7 +58,7 @@ const createErrorHandler = (logger) => async (ctx, next) => {
         await next();
     } catch (err) {
         // TODO: return a 500 here if the response has not already been sent?
-        logger.isErrorEnabled && logger.push({ err }).error('Error caught in catchall');
+        logger.error('Error caught in catchall: ', err);
     }
 };
 
@@ -261,7 +261,7 @@ const createHeaderValidator = (conf) => async (
 
     // Only validate requests for the requested resources
     if (!resources.includes(resource)) {
-        logger.info(`skip validation for ${resource}`);
+        logger.info(`skipping header validation for ${resource}`);
         return await next();
     }
 
@@ -347,17 +347,9 @@ const createHeaderValidator = (conf) => async (
         return;
     }
 
-    try {
-        ctx.request.body = await coBody.json(ctx.req, { limit: conf.fspiopApiServerMaxRequestBytes });
-    }
-    catch(err) {
-        // error parsing body
-        logger.push({ err }).error('Error parsing body');
-        ctx.response.status = Errors.MojaloopApiErrorCodes.MALFORMED_SYNTAX.httpStatusCode;
-        ctx.response.body = new Errors.MojaloopFSPIOPError(err, err.message, null,
-            Errors.MojaloopApiErrorCodes.MALFORMED_SYNTAX).toApiErrorObject();
-        return;
-    }
+    const isOk = await extractRequestBody(conf, ctx);
+    if (!isOk) return;
+
     await next();
 };
 
@@ -372,7 +364,7 @@ const createHeaderValidator = (conf) => async (
 const createJwsValidator = (logger, keys, exclusions) => {
     // todo: take logger from ctx
     const jwsValidator = new Jws.validator({
-        logger: logger,
+        logger,
         validationKeys: keys,
     });
     // JWS validation for incoming requests
@@ -383,9 +375,11 @@ const createJwsValidator = (logger, keys, exclusions) => {
             if (exclusions.includes('putParties')
                     && ctx.request.method === 'PUT'
                     && ctx.request.path.startsWith('/parties/')) {
-                logger.isInfoEnabled && logger.info('Skipping jws validation on put parties. config flag is set');
+                logger.info('skipping jws validation on put parties. config flag is set');
                 return await next();
             }
+
+            if (isPingRoute(ctx)) return await next();
 
             // we dont check signatures on GET requests
             // todo: validate this requirement. No state is mutated by GETs but
@@ -393,12 +387,11 @@ const createJwsValidator = (logger, keys, exclusions) => {
             // determine permission sets i.e. what is "readable"
             if (ctx.request.method !== 'GET') {
                 logger.isDebugEnabled && logger.push({ request: ctx.request, body: ctx.request.body }).debug('Validating JWS');
-                jwsValidator.validate(ctx.request, logger);
+                jwsValidator.validate(ctx.request);
             }
 
-        }
-        catch(err) {
-            logger.push({ err }).error('Inbound request failed JWS validation');
+        } catch (err) {
+            logger.error('Inbound request failed JWS validation', err);
 
             ctx.response.status = ReturnCodes.BADREQUEST.CODE;
             ctx.response.body = new Errors.MojaloopFSPIOPError(
@@ -444,7 +437,6 @@ const createLogger = (logger) => async (ctx, next) => {
 
     await next();
 };
-
 
 /**
  * Add validation for each inbound request
@@ -516,6 +508,53 @@ const createResponseLogging = () => async (ctx, next) => {
     return await next();
 };
 
+const createPingMiddleware = (config, validationKeys) => async (ctx, next) => {
+    if (!isPingRoute(ctx)) return await next();
+
+    const { logger } = ctx.state;
+    const isOk = await extractRequestBody(config, ctx);
+    if (!isOk) {
+        logger.warn('failed to extract request body');
+        return;
+    }
+
+    let result;
+
+    if (validationKeys) {
+        const jwsValidator = new Jws.validator({
+            logger,
+            validationKeys,
+        });
+
+        try {
+            result = jwsValidator.validate(ctx.request);
+        } catch (err) {
+            result = err;
+        }
+    }
+
+    ctx.state.jwsPingValidationResult = result;
+    logger.verbose(`is jwsPingValidation passed: ${result === true}`);
+
+    await next();
+};
+
+const extractRequestBody = async (conf, ctx) => {
+    try {
+        ctx.request.body = await coBody.json(ctx.req, { limit: conf.fspiopApiServerMaxRequestBytes });
+        return true;
+    } catch (err) {
+        // error parsing body
+        ctx.state.logger.error('Error parsing body: ', err);
+        ctx.response.status = Errors.MojaloopApiErrorCodes.MALFORMED_SYNTAX.httpStatusCode;
+        ctx.response.body = new Errors.MojaloopFSPIOPError(err, err.message, null,
+            Errors.MojaloopApiErrorCodes.MALFORMED_SYNTAX).toApiErrorObject();
+
+    }
+};
+
+const isPingRoute = (ctx) => ctx.request?.path?.startsWith('/ping');
+
 module.exports = {
     applyState,
     assignFspiopIdentifier,
@@ -528,5 +567,6 @@ module.exports = {
     createRequestValidator,
     createResponseBodyHandler,
     createResponseLogging,
+    createPingMiddleware,
     logResponse,
 };

@@ -34,6 +34,7 @@
 const { Enum } = require('@mojaloop/central-services-shared');
 const {
     InboundTransfersModel,
+    InboundPingModel,
     PartiesModel,
     QuotesModel,
     TransfersModel,
@@ -411,8 +412,8 @@ const putParticipantsByTypeAndId = async (ctx) => {
         // publish an event onto the cache for subscribers to action
         let cacheId = `${idType}_${idValue}` + (idSubValue ? `_${idSubValue}` : '');
         const message = { data };
-        
-        // We need to determine if this callback is a response to either a GET/POST /participants 
+
+        // We need to determine if this callback is a response to either a GET/POST /participants
         // or DELETE /participants/{Type}/{ID}/{SubId} request
         const adCacheId = `ad_${cacheId}`;
         if (ctx.state.cache._callbacks[adCacheId]) {
@@ -431,8 +432,8 @@ const putParticipantsByTypeAndId = async (ctx) => {
 
 
 /**
- * Handles a PUT /participants/{Type}/{ID}/{SubId}/error request. 
- * This is an error response to a GET /participants/{Type}/{ID}/{SubId} or 
+ * Handles a PUT /participants/{Type}/{ID}/{SubId}/error request.
+ * This is an error response to a GET /participants/{Type}/{ID}/{SubId} or
  * DELETE /participants/{Type}/{ID}/{SubId} request
  */
 const putParticipantsByTypeAndIdError = async(ctx) => {
@@ -450,7 +451,7 @@ const putParticipantsByTypeAndIdError = async(ctx) => {
     let cacheId = `${idType}_${idValue}` + (idSubValue ? `_${idSubValue}` : '');
     const message = { data };
 
-    // We need to determine if this callback is a response to either a GET/POST /participants 
+    // We need to determine if this callback is a response to either a GET/POST /participants
     // or DELETE /participants/{Type}/{ID}/{SubId} request
     const adCacheId = `ad_${cacheId}`;
     if (ctx.state.cache._callbacks[adCacheId]) {
@@ -1105,6 +1106,22 @@ const createPutFxTransfersHandler = (success) => async (ctx) => {
     ctx.response.status = ReturnCodes.OK.CODE;
 };
 
+const handlePostPing = (ctx) => {
+    const { jwsPingValidationResult, conf, logger, wso2 } = ctx.state;
+    const { sourceFspId, body, headers } = extractBodyHeadersSourceFspId(ctx);
+
+    const model = new InboundPingModel({
+        ...conf,
+        resourceVersions: ctx.resourceVersions,
+        logger,
+        wso2,
+    });
+    model.postPing({ jwsPingValidationResult, sourceFspId, body, headers })
+        .catch(err => logger.error('error in handlePostPing:', err));
+
+    prepareResponse(ctx);
+};
+
 module.exports = {
     '/': {
         get: healthCheck
@@ -1217,5 +1234,8 @@ module.exports = {
     },
     '/fxTransfers/{ID}/error': {
         put: createPutFxTransfersHandler(false)
-    }
+    },
+    '/ping': {
+        post: handlePostPing
+    },
 };

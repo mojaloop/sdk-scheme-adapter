@@ -26,8 +26,8 @@
  ******/
 'use strict';
 
-
 const InboundTransfersModel = require('./InboundTransfersModel');
+const InboundPingModel = require('./InboundPingModel');
 const OutboundTransfersModel = require('./OutboundTransfersModel');
 const OutboundBulkQuotesModel = require('./OutboundBulkQuotesModel');
 const OutboundBulkTransfersModel = require('./OutboundBulkTransfersModel');
@@ -43,11 +43,12 @@ const TransfersModel = require('./TransfersModel');
 module.exports = {
     AccountsModel,
     BackendError,
+    InboundTransfersModel,
+    InboundPingModel,
     OutboundBulkQuotesModel,
     OutboundBulkTransfersModel,
     OutboundRequestToPayTransferModel,
     OutboundRequestToPayModel,
-    InboundTransfersModel,
     OutboundTransfersModel,
     ProxyModel,
     PersistentStateMachine,
