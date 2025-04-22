@@ -1,4 +1,11 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+## [24.9.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.8.0...v24.9.0) (2025-04-22)
+
+
+### Features
+
+* **csi-1408:** added InboundPingModel ([#574](https://github.com/mojaloop/sdk-scheme-adapter/issues/574)) ([ef84eee](https://github.com/mojaloop/sdk-scheme-adapter/commit/ef84eee0d4ca0fe3c6c84fb72cca196b4ffd707b)), closes [#573](https://github.com/mojaloop/sdk-scheme-adapter/issues/573)
+
 ## [24.8.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.7.0...v24.8.0) (2025-04-15)
 
 
