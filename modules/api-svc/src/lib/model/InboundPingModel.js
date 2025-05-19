@@ -55,6 +55,9 @@ class InboundPingModel {
         const log = this.logger.child({ requestId, sourceFspId });
         log.debug('postPing...', { jwsPingValidationResult, headers });
 
+        await this.pingRequests.putParties();
+        log.verbose('pingRequests.putParties() is done');
+
         if (jwsPingValidationResult === true) {
             log.verbose('ping JWS validation passed, sending PUT ping callback...');
             return this.pingRequests.putPing({
