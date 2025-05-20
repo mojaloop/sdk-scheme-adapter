@@ -1,4 +1,11 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+### [24.9.1](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.9.0...v24.9.1) (2025-05-20)
+
+
+### Chore
+
+* remove gateway headers when returning ping request ([#578](https://github.com/mojaloop/sdk-scheme-adapter/issues/578)) ([a4b0aae](https://github.com/mojaloop/sdk-scheme-adapter/commit/a4b0aaeccf271d62e192275cdd44686e5faee98b))
+
 ## [24.9.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.8.0...v24.9.0) (2025-04-22)
 
 
