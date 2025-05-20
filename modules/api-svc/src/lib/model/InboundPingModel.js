@@ -27,6 +27,7 @@
 
 const { requests: { PingRequests }, Errors } = require('@mojaloop/sdk-standard-components');
 const { Headers } = require('@mojaloop/central-services-shared').Enum.Http;
+const { xHeaders, hopByHopHeaders, sensitiveHeaders } = require('./lib/shared');
 
 class InboundPingModel {
     constructor(config) {
@@ -89,12 +90,28 @@ class InboundPingModel {
     }
 
     #createCallbackHeaders(headers) {
+        const cleanedHeaders = this.#cleanupIncomingHeaders(headers);
         return {
-            ...headers,
+            ...cleanedHeaders,
             [Headers.FSPIOP.DESTINATION]: headers[Headers.FSPIOP.SOURCE],
             [Headers.FSPIOP.SOURCE]: this.dfspId
         };
     }
+
+    #cleanupIncomingHeaders(headers) {
+        const cleanedHeaders = { ...headers };
+        // prettier-ignore
+        [
+            ...sensitiveHeaders,
+            ...hopByHopHeaders,
+            ...xHeaders,
+        ].forEach((header) => {
+            delete cleanedHeaders[header];
+        });
+
+        return cleanedHeaders;
+    }
+
 }
 
 module.exports = InboundPingModel;
