@@ -125,6 +125,7 @@ const build = {
             JSON_PARSE_ERROR: (id) => buildMsg(VERB.NOTIFY, MESSAGE.ERROR, ERROR.JSON_PARSE_ERROR, id),
         }
     },
+    PEER_JWS: {},
 };
 
 /**************************************************************************
