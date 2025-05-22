@@ -1,4 +1,11 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+### [24.9.2](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.9.1...v24.9.2) (2025-05-22)
+
+
+### Chore
+
+* ignore peer_jws notify messages instead of broadcasting error ([#579](https://github.com/mojaloop/sdk-scheme-adapter/issues/579)) ([ff15316](https://github.com/mojaloop/sdk-scheme-adapter/commit/ff15316b1e86bf1d89829e36a41cd36e5009698b))
+
 ### [24.9.1](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.9.0...v24.9.1) (2025-05-20)
 
 
