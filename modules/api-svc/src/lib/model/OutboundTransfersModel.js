@@ -58,6 +58,9 @@ const { TransferState } = Enum.Transfers;
  */
 class OutboundTransfersModel {
     constructor(config) {
+        console.log('🚀 OutboundTransfersModel CONSTRUCTOR CALLED!');
+        console.log('Stack trace (OutboundTransfersModel constructor):', new Error().stack);
+
         this._idGenerator = idGenerator(config.idGenerator);
         this._cache = config.cache;
         this._logger = config.logger.push({ component: this.constructor.name });
@@ -226,6 +229,9 @@ class OutboundTransfersModel {
      */
     async initialize(data) {
         this.data = data;
+        
+        console.log('--- OutboundTransfersModel initialize method called! Incrementing transferPrepares metric! ---');
+        this.metrics.transferPrepares.inc(); // This increments the counter for each actual transfer
 
         // add a transferId if one is not present e.g. on first submission
         if(!this.data.hasOwnProperty('transferId')) {
