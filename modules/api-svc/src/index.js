@@ -139,6 +139,12 @@ class Server extends EventEmitter {
         }
     }
 
+    _shouldUpdateInboundServer(newConf) {
+        return !_.isEqual(this.conf.inbound, newConf.inbound)
+            || !_.isEqual(this.conf.outbound, newConf.outbound)
+            || !_.isEqual(this.conf.peerJWSKeys, newConf.peerJWSKeys);
+    }
+
     async start() {
         await this.cache.connect();
         await this.wso2.auth.start();
@@ -224,8 +230,7 @@ class Server extends EventEmitter {
         }
 
         this.logger.isDebugEnabled && this.logger.push({ oldConf: this.conf.inbound, newConf: newConf.inbound }).debug('Inbound server configuration');
-        const updateInboundServer = !_.isEqual(this.conf.inbound, newConf.inbound)
-            || !_.isEqual(this.conf.outbound, newConf.outbound);
+        const updateInboundServer = this._shouldUpdateInboundServer(this.conf, newConf);
         if (updateInboundServer) {
             await this.inboundServer.stop();
             this.inboundServer = new InboundServer(
