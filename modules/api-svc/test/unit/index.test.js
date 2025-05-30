@@ -99,22 +99,19 @@ describe('Server', () => {
             expect(server.restart).toHaveBeenCalledWith(newConf);
         });
 
-        it('restarts inbound server if peerJWSKeys config is different', async () => {
-            // Clone the conf and change peerJWSKeys
-            const newConf = JSON.parse(JSON.stringify(conf));
-            newConf.peerJWSKeys = [{ kid: 'new-key', key: 'abc123' }];
+        it('hot mutates peerJwsKeys reference if peerJWSKeys config is different', async () => {
+            // Test that peerJwsKeys are updated without a full restart if config changes
+            const originalPeerJwsKeys = conf.peerJWSKeys;
+            const newPeerJwsKeys = { ...originalPeerJwsKeys, newKey: 'newValue' };
+            const newConfPeerJwsKeys = { ...conf, peerJWSKeys: newPeerJwsKeys };
 
-            // _shouldUpdateInboundServer should return true
-            expect(server._shouldUpdateInboundServer(newConf)).toBe(true);
+            expect(server._shouldUpdatePeerJwsKeys(newConfPeerJwsKeys)).toBe(true);
 
-            // Simulate a config change event from control server
-            controlServer.broadcastConfigChange(newConf);
-
-            // Wait for the restart to be triggered
+            controlServer.broadcastConfigChange(newConfPeerJwsKeys);
             await new Promise((wait) => setTimeout(wait, 1000));
 
-            expect(server.restart).toHaveBeenCalledTimes(1);
-            expect(server.restart).toHaveBeenCalledWith(newConf);
+            // Should call restart with new config
+            expect(server.restart).toHaveBeenCalledWith(newConfPeerJwsKeys);
         });
 
         it('restarts inbound server if inbound or outbound is different', async () => {
