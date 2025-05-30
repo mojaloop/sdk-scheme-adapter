@@ -52,6 +52,7 @@ class InboundApi extends EventEmitter {
         super({ captureExceptions: true });
         this._conf = conf;
         this._cache = cache;
+        this._logger = logger;
         _initialize ||= _validator.initialise(apiSpecs, conf);
 
         if (conf.validateInboundJws) {
@@ -83,6 +84,15 @@ class InboundApi extends EventEmitter {
 
     callback() {
         return this._api.callback();
+    }
+
+    _updatePeerJwsKeys(peerJwsKeys) {
+        if (this._conf.pm4mlEnabled) {
+            this._logger && this._logger.isVerboseEnabled && this._logger.verbose('Clearing existing JWS verification keys');
+            Object.keys(this._jwsVerificationKeys).forEach(key => delete this._jwsVerificationKeys[key]);
+            this._logger && this._logger.isVerboseEnabled && this._logger.verbose('Assigning new peer JWS keys');
+            Object.assign(this._jwsVerificationKeys, peerJwsKeys);
+        }
     }
 
     _startJwsWatcher() {
