@@ -141,8 +141,11 @@ class Server extends EventEmitter {
 
     _shouldUpdateInboundServer(newConf) {
         return !_.isEqual(this.conf.inbound, newConf.inbound)
-            || !_.isEqual(this.conf.outbound, newConf.outbound)
-            || !_.isEqual(this.conf.peerJWSKeys, newConf.peerJWSKeys);
+            || !_.isEqual(this.conf.outbound, newConf.outbound);
+    }
+
+    _shouldUpdatePeerJwsKeys(newConf) {
+        return !_.isEqual(this.conf.peerJWSKeys, newConf.peerJWSKeys);
     }
 
     async start() {
@@ -203,6 +206,7 @@ class Server extends EventEmitter {
     }
 
     async restart(newConf) {
+        this.logger.push({ oldConf: this.conf, newConf }).debug('Restarting server with new configuration');
         const restartActionsTaken = {};
         this.logger.isDebugEnabled && this.logger.debug('Server is restarting...');
 
@@ -246,6 +250,11 @@ class Server extends EventEmitter {
             });
             await this.inboundServer.start();
             restartActionsTaken.updateInboundServer = true;
+        }
+
+        const updatePeerJwsKeys = this._shouldUpdatePeerJwsKeys(newConf);
+        if (updatePeerJwsKeys) {
+            this.inboundServer._api._updatePeerJwsKeys(newConf.peerJWSKeys);
         }
 
         this.logger.isDebugEnabled && this.logger.push({ oldConf: this.conf.outbound, newConf: newConf.outbound }).debug('Outbound server configuration');
