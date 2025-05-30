@@ -1,4 +1,11 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+### [24.9.5](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.9.4...v24.9.5) (2025-05-30)
+
+
+### Chore
+
+* hot mutate peerJwsKeys instead of restart ([#584](https://github.com/mojaloop/sdk-scheme-adapter/issues/584)) ([08983fc](https://github.com/mojaloop/sdk-scheme-adapter/commit/08983fcc5ab7cde0042cb3e17545d581accb9d3a))
+
 ### [24.9.4](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.9.3...v24.9.4) (2025-05-30)
 
 
