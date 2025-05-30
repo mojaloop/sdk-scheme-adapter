@@ -206,7 +206,6 @@ class Server extends EventEmitter {
     }
 
     async restart(newConf) {
-        this.logger.push({ oldConf: this.conf, newConf }).debug('Restarting server with new configuration');
         const restartActionsTaken = {};
         this.logger.isDebugEnabled && this.logger.debug('Server is restarting...');
 
