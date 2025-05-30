@@ -1,4 +1,11 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+### [24.9.4](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.9.3...v24.9.4) (2025-05-30)
+
+
+### Chore
+
+* restart inbound on diff peerJwsKeys ([#582](https://github.com/mojaloop/sdk-scheme-adapter/issues/582)) ([c388481](https://github.com/mojaloop/sdk-scheme-adapter/commit/c388481185ff7aab08c6e6151825adc849bf6124))
+
 ### [24.9.3](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.9.2...v24.9.3) (2025-05-27)
 
 
