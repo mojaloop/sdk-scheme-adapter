@@ -225,7 +225,8 @@ class Server extends EventEmitter {
 
         this.logger.isDebugEnabled && this.logger.push({ oldConf: this.conf.inbound, newConf: newConf.inbound }).debug('Inbound server configuration');
         const updateInboundServer = !_.isEqual(this.conf.inbound, newConf.inbound)
-            || !_.isEqual(this.conf.outbound, newConf.outbound);
+            || !_.isEqual(this.conf.outbound, newConf.outbound)
+            || !_.isEqual(this.conf.peerJWSKeys, newConf.peerJWSKeys);
         if (updateInboundServer) {
             await this.inboundServer.stop();
             this.inboundServer = new InboundServer(
