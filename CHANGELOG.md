@@ -1,4 +1,11 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+### [24.9.6](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.9.5...v24.9.6) (2025-06-01)
+
+
+### Chore
+
+* fix faulty jws replacement logic  [@kleyow](https://github.com/kleyow) ([#585](https://github.com/mojaloop/sdk-scheme-adapter/issues/585)) ([efa7ce1](https://github.com/mojaloop/sdk-scheme-adapter/commit/efa7ce19f869a601f868f57ea569202110c9d7f9))
+
 ### [24.9.5](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.9.4...v24.9.5) (2025-05-30)
 
 
