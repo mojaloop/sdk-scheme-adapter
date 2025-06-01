@@ -88,11 +88,10 @@ class InboundApi extends EventEmitter {
     }
 
     _updatePeerJwsKeys(peerJwsKeys) {
-        if (this._conf.pm4mlEnabled && !_.isEqual(this._jwsVerificationKeys, peerJwsKeys)) {
+        if (this._conf.pm4mlEnabled && !_.isEqual(this._jwsVerificationKeys, peerJwsKeys) &&
+            this._jwsVerificationKeys && typeof this._jwsVerificationKeys === 'object') {
             this._logger && this._logger.isVerboseEnabled && this._logger.verbose('Clearing existing JWS verification keys');
-            if (this._jwsVerificationKeys && typeof this._jwsVerificationKeys === 'object') {
-                Object.keys(this._jwsVerificationKeys).forEach(key => delete this._jwsVerificationKeys[key]);
-            }
+            Object.keys(this._jwsVerificationKeys).forEach(key => delete this._jwsVerificationKeys[key]);
             this._logger && this._logger.isVerboseEnabled && this._logger.verbose('Assigning new peer JWS keys');
             Object.assign(this._jwsVerificationKeys, peerJwsKeys);
         }
