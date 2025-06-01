@@ -144,10 +144,6 @@ class Server extends EventEmitter {
             || !_.isEqual(this.conf.outbound, newConf.outbound);
     }
 
-    _shouldUpdatePeerJwsKeys(newConf) {
-        return !_.isEqual(this.conf.peerJWSKeys, newConf.peerJWSKeys);
-    }
-
     async start() {
         await this.cache.connect();
         await this.wso2.auth.start();
@@ -251,10 +247,7 @@ class Server extends EventEmitter {
             restartActionsTaken.updateInboundServer = true;
         }
 
-        const updatePeerJwsKeys = this._shouldUpdatePeerJwsKeys(newConf);
-        if (updatePeerJwsKeys) {
-            this.inboundServer._api._updatePeerJwsKeys(newConf.peerJWSKeys);
-        }
+        this.inboundServer._api._updatePeerJwsKeys(newConf.peerJWSKeys);
 
         this.logger.isDebugEnabled && this.logger.push({ oldConf: this.conf.outbound, newConf: newConf.outbound }).debug('Outbound server configuration');
         const updateOutboundServer = !_.isEqual(this.conf.outbound, newConf.outbound);

@@ -26,6 +26,7 @@
  ******/
 const Koa = require('koa');
 
+const _ = require('lodash');
 const assert = require('assert').strict;
 const https = require('https');
 const http = require('http');
@@ -87,7 +88,8 @@ class InboundApi extends EventEmitter {
     }
 
     _updatePeerJwsKeys(peerJwsKeys) {
-        if (this._conf.pm4mlEnabled) {
+        if (this._conf.pm4mlEnabled && !_.isEqual(this._jwsVerificationKeys, peerJwsKeys) &&
+            this._jwsVerificationKeys && typeof this._jwsVerificationKeys === 'object') {
             this._logger && this._logger.isVerboseEnabled && this._logger.verbose('Clearing existing JWS verification keys');
             Object.keys(this._jwsVerificationKeys).forEach(key => delete this._jwsVerificationKeys[key]);
             this._logger && this._logger.isVerboseEnabled && this._logger.verbose('Assigning new peer JWS keys');
