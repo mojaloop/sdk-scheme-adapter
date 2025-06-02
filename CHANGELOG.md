@@ -1,4 +1,11 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+### [24.9.7](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.9.6...v24.9.7) (2025-06-02)
+
+
+### Chore
+
+* **deps:** bump undici from 6.21.1 to 6.21.3 ([#583](https://github.com/mojaloop/sdk-scheme-adapter/issues/583)) ([b2d51ad](https://github.com/mojaloop/sdk-scheme-adapter/commit/b2d51adaa37b1c01b4433c3e028ef17c33ec0347))
+
 ### [24.9.6](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.9.5...v24.9.6) (2025-06-01)
 
 
