@@ -527,12 +527,12 @@ __metadata:
   linkType: hard
 
 "@babel/helpers@npm:^7.26.9":
-  version: 7.26.9
-  resolution: "@babel/helpers@npm:7.26.9"
+  version: 7.26.10
+  resolution: "@babel/helpers@npm:7.26.10"
   dependencies:
     "@babel/template": ^7.26.9
-    "@babel/types": ^7.26.9
-  checksum: 06363f8288a24c1cfda03eccd775ac22f79cba319b533cb0e5d0f2a04a33512881cc3f227a4c46324935504fb92999cc4758b69b5e7b3846107eadcb5ee0abca
+    "@babel/types": ^7.26.10
+  checksum: daa3689024a4fc5e024fea382915c6fb0fde15cf1b2f6093435725c79edccbef7646d4a656b199c046ff5c61846d1b3876d6096b7bf0635823de6aaff2a1e1a4
   languageName: node
   linkType: hard
 
@@ -1650,6 +1650,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/types@npm:^7.26.10, @babel/types@npm:^7.27.3":
+  version: 7.27.3
+  resolution: "@babel/types@npm:7.27.3"
+  dependencies:
+    "@babel/helper-string-parser": ^7.27.1
+    "@babel/helper-validator-identifier": ^7.27.1
+  checksum: f0d43c0231f3ebc118480e149292dcd92ea128e2650285ced99ff2e5610db2171305f59aa07406ba0cb36af8e4331a53a69576d6b0c3f3176144dd3ad514b9ae
+  languageName: node
+  linkType: hard
+
 "@babel/types@npm:^7.27.1":
   version: 7.27.1
   resolution: "@babel/types@npm:7.27.1"
@@ -1657,16 +1667,6 @@ __metadata:
     "@babel/helper-string-parser": ^7.27.1
     "@babel/helper-validator-identifier": ^7.27.1
   checksum: 357c13f37aaa2f2e2cfcdb63f986d5f7abc9f38df20182b620ace34387d2460620415770fe5856eb54d70c9f0ba2f71230d29465e789188635a948476b830ae4
-  languageName: node
-  linkType: hard
-
-"@babel/types@npm:^7.27.3":
-  version: 7.27.3
-  resolution: "@babel/types@npm:7.27.3"
-  dependencies:
-    "@babel/helper-string-parser": ^7.27.1
-    "@babel/helper-validator-identifier": ^7.27.1
-  checksum: f0d43c0231f3ebc118480e149292dcd92ea128e2650285ced99ff2e5610db2171305f59aa07406ba0cb36af8e4331a53a69576d6b0c3f3176144dd3ad514b9ae
   languageName: node
   linkType: hard
 
@@ -2699,20 +2699,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/central-services-logger@npm:11.8.1":
-  version: 11.8.1
-  resolution: "@mojaloop/central-services-logger@npm:11.8.1"
-  dependencies:
-    "@opentelemetry/api": 1.9.0
-    parse-strings-in-object: 2.0.0
-    rc: 1.2.8
-    safe-stable-stringify: ^2.5.0
-    triple-beam: 1.4.1
-    winston: 3.17.0
-  checksum: 32d5d8371e05247ac40e92c3a04d1b693358bdad10489efe228d26e73f64c9f4694189af1136f523e1c82d2352517aae57194b78b43dfd97f624ee482521b2c8
-  languageName: node
-  linkType: hard
-
 "@mojaloop/central-services-logger@npm:11.9.0":
   version: 11.9.0
   resolution: "@mojaloop/central-services-logger@npm:11.9.0"
@@ -2792,16 +2778,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/central-services-shared@npm:18.26.2":
-  version: 18.26.2
-  resolution: "@mojaloop/central-services-shared@npm:18.26.2"
+"@mojaloop/central-services-shared@npm:18.27.0":
+  version: 18.27.0
+  resolution: "@mojaloop/central-services-shared@npm:18.27.0"
   dependencies:
     "@hapi/catbox": 12.1.1
     "@hapi/catbox-memory": 5.0.1
     "@hapi/hapi": 21.4.0
     "@hapi/joi-date": 2.0.1
-    "@mojaloop/inter-scheme-proxy-cache-lib": 2.5.0
+    "@mojaloop/inter-scheme-proxy-cache-lib": 2.6.0
     "@opentelemetry/api": 1.9.0
+    async-exit-hook: 2.0.1
+    async-retry: 1.3.3
     axios: 1.9.0
     clone: 2.1.2
     convict: ^6.2.4
@@ -2830,6 +2818,8 @@ __metadata:
     ajv: 8.x.x
     ajv-formats: 3.x.x
     ajv-keywords: 5.x.x
+    knex: 3.x
+    mysql2: 3.x
   peerDependenciesMeta:
     "@mojaloop/central-services-error-handling":
       optional: false
@@ -2843,7 +2833,11 @@ __metadata:
       optional: false
     ajv-keyboards:
       optional: false
-  checksum: 504c725d382619e9286f063468a64a538fbb1f57d1f64f2474896a28b869b6abd96d2628fb05ba275ce286c5a3946bb5210cf8b1447f94976e787477a8b7fd98
+    knex:
+      optional: false
+    mysql2:
+      optional: false
+  checksum: bf265a09bd6b0ca23783fe61510cd36fb48474f0d4d03af317d85dfa40d5c605cdfe18cfc030280192906b20bc7f6a0fc9cce42838312b3d327fd52c612c967c
   languageName: node
   linkType: hard
 
@@ -2890,16 +2884,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/inter-scheme-proxy-cache-lib@npm:2.5.0":
-  version: 2.5.0
-  resolution: "@mojaloop/inter-scheme-proxy-cache-lib@npm:2.5.0"
+"@mojaloop/inter-scheme-proxy-cache-lib@npm:2.6.0":
+  version: 2.6.0
+  resolution: "@mojaloop/inter-scheme-proxy-cache-lib@npm:2.6.0"
   dependencies:
-    "@mojaloop/central-services-logger": 11.8.1
+    "@mojaloop/central-services-logger": 11.9.0
     ajv: 8.17.1
     convict: 6.2.4
     fast-safe-stringify: 2.1.1
-    ioredis: 5.6.0
-  checksum: bf7e14ce334b2f700bc9dc6dedb07497c8c7ce8c05074c5b751b26e3a390fea7c56bf65b9f65444b9c160d312d5f2f2f35c7c8efe5b7d72f41c48f07efb22ffb
+    ioredis: 5.6.1
+  checksum: 2f05e6e272e47ec83a8ee37e8725115a08b56fd01333253b1e8f701699aa16b616bb90cb16dd70850a25938d4663f6a7a4e35d69ab0d0544ceca57947ce1f0a6
   languageName: node
   linkType: hard
 
@@ -2988,7 +2982,7 @@ __metadata:
     "@mojaloop/central-services-error-handling": 13.1.0
     "@mojaloop/central-services-logger": 11.9.0
     "@mojaloop/central-services-metrics": 12.6.0
-    "@mojaloop/central-services-shared": 18.26.2
+    "@mojaloop/central-services-shared": 18.27.0
     "@mojaloop/event-sdk": 14.5.1
     "@mojaloop/logging-bc-client-lib": 0.5.8
     "@mojaloop/ml-schema-transformer-lib": 2.7.1
@@ -3045,7 +3039,7 @@ __metadata:
   dependencies:
     "@eslint/compat": 1.2.9
     "@mojaloop/api-snippets": 17.10.3
-    "@mojaloop/central-services-shared": 18.26.2
+    "@mojaloop/central-services-shared": 18.27.0
     "@mojaloop/logging-bc-client-lib": 0.5.8
     "@mojaloop/logging-bc-public-types-lib": 0.5.5
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^"
@@ -3124,7 +3118,7 @@ __metadata:
   dependencies:
     "@eslint/compat": 1.2.9
     "@mojaloop/api-snippets": 17.10.3
-    "@mojaloop/central-services-shared": 18.26.2
+    "@mojaloop/central-services-shared": 18.27.0
     "@mojaloop/logging-bc-public-types-lib": 0.5.5
     "@mojaloop/platform-shared-lib-messaging-types-lib": 0.7.2
     "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib": 0.5.18
@@ -3161,6 +3155,7 @@ __metadata:
     eslint-plugin-import: 2.31.0
     husky: 9.1.7
     jest: 29.7.0
+    knex: 3.1.0
     nodemon: 3.1.10
     npm-check-updates: 16.7.10
     nx: 16.5.0
@@ -5174,10 +5169,26 @@ __metadata:
   languageName: node
   linkType: hard
 
+"async-exit-hook@npm:2.0.1":
+  version: 2.0.1
+  resolution: "async-exit-hook@npm:2.0.1"
+  checksum: b72cbdd19ea90fa33a3a57b0dbff83e4bf2f4e4acd70b2b3847a588f9f16a45d38590ee13f285375dd919c224f60fa58dc3d315a87678d3aa24ff686d1c0200a
+  languageName: node
+  linkType: hard
+
 "async-function@npm:^1.0.0":
   version: 1.0.0
   resolution: "async-function@npm:1.0.0"
   checksum: 9102e246d1ed9b37ac36f57f0a6ca55226876553251a31fc80677e71471f463a54c872dc78d5d7f80740c8ba624395cccbe8b60f7b690c4418f487d8e9fd1106
+  languageName: node
+  linkType: hard
+
+"async-retry@npm:1.3.3":
+  version: 1.3.3
+  resolution: "async-retry@npm:1.3.3"
+  dependencies:
+    retry: 0.13.1
+  checksum: 38a7152ff7265a9321ea214b9c69e8224ab1febbdec98efbbde6e562f17ff68405569b796b1c5271f354aef8783665d29953f051f68c1fc45306e61aec82fdc4
   languageName: node
   linkType: hard
 
@@ -6169,6 +6180,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"colorette@npm:2.0.19":
+  version: 2.0.19
+  resolution: "colorette@npm:2.0.19"
+  checksum: 888cf5493f781e5fcf54ce4d49e9d7d698f96ea2b2ef67906834bb319a392c667f9ec69f4a10e268d2946d13a9503d2d19b3abaaaf174e3451bfe91fb9d82427
+  languageName: node
+  linkType: hard
+
 "colorette@npm:^1.2.0":
   version: 1.4.0
   resolution: "colorette@npm:1.4.0"
@@ -6812,6 +6830,18 @@ __metadata:
     supports-color:
       optional: true
   checksum: fb42df878dd0e22816fc56e1fdca9da73caa85212fbe40c868b1295a6878f9101ae684f4eeef516c13acfc700f5ea07f1136954f43d4cd2d477a811144136479
+  languageName: node
+  linkType: hard
+
+"debug@npm:4.3.4":
+  version: 4.3.4
+  resolution: "debug@npm:4.3.4"
+  dependencies:
+    ms: 2.1.2
+  peerDependenciesMeta:
+    supports-color:
+      optional: true
+  checksum: 3dbad3f94ea64f34431a9cbf0bafb61853eda57bff2880036153438f50fb5a84f27683ba0d8e5426bf41a8c6ff03879488120cf5b3a761e77953169c0600a708
   languageName: node
   linkType: hard
 
@@ -7654,6 +7684,13 @@ __metadata:
   bin:
     eslint: bin/eslint.js
   checksum: 50b7e1c4cb49662a54916877d47aeded2aac0cae428c8258ec9d181160ca893681a32c69df359404bfb81a9693480896adbcd8a18fa5acafd1c933dc1030f32e
+  languageName: node
+  linkType: hard
+
+"esm@npm:^3.2.25":
+  version: 3.2.25
+  resolution: "esm@npm:3.2.25"
+  checksum: 978aabe2de83541c105605a6d60a26ed8e627ef6bb0a7605fe15a95bbdea6b8348bd045255cb22219c054dd09a81a94823df00843d9e97f42419c92015ce3a64
   languageName: node
   linkType: hard
 
@@ -8506,6 +8543,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"getopts@npm:2.3.0":
+  version: 2.3.0
+  resolution: "getopts@npm:2.3.0"
+  checksum: bbb5fcef8d4a8582cf4499ea3fc492d95322df2184e65d550ddacede04871e7ba33194c7abd06a6c5d540de3b70112a16f988787e236e1c66b89521032b398ce
+  languageName: node
+  linkType: hard
+
 "git-raw-commits@npm:^2.0.8":
   version: 2.0.11
   resolution: "git-raw-commits@npm:2.0.11"
@@ -9334,6 +9378,13 @@ __metadata:
     hasown: ^2.0.2
     side-channel: ^1.1.0
   checksum: 8e0991c2d048cc08dab0a91f573c99f6a4215075887517ea4fa32203ce8aea60fa03f95b177977fa27eb502e5168366d0f3e02c762b799691411d49900611861
+  languageName: node
+  linkType: hard
+
+"interpret@npm:^2.2.0":
+  version: 2.2.0
+  resolution: "interpret@npm:2.2.0"
+  checksum: f51efef7cb8d02da16408ffa3504cd6053014c5aeb7bb8c223727e053e4235bf565e45d67028b0c8740d917c603807aa3c27d7bd2f21bf20b6417e2bb3e5fd6e
   languageName: node
   linkType: hard
 
@@ -10819,6 +10870,45 @@ __metadata:
   languageName: node
   linkType: hard
 
+"knex@npm:3.1.0":
+  version: 3.1.0
+  resolution: "knex@npm:3.1.0"
+  dependencies:
+    colorette: 2.0.19
+    commander: ^10.0.0
+    debug: 4.3.4
+    escalade: ^3.1.1
+    esm: ^3.2.25
+    get-package-type: ^0.1.0
+    getopts: 2.3.0
+    interpret: ^2.2.0
+    lodash: ^4.17.21
+    pg-connection-string: 2.6.2
+    rechoir: ^0.8.0
+    resolve-from: ^5.0.0
+    tarn: ^3.0.2
+    tildify: 2.0.0
+  peerDependenciesMeta:
+    better-sqlite3:
+      optional: true
+    mysql:
+      optional: true
+    mysql2:
+      optional: true
+    pg:
+      optional: true
+    pg-native:
+      optional: true
+    sqlite3:
+      optional: true
+    tedious:
+      optional: true
+  bin:
+    knex: bin/cli.js
+  checksum: 3905f8d27960975f7f57f3f488d1ef3ccf47784acc8eb627e8a28cbbe1f296c6879c8ef0cbd9e17e867be80117d305cd948545f3fbd4c74b24c90d2413bbc021
+  languageName: node
+  linkType: hard
+
 "koa-body@npm:6.0.1":
   version: 6.0.1
   resolution: "koa-body@npm:6.0.1"
@@ -11875,6 +11965,13 @@ __metadata:
   version: 2.0.0
   resolution: "ms@npm:2.0.0"
   checksum: 0e6a22b8b746d2e0b65a430519934fefd41b6db0682e3477c10f60c76e947c4c0ad06f63ffdf1d78d335f83edee8c0aa928aa66a36c7cd95b69b26f468d527f4
+  languageName: node
+  linkType: hard
+
+"ms@npm:2.1.2":
+  version: 2.1.2
+  resolution: "ms@npm:2.1.2"
+  checksum: 673cdb2c3133eb050c745908d8ce632ed2c02d85640e2edb3ace856a2266a813b30c613569bf3354fdf4ea7d1a1494add3bfa95e2713baa27d0c2c71fc44f58f
   languageName: node
   linkType: hard
 
@@ -13200,6 +13297,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"pg-connection-string@npm:2.6.2":
+  version: 2.6.2
+  resolution: "pg-connection-string@npm:2.6.2"
+  checksum: 22265882c3b6f2320785378d0760b051294a684989163d5a1cde4009e64e84448d7bf67d9a7b9e7f69440c3ee9e2212f9aa10dd17ad6773f6143c6020cebbcb5
+  languageName: node
+  linkType: hard
+
 "picocolors@npm:^1.0.0, picocolors@npm:^1.1.1":
   version: 1.1.1
   resolution: "picocolors@npm:1.1.1"
@@ -13789,6 +13893,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"rechoir@npm:^0.8.0":
+  version: 0.8.0
+  resolution: "rechoir@npm:0.8.0"
+  dependencies:
+    resolve: ^1.20.0
+  checksum: ad3caed8afdefbc33fbc30e6d22b86c35b3d51c2005546f4e79bcc03c074df804b3640ad18945e6bef9ed12caedc035655ec1082f64a5e94c849ff939dc0a788
+  languageName: node
+  linkType: hard
+
 "redent@npm:^3.0.0":
   version: 3.0.0
   resolution: "redent@npm:3.0.0"
@@ -14073,6 +14186,13 @@ __metadata:
     onetime: ^5.1.0
     signal-exit: ^3.0.2
   checksum: f877dd8741796b909f2a82454ec111afb84eb45890eb49ac947d87991379406b3b83ff9673a46012fca0d7844bb989f45cc5b788254cf1a39b6b5a9659de0630
+  languageName: node
+  linkType: hard
+
+"retry@npm:0.13.1":
+  version: 0.13.1
+  resolution: "retry@npm:0.13.1"
+  checksum: 47c4d5be674f7c13eee4cfe927345023972197dbbdfba5d3af7e461d13b44de1bfd663bfc80d2f601f8ef3fc8164c16dd99655a221921954a65d044a2fc1233b
   languageName: node
   linkType: hard
 
@@ -15392,6 +15512,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"tarn@npm:^3.0.2":
+  version: 3.0.2
+  resolution: "tarn@npm:3.0.2"
+  checksum: 27a69658f02504979c5b02e500522e78ec12ef893b90cb00fdef794f9d847a92ed78f6c0ad12e82b8919519bded6a8d6d0000442cd0c6d6ea83cd9b7297729af
+  languageName: node
+  linkType: hard
+
 "tdigest@npm:^0.1.1":
   version: 0.1.2
   resolution: "tdigest@npm:0.1.2"
@@ -15449,6 +15576,13 @@ __metadata:
   version: 2.3.8
   resolution: "through@npm:2.3.8"
   checksum: a38c3e059853c494af95d50c072b83f8b676a9ba2818dcc5b108ef252230735c54e0185437618596c790bbba8fcdaef5b290405981ffa09dce67b1f1bf190cbd
+  languageName: node
+  linkType: hard
+
+"tildify@npm:2.0.0":
+  version: 2.0.0
+  resolution: "tildify@npm:2.0.0"
+  checksum: 0f5fee93624c4afdf75ee224c3b65aece4817ba5317fd70f49eaf084ea720d73556a6ef3f50079425a773ba3b93805b4524d14057841d4e4336516fdbe80635b
   languageName: node
   linkType: hard
 
