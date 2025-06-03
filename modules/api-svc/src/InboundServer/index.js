@@ -88,6 +88,9 @@ class InboundApi extends EventEmitter {
     }
 
     _updatePeerJwsKeys(peerJwsKeys) {
+        // Security Risk only for testing purposes.
+        this._logger && this._logger.isDebugEnabled && this._logger.debug('Old peer JWS keys:', Object.entries(this._jwsVerificationKeys).map(([k, v]) => [k, v.toString()]));
+        this._logger && this._logger.isDebugEnabled && this._logger.debug('New peer JWS keys:', Object.entries(peerJwsKeys).map(([k, v]) => [k, v.toString()]));
         if (this._conf.pm4mlEnabled && !_.isEqual(this._jwsVerificationKeys, peerJwsKeys) &&
             this._jwsVerificationKeys && typeof this._jwsVerificationKeys === 'object') {
             this._logger && this._logger.isVerboseEnabled && this._logger.verbose('Clearing existing JWS verification keys');
