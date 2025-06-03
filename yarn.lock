@@ -3226,6 +3226,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mojaloop/sdk-scheme-adapter@workspace:."
   dependencies:
+    "@mojaloop/central-services-shared": 18.26.2
     "@types/jest": 29.5.14
     "@types/node": 22.15.29
     "@types/node-cache": 4.2.5
