@@ -2699,6 +2699,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@mojaloop/central-services-logger@npm:11.8.1":
+  version: 11.8.1
+  resolution: "@mojaloop/central-services-logger@npm:11.8.1"
+  dependencies:
+    "@opentelemetry/api": 1.9.0
+    parse-strings-in-object: 2.0.0
+    rc: 1.2.8
+    safe-stable-stringify: ^2.5.0
+    triple-beam: 1.4.1
+    winston: 3.17.0
+  checksum: 32d5d8371e05247ac40e92c3a04d1b693358bdad10489efe228d26e73f64c9f4694189af1136f523e1c82d2352517aae57194b78b43dfd97f624ee482521b2c8
+  languageName: node
+  linkType: hard
+
 "@mojaloop/central-services-logger@npm:11.9.0":
   version: 11.9.0
   resolution: "@mojaloop/central-services-logger@npm:11.9.0"
@@ -2775,6 +2789,61 @@ __metadata:
     ajv-keyboards:
       optional: false
   checksum: 50f5f83ce55ff7d046d64c8dbe80a768ddaf3ed1458b4da4902f8aef076aeffee6961d0687b5a8b7d91533b20f33d468a763b9bbe967f612e3fdb8997afa8a04
+  languageName: node
+  linkType: hard
+
+"@mojaloop/central-services-shared@npm:18.26.2":
+  version: 18.26.2
+  resolution: "@mojaloop/central-services-shared@npm:18.26.2"
+  dependencies:
+    "@hapi/catbox": 12.1.1
+    "@hapi/catbox-memory": 5.0.1
+    "@hapi/hapi": 21.4.0
+    "@hapi/joi-date": 2.0.1
+    "@mojaloop/inter-scheme-proxy-cache-lib": 2.5.0
+    "@opentelemetry/api": 1.9.0
+    axios: 1.9.0
+    clone: 2.1.2
+    convict: ^6.2.4
+    dotenv: 16.5.0
+    env-var: 7.5.0
+    event-stream: 4.0.1
+    fast-safe-stringify: 2.1.1
+    immutable: 5.1.2
+    ioredis: 5.6.1
+    joi: 17.13.3
+    lodash: 4.17.21
+    mustache: 4.2.0
+    openapi-backend: 5.12.0
+    raw-body: 3.0.0
+    rc: 1.2.8
+    shins: 2.6.0
+    ulidx: 2.4.1
+    uuid4: 2.0.3
+    widdershins: 4.0.1
+    yaml: 2.8.0
+  peerDependencies:
+    "@mojaloop/central-services-error-handling": 13.1.0
+    "@mojaloop/central-services-logger": 11.9.0
+    "@mojaloop/central-services-metrics": 12.6.0
+    "@mojaloop/event-sdk": 14.5.1
+    ajv: 8.x.x
+    ajv-formats: 3.x.x
+    ajv-keywords: 5.x.x
+  peerDependenciesMeta:
+    "@mojaloop/central-services-error-handling":
+      optional: false
+    "@mojaloop/central-services-logger":
+      optional: false
+    "@mojaloop/central-services-metrics":
+      optional: false
+    "@mojaloop/event-sdk":
+      optional: false
+    ajv:
+      optional: false
+    ajv-keyboards:
+      optional: false
+  checksum: 504c725d382619e9286f063468a64a538fbb1f57d1f64f2474896a28b869b6abd96d2628fb05ba275ce286c5a3946bb5210cf8b1447f94976e787477a8b7fd98
   languageName: node
   linkType: hard
 
@@ -2884,6 +2953,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@mojaloop/inter-scheme-proxy-cache-lib@npm:2.5.0":
+  version: 2.5.0
+  resolution: "@mojaloop/inter-scheme-proxy-cache-lib@npm:2.5.0"
+  dependencies:
+    "@mojaloop/central-services-logger": 11.8.1
+    ajv: 8.17.1
+    convict: 6.2.4
+    fast-safe-stringify: 2.1.1
+    ioredis: 5.6.0
+  checksum: bf7e14ce334b2f700bc9dc6dedb07497c8c7ce8c05074c5b751b26e3a390fea7c56bf65b9f65444b9c160d312d5f2f2f35c7c8efe5b7d72f41c48f07efb22ffb
+  languageName: node
+  linkType: hard
+
 "@mojaloop/inter-scheme-proxy-cache-lib@npm:2.6.0":
   version: 2.6.0
   resolution: "@mojaloop/inter-scheme-proxy-cache-lib@npm:2.6.0"
@@ -2982,7 +3064,7 @@ __metadata:
     "@mojaloop/central-services-error-handling": 13.1.0
     "@mojaloop/central-services-logger": 11.9.0
     "@mojaloop/central-services-metrics": 12.6.0
-    "@mojaloop/central-services-shared": 18.27.0
+    "@mojaloop/central-services-shared": 18.26.2
     "@mojaloop/event-sdk": 14.5.1
     "@mojaloop/logging-bc-client-lib": 0.5.8
     "@mojaloop/ml-schema-transformer-lib": 2.7.1
