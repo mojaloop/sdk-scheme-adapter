@@ -142,6 +142,8 @@ class Server extends EventEmitter {
     _shouldUpdateInboundServer(newConf) {
         const isInboundDifferent = !_.isEqual(this.conf.inbound, newConf.inbound);
         const isOutboundDifferent = !_.isEqual(this.conf.outbound, newConf.outbound);
+        const isPeerJWSKeysDifferent = !_.isEqual(this.conf.peerJWSKeys, newConf.peerJWSKeys);
+        const isJwsSigningKeyDifferent = !_.isEqual(this.conf.jwsSigningKey, newConf.jwsSigningKey);
 
         if (isInboundDifferent) {
             this.logger.debug('Inbound config is different', {
@@ -156,11 +158,26 @@ class Server extends EventEmitter {
             });
         }
 
-        return isInboundDifferent || isOutboundDifferent;
+        if (isPeerJWSKeysDifferent) {
+            this.logger.debug('Peer JWS Keys config is different', {
+                oldPeerJWSKeys: this.conf.peerJWSKeys,
+                newPeerJWSKeys: newConf.peerJWSKeys
+            });
+        }
+
+        if (isJwsSigningKeyDifferent) {
+            this.logger.debug('JWS Signing Key config is different', {
+                oldJwsSigningKey: this.conf.jwsSigningKey,
+                newJwsSigningKey: newConf.jwsSigningKey
+            });
+        }
+
+        return isInboundDifferent || isOutboundDifferent || isPeerJWSKeysDifferent || isJwsSigningKeyDifferent;
     }
 
     _shouldUpdateOutboundServer(newConf) {
         const isOutboundDifferent = !_.isEqual(this.conf.outbound, newConf.outbound);
+        const isJwsSigningKeyDifferent = !_.isEqual(this.conf.jwsSigningKey, newConf.jwsSigningKey);
 
         if (isOutboundDifferent) {
             this.logger.debug('Outbound config is different', {
@@ -169,7 +186,14 @@ class Server extends EventEmitter {
             });
         }
 
-        return isOutboundDifferent;
+        if (isJwsSigningKeyDifferent) {
+            this.logger.debug('JWS Signing Key config is different', {
+                oldJwsSigningKey: this.conf.jwsSigningKey,
+                newJwsSigningKey: newConf.jwsSigningKey
+            });
+        }
+
+        return isOutboundDifferent || isJwsSigningKeyDifferent;
     }
 
     async start() {
@@ -293,20 +317,6 @@ class Server extends EventEmitter {
             });
             await this.outboundServer.start();
             restartActionsTaken.updateOutboundServer = true;
-        }
-
-        if(!_.isEqual(this.conf.jwsSigningKey, newConf.jwsSigningKey) ||
-           !_.isEqual(this.conf.peerJWSKeys, newConf.peerJWSKeys)) {
-            this.logger.isDebugEnabled && this.logger.push({
-                oldJwsSigningKey: this.conf.jwsSigningKey,
-                newJwsSigningKey: newConf.jwsSigningKey,
-                oldPeerJWSKeys: this.conf.peerJWSKeys,
-                newPeerJWSKeys: newConf.peerJWSKeys
-            }).debug('JWS signing key or peer JWS keys configuration changed');
-            this.outboundServer._conf.jwsSigningKey = newConf.jwsSigningKey;
-            this.outboundServer._conf.peerJWSKeys = newConf.peerJWSKeys;
-            this.inboundServer._conf.jwsSigningKey = newConf.jwsSigningKey;
-            this.inboundServer._conf.peerJWSKeys = newConf.peerJWSKeys;
         }
 
         const updateFspiopEventHandler = !_.isEqual(this.conf.outbound, newConf.outbound)
