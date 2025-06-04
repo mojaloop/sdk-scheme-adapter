@@ -11,11 +11,7 @@ ARG NODE_VERSION=lts-alpine
 #
 
 # Build Image
-# TODO: remove hardcoded version and use ARG NODE_VERSION once the below grype issue is resolved
-# Medium severity vulnerabilities:
-# - sqlite-libs 3.48.0-r2: CVE-2025-3277
-# - ada-libs 2.9.2-r1: CVE-2024-9410
-FROM node:22.16.0-alpine3.22 AS builder
+FROM node:${NODE_VERSION} AS builder
 
 ## Install tool dependencies
 RUN apk add --no-cache -t build-dependencies make gcc g++ python3 libtool openssl-dev autoconf automake yarn bash
@@ -47,7 +43,7 @@ COPY ./modules/private-shared-lib/package.json ./modules/private-shared-lib/pack
 RUN yarn install --immutable
 
 # Build Run-time image
-FROM node:22.16.0-alpine3.22
+FROM node:${NODE_VERSION}
 WORKDIR /opt/app
 
 ## Install general dependencies
