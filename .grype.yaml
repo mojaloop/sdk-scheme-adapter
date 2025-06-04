@@ -1,9 +1,10 @@
 ignore:
-  # Ignore cross-spawn vulnerabilities by CVE ID due to false positive
-  # as grype looks at package-lock.json where it shows versions with
-  # vulnerabilities, npm ls shows only 7.0.6 verion is used
-  - "CVE-2025-3277" #  sqlite-libs 3.48.0-r2 
-  - "CVE-2024-9410" # ada-libs 2.9.2-r1
+  - vulnerability:
+      id: CVE-2025-3277
+      #  sqlite-libs 3.48.0-r2 
+  - vulnerability:
+      id: CVE-2024-9410
+      # ada-libs 2.9.2-r1
 
 # Set output format defaults
 output:
