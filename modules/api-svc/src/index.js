@@ -257,7 +257,7 @@ class Server extends EventEmitter {
         }
 
         this.logger.isDebugEnabled && this.logger.push({ oldConf: this.conf.inbound, newConf: newConf.inbound }).debug('Inbound server configuration');
-        const updateInboundServer = this._shouldUpdateInboundServer(this.conf, newConf);
+        const updateInboundServer = this._shouldUpdateInboundServer(newConf);
         if (updateInboundServer) {
             await this.inboundServer.stop();
             this.inboundServer = new InboundServer(
@@ -276,7 +276,7 @@ class Server extends EventEmitter {
         }
 
         this.logger.isDebugEnabled && this.logger.push({ oldConf: this.conf.outbound, newConf: newConf.outbound }).debug('Outbound server configuration');
-        const updateOutboundServer = this._shouldUpdateOutboundServer(this.conf, newConf);
+        const updateOutboundServer = this._shouldUpdateOutboundServer(newConf);
         if (updateOutboundServer) {
             await this.outboundServer.stop();
             this.outboundServer = new OutboundServer(
