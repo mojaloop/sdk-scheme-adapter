@@ -140,9 +140,50 @@ class Server extends EventEmitter {
     }
 
     _shouldUpdateInboundServer(newConf) {
-        return !_.isEqual(this.conf.inbound, newConf.inbound)
-            || !_.isEqual(this.conf.outbound, newConf.outbound)
-            || !_.isEqual(this.conf.peerJWSKeys, newConf.peerJWSKeys);
+        const isInboundDifferent = !_.isEqual(this.conf.inbound, newConf.inbound);
+        const isOutboundDifferent = !_.isEqual(this.conf.outbound, newConf.outbound);
+        const isPeerJWSKeysDifferent = !_.isEqual(this.conf.peerJWSKeys, newConf.peerJWSKeys);
+
+        if (isInboundDifferent) {
+            this.logger.debug('Inbound config is different', {
+                oldInbound: this.conf.inbound,
+                newInbound: newConf.inbound
+            });
+        }
+        if (isOutboundDifferent) {
+            this.logger.debug('Outbound config is different (checked in inbound update)', {
+                oldOutbound: this.conf.outbound,
+                newOutbound: newConf.outbound
+            });
+        }
+        if (isPeerJWSKeysDifferent) {
+            this.logger.debug('Peer JWS Keys config is different', {
+                oldPeerJWSKeys: this.conf.peerJWSKeys,
+                newPeerJWSKeys: newConf.peerJWSKeys
+            });
+        }
+
+        return isInboundDifferent || isOutboundDifferent || isPeerJWSKeysDifferent;
+    }
+
+    _shouldUpdateOutboundServer(newConf) {
+        const isOutboundDifferent = !_.isEqual(this.conf.outbound, newConf.outbound);
+        const isJwsSigningKeyDifferent = !_.isEqual(this.conf.jwsSigningKey, newConf.jwsSigningKey);
+
+        if (isOutboundDifferent) {
+            this.logger.debug('Outbound config is different', {
+                oldOutbound: this.conf.outbound,
+                newOutbound: newConf.outbound
+            });
+        }
+        if (isJwsSigningKeyDifferent) {
+            this.logger.debug('JWS signing key is different', {
+                oldJwsSigningKey: this.conf.jwsSigningKey,
+                newJwsSigningKey: newConf.jwsSigningKey
+            });
+        }
+
+        return isOutboundDifferent || isJwsSigningKeyDifferent;
     }
 
     async start() {
@@ -249,7 +290,7 @@ class Server extends EventEmitter {
         }
 
         this.logger.isDebugEnabled && this.logger.push({ oldConf: this.conf.outbound, newConf: newConf.outbound }).debug('Outbound server configuration');
-        const updateOutboundServer = !_.isEqual(this.conf.outbound, newConf.outbound);
+        const updateOutboundServer = this._shouldUpdateOutboundServer(this.conf, newConf);
         if (updateOutboundServer) {
             await this.outboundServer.stop();
             this.outboundServer = new OutboundServer(
