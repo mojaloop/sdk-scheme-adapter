@@ -51,7 +51,7 @@
     "convict": "6.2.4",
     "express": "4.21.2",
     "openapi-backend": "5.12.0",
-    "redis": "5.1.1",
+    "redis": "5.5.5",
     "swagger-ui-express": "5.0.1",
     "yamljs": "0.3.0"
   },

@@ -35,7 +35,7 @@
     "@mojaloop/platform-shared-lib-messaging-types-lib": "0.7.2",
     "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib": "0.5.18",
     "ajv": "8.17.1",
-    "redis": "5.1.1",
+    "redis": "5.5.5",
     "uuid": "11.1.0"
   },
   "devDependencies": {
