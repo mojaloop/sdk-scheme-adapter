@@ -580,13 +580,13 @@ __metadata:
   linkType: hard
 
 "@babel/parser@npm:^7.27.4":
-  version: 7.27.5
-  resolution: "@babel/parser@npm:7.27.5"
+  version: 7.27.4
+  resolution: "@babel/parser@npm:7.27.4"
   dependencies:
     "@babel/types": ^7.27.3
   bin:
     parser: ./bin/babel-parser.js
-  checksum: 16f00a12895522c1682f1f047332010e129ba517add3a2db347a658e02f60434fc38f9105a9d6ec3fd6bfb5d1b0b70d88585c1f10e06e2b58fba29004a42d648
+  checksum: 846d26768826c79fecd0fddca34da1d3b2814afa2907b5379769e5265b15824ab2feea76c598b3db11284935bd04133b96bd5f5ca8d4c1cf2780000afd0feb68
   languageName: node
   linkType: hard
 
@@ -16096,9 +16096,9 @@ __metadata:
   linkType: hard
 
 "undici@npm:^6.19.5":
-  version: 6.21.1
-  resolution: "undici@npm:6.21.1"
-  checksum: 2efc52f77224754a2efa7cb6459829f3c93c8321d17e76f574a904b353783d95073b6116f5b15637c4845d98c9dc5a019b809cb9d63b3529267e7727c49f6996
+  version: 6.21.3
+  resolution: "undici@npm:6.21.3"
+  checksum: a2af0601deece36acbcc11ef722f36ad3c1e035d3065b9fbb36987487f7b69904046fa95c18f228a872ca45441f156fcaacd948fc920b0a97d0c1ab78ea63c04
   languageName: node
   linkType: hard
 

@@ -1,4 +1,25 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+### [24.9.7](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.9.6...v24.9.7) (2025-06-02)
+
+
+### Chore
+
+* **deps:** bump undici from 6.21.1 to 6.21.3 ([#583](https://github.com/mojaloop/sdk-scheme-adapter/issues/583)) ([b2d51ad](https://github.com/mojaloop/sdk-scheme-adapter/commit/b2d51adaa37b1c01b4433c3e028ef17c33ec0347))
+
+### [24.9.6](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.9.5...v24.9.6) (2025-06-01)
+
+
+### Chore
+
+* fix faulty jws replacement logic  [@kleyow](https://github.com/kleyow) ([#585](https://github.com/mojaloop/sdk-scheme-adapter/issues/585)) ([efa7ce1](https://github.com/mojaloop/sdk-scheme-adapter/commit/efa7ce19f869a601f868f57ea569202110c9d7f9))
+
+### [24.9.5](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.9.4...v24.9.5) (2025-05-30)
+
+
+### Chore
+
+* hot mutate peerJwsKeys instead of restart ([#584](https://github.com/mojaloop/sdk-scheme-adapter/issues/584)) ([08983fc](https://github.com/mojaloop/sdk-scheme-adapter/commit/08983fcc5ab7cde0042cb3e17545d581accb9d3a))
+
 ### [24.9.4](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.9.3...v24.9.4) (2025-05-30)
 
 
