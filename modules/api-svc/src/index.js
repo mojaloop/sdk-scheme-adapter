@@ -283,6 +283,9 @@ class Server extends EventEmitter {
         this.logger.isDebugEnabled && this.logger.push({ oldConf: this.conf.inbound, newConf: newConf.inbound }).debug('Inbound server configuration');
         const updateInboundServer = this._shouldUpdateInboundServer(newConf);
         if (updateInboundServer) {
+            const stopStartLabel = 'InboundServer stop/start duration';
+            // eslint-disable-next-line no-console
+            console.time(stopStartLabel);
             await this.inboundServer.stop();
             this.inboundServer = new InboundServer(
                 newConf,
@@ -296,12 +299,17 @@ class Server extends EventEmitter {
                 this.emit('error', errMessage);
             });
             await this.inboundServer.start();
+            // eslint-disable-next-line no-console
+            console.timeEnd(stopStartLabel);
             restartActionsTaken.updateInboundServer = true;
         }
 
         this.logger.isDebugEnabled && this.logger.push({ oldConf: this.conf.outbound, newConf: newConf.outbound }).debug('Outbound server configuration');
         const updateOutboundServer = this._shouldUpdateOutboundServer(newConf);
         if (updateOutboundServer) {
+            const stopStartLabel = 'OutboundServer stop/start duration';
+            // eslint-disable-next-line no-console
+            console.time(stopStartLabel);
             await this.outboundServer.stop();
             this.outboundServer = new OutboundServer(
                 newConf,
@@ -316,6 +324,8 @@ class Server extends EventEmitter {
                 this.emit('error', errMessage);
             });
             await this.outboundServer.start();
+            // eslint-disable-next-line no-console
+            console.timeEnd(stopStartLabel);
             restartActionsTaken.updateOutboundServer = true;
         }
 
