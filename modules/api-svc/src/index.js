@@ -420,6 +420,8 @@ class Server extends EventEmitter {
         }
 
         this.conf = newConf;
+        this.conf.peerJWSKeys = newConf?.peerJWSKeys;
+        this.conf.jwsSigningKey = newConf?.jwsSigningKey;
 
         await oldCache?.disconnect();
 
