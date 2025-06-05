@@ -1,4 +1,11 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+## [24.10.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.9.7...v24.10.0) (2025-06-05)
+
+
+### Features
+
+* bump up the node version to v22.15.1 ([#586](https://github.com/mojaloop/sdk-scheme-adapter/issues/586)) ([2c09d28](https://github.com/mojaloop/sdk-scheme-adapter/commit/2c09d28363d065c826899b5613c148dc8d0dd0b4))
+
 ### [24.9.7](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.9.6...v24.9.7) (2025-06-02)
 
 
