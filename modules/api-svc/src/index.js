@@ -69,8 +69,6 @@ class Server extends EventEmitter {
         this.conf = conf;
         this.logger = logger;
         this.cache = createCache(conf);
-        this.peerJWSKeys = _.cloneDeep(conf?.peerJWSKeys);
-        this.jwsSigningKey = _.cloneDeep(conf?.jwsSigningKey);
 
         this.metricsClient = new MetricsClient();
         this.metricsServer = new MetricsServer({
@@ -144,8 +142,8 @@ class Server extends EventEmitter {
     _shouldUpdateInboundServer(newConf) {
         const isInboundDifferent = !_.isEqual(this.conf.inbound, newConf.inbound);
         const isOutboundDifferent = !_.isEqual(this.conf.outbound, newConf.outbound);
-        const isPeerJWSKeysDifferent = !_.isEqual(this.peerJWSKeys, newConf.peerJWSKeys);
-        const isJwsSigningKeyDifferent = !_.isEqual(this.jwsSigningKey, newConf.jwsSigningKey);
+        const isPeerJWSKeysDifferent = !_.isEqual(this.conf.peerJWSKeys, newConf.peerJWSKeys);
+        const isJwsSigningKeyDifferent = !_.isEqual(this.conf.jwsSigningKey, newConf.jwsSigningKey);
 
         if (isInboundDifferent) {
             this.logger.debug('Inbound config is different', {
@@ -162,7 +160,7 @@ class Server extends EventEmitter {
 
         if (isPeerJWSKeysDifferent) {
             this.logger.debug('Peer JWS Keys config is different', {
-                oldPeerJWSKeys: this.peerJWSKeys,
+                oldPeerJWSKeys: this.conf.peerJWSKeys,
                 newPeerJWSKeys: newConf.peerJWSKeys
             });
         }
@@ -179,7 +177,7 @@ class Server extends EventEmitter {
 
     _shouldUpdateOutboundServer(newConf) {
         const isOutboundDifferent = !_.isEqual(this.conf.outbound, newConf.outbound);
-        const isJwsSigningKeyDifferent = !_.isEqual(this.jwsSigningKey, newConf.jwsSigningKey);
+        const isJwsSigningKeyDifferent = !_.isEqual(this.conf.jwsSigningKey, newConf.jwsSigningKey);
 
         if (isOutboundDifferent) {
             this.logger.debug('Outbound config is different', {
@@ -190,7 +188,7 @@ class Server extends EventEmitter {
 
         if (isJwsSigningKeyDifferent) {
             this.logger.debug('JWS Signing Key config is different', {
-                oldJwsSigningKey: this.jwsSigningKey,
+                oldJwsSigningKey: this.conf.jwsSigningKey,
                 newJwsSigningKey: newConf.jwsSigningKey
             });
         }
@@ -422,8 +420,6 @@ class Server extends EventEmitter {
         }
 
         this.conf = newConf;
-        this.peerJWSKeys = _.cloneDeep(newConf.peerJWSKeys);
-        this.jwsSigningKey = _.cloneDeep(newConf.jwsSigningKey);
 
         await oldCache?.disconnect();
 
