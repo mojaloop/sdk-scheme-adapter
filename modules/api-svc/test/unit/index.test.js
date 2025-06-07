@@ -123,5 +123,37 @@ describe('Server', () => {
             await new Promise((wait) => setTimeout(wait, 1000));
             expect(server.restart).toHaveBeenCalledWith(newConfOutbound);
         });
+
+        it('restarts when peerJWSKeys is different', async () => {
+            const newConfPeerJWSKeys = JSON.parse(JSON.stringify(conf));
+            newConfPeerJWSKeys.peerJWSKeys = { ...conf.peerJWSKeys, newKey: 'newValue' };
+
+            expect(server._shouldUpdatePeerJWSKeys(newConfPeerJWSKeys)).toBe(true);
+
+            controlServer.broadcastConfigChange(newConfPeerJWSKeys);
+            await new Promise((wait) => setTimeout(wait, 1000));
+            expect(server.restart).toHaveBeenCalledWith(newConfPeerJWSKeys);
+        });
+
+        it('does not update when peerJWSKeys is the same', async () => {
+            const newConfPeerJWSKeys = JSON.parse(JSON.stringify(conf));
+            expect(server._shouldUpdatePeerJWSKeys(newConfPeerJWSKeys)).toBe(false);
+        });
+
+        it('restarts when jwsSigningKey is different', async () => {
+            const newConfJwsSigningKey = JSON.parse(JSON.stringify(conf));
+            newConfJwsSigningKey.jwsSigningKey = { ...conf.jwsSigningKey, key: 'differentKey' };
+
+            expect(server._shouldUpdateJwsSigningKey(newConfJwsSigningKey)).toBe(true);
+
+            controlServer.broadcastConfigChange(newConfJwsSigningKey);
+            await new Promise((wait) => setTimeout(wait, 1000));
+            expect(server.restart).toHaveBeenCalledWith(newConfJwsSigningKey);
+        });
+
+        it('does not update when jwsSigningKey is the same', async () => {
+            const newConfJwsSigningKey = JSON.parse(JSON.stringify(conf));
+            expect(server._shouldUpdateJwsSigningKey(newConfJwsSigningKey)).toBe(false);
+        });
     });
 });
