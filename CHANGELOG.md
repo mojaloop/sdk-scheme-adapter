@@ -1,4 +1,11 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+### [24.10.1](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.10.0...v24.10.1) (2025-06-09)
+
+
+### Chore
+
+* **csi-1494:** more restarting logic ([#587](https://github.com/mojaloop/sdk-scheme-adapter/issues/587)) ([fcaa375](https://github.com/mojaloop/sdk-scheme-adapter/commit/fcaa3753ccb974669f1814d2cd7ca031305b8e8f))
+
 ## [24.10.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.9.7...v24.10.0) (2025-06-05)
 
 
