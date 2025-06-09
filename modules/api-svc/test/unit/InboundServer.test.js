@@ -490,59 +490,5 @@ describe('Inbound Server', () => {
 
             expect(Jws.validator.__validationKeys['mock-jws'].toString()).toEqual('foo-key-updated');
         });
-
-        it('should overwrite an existing peer JWS key when _updatePeerJwsKeys is called with the same key name', async () => {
-            // Arrange
-            const serverConfig = JSON.parse(JSON.stringify(defaultConfig));
-            serverConfig.validateInboundJws = true;
-            const cache = new Cache({
-                cacheUrl: serverConfig.cacheUrl,
-                logger: logger.push({ component: 'cache' }),
-                unsubscribeTimeoutMs: serverConfig.unsubscribeTimeoutMs,
-            });
-            serverConfig.validateInboundJws = true;
-            serverConfig.pm4mlEnabled = true;
-            serverConfig.peerJWSKeys = {
-                'peer1': 'original-key'
-            };
-            const svr = new InboundServer(serverConfig, logger, cache);
-
-            // Save reference before update
-            const keysRef = svr._api._jwsVerificationKeys;
-
-            // Act: Overwrite the key
-            svr._api._updatePeerJwsKeys({ 'peer1': 'new-key' });
-
-            // Assert
-            expect(svr._api._jwsVerificationKeys['peer1']).toBe('new-key');
-            expect(svr._api._jwsVerificationKeys).toBe(keysRef); // memory reference unchanged
-        });
-
-        it('should add a new peer JWS key when _updatePeerJwsKeys is called with a new key name', async () => {
-            // Arrange
-            const serverConfig = JSON.parse(JSON.stringify(defaultConfig));
-            serverConfig.validateInboundJws = true;
-            const cache = new Cache({
-                cacheUrl: serverConfig.cacheUrl,
-                logger: logger.push({ component: 'cache' }),
-                unsubscribeTimeoutMs: serverConfig.unsubscribeTimeoutMs,
-            });
-            serverConfig.validateInboundJws = true;
-            serverConfig.pm4mlEnabled = true;
-            serverConfig.peerJWSKeys = {
-                'peer1': 'original-key'
-            };
-            const svr = new InboundServer(serverConfig, logger, cache);
-
-            // Save reference before update
-            const keysRef = svr._api._jwsVerificationKeys;
-
-            // Act: Add a new key
-            svr._api._updatePeerJwsKeys({ 'peer1': 'original-key', 'peer2': 'another-key' });
-            // Assert
-            expect(svr._api._jwsVerificationKeys['peer1']).toBe('original-key');
-            expect(svr._api._jwsVerificationKeys['peer2']).toBe('another-key');
-            expect(svr._api._jwsVerificationKeys).toBe(keysRef); // memory reference unchanged
-        });
     });
 });

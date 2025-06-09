@@ -140,8 +140,60 @@ class Server extends EventEmitter {
     }
 
     _shouldUpdateInboundServer(newConf) {
-        return !_.isEqual(this.conf.inbound, newConf.inbound)
-            || !_.isEqual(this.conf.outbound, newConf.outbound);
+        const isInboundDifferent = !_.isEqual(this.conf.inbound, newConf.inbound);
+        const isOutboundDifferent = !_.isEqual(this.conf.outbound, newConf.outbound);
+        const isPeerJWSKeysDifferent = !_.isEqual(this.conf.peerJWSKeys, newConf.peerJWSKeys);
+        const isJwsSigningKeyDifferent = !_.isEqual(this.conf.jwsSigningKey, newConf.jwsSigningKey);
+
+        if (isInboundDifferent) {
+            this.logger.debug('Inbound config is different', {
+                oldInbound: this.conf.inbound,
+                newInbound: newConf.inbound
+            });
+        }
+        if (isOutboundDifferent) {
+            this.logger.debug('Outbound config is different (checked in inbound update)', {
+                oldOutbound: this.conf.outbound,
+                newOutbound: newConf.outbound
+            });
+        }
+
+        if (isPeerJWSKeysDifferent) {
+            this.logger.debug('Peer JWS Keys config is different', {
+                oldPeerJWSKeys: this.conf.peerJWSKeys,
+                newPeerJWSKeys: newConf.peerJWSKeys
+            });
+        }
+
+        if (isJwsSigningKeyDifferent) {
+            this.logger.debug('JWS Signing Key config is different', {
+                oldJwsSigningKey: this.conf.jwsSigningKey,
+                newJwsSigningKey: newConf.jwsSigningKey
+            });
+        }
+
+        return isInboundDifferent || isOutboundDifferent || isPeerJWSKeysDifferent || isJwsSigningKeyDifferent;
+    }
+
+    _shouldUpdateOutboundServer(newConf) {
+        const isOutboundDifferent = !_.isEqual(this.conf.outbound, newConf.outbound);
+        const isJwsSigningKeyDifferent = !_.isEqual(this.conf.jwsSigningKey, newConf.jwsSigningKey);
+
+        if (isOutboundDifferent) {
+            this.logger.debug('Outbound config is different', {
+                oldOutbound: this.conf.outbound,
+                newOutbound: newConf.outbound
+            });
+        }
+
+        if (isJwsSigningKeyDifferent) {
+            this.logger.debug('JWS Signing Key config is different', {
+                oldJwsSigningKey: this.conf.jwsSigningKey,
+                newJwsSigningKey: newConf.jwsSigningKey
+            });
+        }
+
+        return isOutboundDifferent || isJwsSigningKeyDifferent;
     }
 
     async start() {
@@ -229,8 +281,11 @@ class Server extends EventEmitter {
         }
 
         this.logger.isDebugEnabled && this.logger.push({ oldConf: this.conf.inbound, newConf: newConf.inbound }).debug('Inbound server configuration');
-        const updateInboundServer = this._shouldUpdateInboundServer(this.conf, newConf);
+        const updateInboundServer = this._shouldUpdateInboundServer(newConf);
         if (updateInboundServer) {
+            const stopStartLabel = 'InboundServer stop/start duration';
+            // eslint-disable-next-line no-console
+            console.time(stopStartLabel);
             await this.inboundServer.stop();
             this.inboundServer = new InboundServer(
                 newConf,
@@ -244,14 +299,17 @@ class Server extends EventEmitter {
                 this.emit('error', errMessage);
             });
             await this.inboundServer.start();
+            // eslint-disable-next-line no-console
+            console.timeEnd(stopStartLabel);
             restartActionsTaken.updateInboundServer = true;
         }
 
-        this.inboundServer._api._updatePeerJwsKeys(newConf.peerJWSKeys);
-
         this.logger.isDebugEnabled && this.logger.push({ oldConf: this.conf.outbound, newConf: newConf.outbound }).debug('Outbound server configuration');
-        const updateOutboundServer = !_.isEqual(this.conf.outbound, newConf.outbound);
+        const updateOutboundServer = this._shouldUpdateOutboundServer(newConf);
         if (updateOutboundServer) {
+            const stopStartLabel = 'OutboundServer stop/start duration';
+            // eslint-disable-next-line no-console
+            console.time(stopStartLabel);
             await this.outboundServer.stop();
             this.outboundServer = new OutboundServer(
                 newConf,
@@ -266,6 +324,8 @@ class Server extends EventEmitter {
                 this.emit('error', errMessage);
             });
             await this.outboundServer.start();
+            // eslint-disable-next-line no-console
+            console.timeEnd(stopStartLabel);
             restartActionsTaken.updateOutboundServer = true;
         }
 
