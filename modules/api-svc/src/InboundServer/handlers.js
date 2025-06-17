@@ -714,6 +714,12 @@ const putTransfersById = async (ctx) => {
  * Handles a PATCH /transfers/{ID} from the Switch to Payee for successful transfer
  */
 const patchTransfersById = async (ctx) => {
+    if (ctx.state.conf.isIsoApi) {
+        ctx.state.logger.isDebugEnabled && ctx.state.logger.push(ctx.request.body).debug('Transforming incoming ISO20022 patch transfers body to FSPIOP');
+        const target = await TransformFacades.FSPIOPISO20022.transfers.patch({ body: ctx.request.body }, { rollUpUnmappedAsExtensions: true });
+        ctx.request.body = target.body;
+    }
+
     const req = {
         headers: { ...ctx.request.headers },
         data: { ...ctx.request.body }
