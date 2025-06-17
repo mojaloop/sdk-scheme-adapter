@@ -1,4 +1,11 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+### [24.10.2](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.10.1...v24.10.2) (2025-06-17)
+
+
+### Chore
+
+* bump deps for rdkafka ([#590](https://github.com/mojaloop/sdk-scheme-adapter/issues/590)) ([41efe48](https://github.com/mojaloop/sdk-scheme-adapter/commit/41efe48781421f3e05d35b533ba9bdcbca7c2ae0))
+
 ### [24.10.1](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.10.0...v24.10.1) (2025-06-09)
 
 
