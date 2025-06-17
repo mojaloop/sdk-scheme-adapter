@@ -1,4 +1,88 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+### [24.10.1](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.10.0...v24.10.1) (2025-06-09)
+
+
+### Chore
+
+* **csi-1494:** more restarting logic ([#587](https://github.com/mojaloop/sdk-scheme-adapter/issues/587)) ([fcaa375](https://github.com/mojaloop/sdk-scheme-adapter/commit/fcaa3753ccb974669f1814d2cd7ca031305b8e8f))
+
+## [24.10.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.9.7...v24.10.0) (2025-06-05)
+
+
+### Features
+
+* bump up the node version to v22.15.1 ([#586](https://github.com/mojaloop/sdk-scheme-adapter/issues/586)) ([2c09d28](https://github.com/mojaloop/sdk-scheme-adapter/commit/2c09d28363d065c826899b5613c148dc8d0dd0b4))
+
+### [24.9.7](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.9.6...v24.9.7) (2025-06-02)
+
+
+### Chore
+
+* **deps:** bump undici from 6.21.1 to 6.21.3 ([#583](https://github.com/mojaloop/sdk-scheme-adapter/issues/583)) ([b2d51ad](https://github.com/mojaloop/sdk-scheme-adapter/commit/b2d51adaa37b1c01b4433c3e028ef17c33ec0347))
+
+### [24.9.6](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.9.5...v24.9.6) (2025-06-01)
+
+
+### Chore
+
+* fix faulty jws replacement logic  [@kleyow](https://github.com/kleyow) ([#585](https://github.com/mojaloop/sdk-scheme-adapter/issues/585)) ([efa7ce1](https://github.com/mojaloop/sdk-scheme-adapter/commit/efa7ce19f869a601f868f57ea569202110c9d7f9))
+
+### [24.9.5](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.9.4...v24.9.5) (2025-05-30)
+
+
+### Chore
+
+* hot mutate peerJwsKeys instead of restart ([#584](https://github.com/mojaloop/sdk-scheme-adapter/issues/584)) ([08983fc](https://github.com/mojaloop/sdk-scheme-adapter/commit/08983fcc5ab7cde0042cb3e17545d581accb9d3a))
+
+### [24.9.4](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.9.3...v24.9.4) (2025-05-30)
+
+
+### Chore
+
+* restart inbound on diff peerJwsKeys ([#582](https://github.com/mojaloop/sdk-scheme-adapter/issues/582)) ([c388481](https://github.com/mojaloop/sdk-scheme-adapter/commit/c388481185ff7aab08c6e6151825adc849bf6124))
+
+### [24.9.3](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.9.2...v24.9.3) (2025-05-27)
+
+
+### Chore
+
+* updated sdk-s-c ([#580](https://github.com/mojaloop/sdk-scheme-adapter/issues/580)) ([46b4fd4](https://github.com/mojaloop/sdk-scheme-adapter/commit/46b4fd4e46a830071073583bbe6e2e777fe04c7a))
+
+### [24.9.2](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.9.1...v24.9.2) (2025-05-22)
+
+
+### Chore
+
+* ignore peer_jws notify messages instead of broadcasting error ([#579](https://github.com/mojaloop/sdk-scheme-adapter/issues/579)) ([ff15316](https://github.com/mojaloop/sdk-scheme-adapter/commit/ff15316b1e86bf1d89829e36a41cd36e5009698b))
+
+### [24.9.1](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.9.0...v24.9.1) (2025-05-20)
+
+
+### Chore
+
+* remove gateway headers when returning ping request ([#578](https://github.com/mojaloop/sdk-scheme-adapter/issues/578)) ([a4b0aae](https://github.com/mojaloop/sdk-scheme-adapter/commit/a4b0aaeccf271d62e192275cdd44686e5faee98b))
+
+## [24.9.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.8.0...v24.9.0) (2025-04-22)
+
+
+### Features
+
+* **csi-1408:** added InboundPingModel ([#574](https://github.com/mojaloop/sdk-scheme-adapter/issues/574)) ([ef84eee](https://github.com/mojaloop/sdk-scheme-adapter/commit/ef84eee0d4ca0fe3c6c84fb72cca196b4ffd707b)), closes [#573](https://github.com/mojaloop/sdk-scheme-adapter/issues/573)
+
+## [24.8.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.7.0...v24.8.0) (2025-04-15)
+
+
+### Features
+
+* **csi-1348:** use updated AxiosHttpRequester ([#572](https://github.com/mojaloop/sdk-scheme-adapter/issues/572)) ([93cf0e1](https://github.com/mojaloop/sdk-scheme-adapter/commit/93cf0e1f888afe1cdcbcf4bd22e66dc967283d05))
+
+## [24.7.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.6.3...v24.7.0) (2025-04-05)
+
+
+### Features
+
+* move heartbeat before client attempts connection ([#570](https://github.com/mojaloop/sdk-scheme-adapter/issues/570)) ([5a7c36a](https://github.com/mojaloop/sdk-scheme-adapter/commit/5a7c36a0a16fc9dfb63b6bb827ed8b10aca1c619))
+
 ### [24.6.3](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.6.2...v24.6.3) (2025-03-27)
 
 

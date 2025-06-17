@@ -52,6 +52,7 @@ class InboundApi extends EventEmitter {
         super({ captureExceptions: true });
         this._conf = conf;
         this._cache = cache;
+        this._logger = logger;
         _initialize ||= _validator.initialise(apiSpecs, conf);
 
         if (conf.validateInboundJws) {
@@ -125,7 +126,8 @@ class InboundApi extends EventEmitter {
             api.use(middlewares.createJwsValidator(logger, jwsVerificationKeys, jwsExclusions));
         }
 
-        api.use(middlewares.applyState({ cache, wso2, conf, logExcludePaths }));
+        api.use(middlewares.applyState({ conf, cache, wso2, logExcludePaths }));
+        api.use(middlewares.createPingMiddleware(conf, jwsVerificationKeys));
         api.use(middlewares.createRequestValidator(validator));
         api.use(middlewares.assignFspiopIdentifier());
         if (conf.enableTestFeatures) {

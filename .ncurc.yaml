@@ -11,6 +11,6 @@ reject: [
   "nx",
   ## esLint 9.15.0 caused the error: TypeError: Error while loading rule '@typescript-eslint/no-unused-expressions': Cannot read properties of undefined (reading 'allowShortCircuit')
   "eslint",
-  ## express >5 has breaking changes error: uncaughtException: pathRegexp.match is not a function
+  ## express >5 introduces breaking changes that are not compatible with the current codebase.
   "express"
 ]

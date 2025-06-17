@@ -34,6 +34,7 @@
 const { Enum } = require('@mojaloop/central-services-shared');
 const {
     InboundTransfersModel,
+    InboundPingModel,
     PartiesModel,
     QuotesModel,
     TransfersModel,
@@ -1111,6 +1112,22 @@ const createPutFxTransfersHandler = (success) => async (ctx) => {
     ctx.response.status = ReturnCodes.OK.CODE;
 };
 
+const handlePostPing = (ctx) => {
+    const { jwsPingValidationResult, conf, logger, wso2 } = ctx.state;
+    const { sourceFspId, body, headers } = extractBodyHeadersSourceFspId(ctx);
+
+    const model = new InboundPingModel({
+        ...conf,
+        resourceVersions: ctx.resourceVersions,
+        logger,
+        wso2,
+    });
+    model.postPing({ jwsPingValidationResult, sourceFspId, body, headers })
+        .catch(err => logger.error('error in handlePostPing:', err));
+
+    prepareResponse(ctx);
+};
+
 module.exports = {
     '/': {
         get: healthCheck
@@ -1223,5 +1240,8 @@ module.exports = {
     },
     '/fxTransfers/{ID}/error': {
         put: createPutFxTransfersHandler(false)
-    }
+    },
+    '/ping': {
+        post: handlePostPing
+    },
 };

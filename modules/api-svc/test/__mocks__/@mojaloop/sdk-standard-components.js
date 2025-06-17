@@ -33,6 +33,7 @@ const {
     axios,
     MojaloopRequests, Errors, WSO2Auth, Jws, Logger, common,
     httpRequester,
+    requests: { PingRequests },
     Ilp: { ILP_VERSIONS }
 } = jest.requireActual('@mojaloop/sdk-standard-components');
 
@@ -200,6 +201,7 @@ module.exports = {
     axios,
     Ilp,
     httpRequester,
+    requests: { PingRequests },
     MojaloopRequests: MockMojaloopRequests,
     Jws: {
         validator: MockJwsValidator,

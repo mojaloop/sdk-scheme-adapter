@@ -51,6 +51,7 @@ const FORCE_WS_CLOSE_TIMEOUT_MS = 5000;
  *************************************************************************/
 const MESSAGE = {
     CONFIGURATION: 'CONFIGURATION',
+    PEER_JWS: 'PEER_JWS',
     ERROR: 'ERROR',
 };
 
@@ -124,6 +125,7 @@ const build = {
             JSON_PARSE_ERROR: (id) => buildMsg(VERB.NOTIFY, MESSAGE.ERROR, ERROR.JSON_PARSE_ERROR, id),
         }
     },
+    PEER_JWS: {},
 };
 
 /**************************************************************************
@@ -230,6 +232,16 @@ class Client extends ws {
                         this.emit(EVENT.RECONFIGURE, dup);
                         break;
                     }
+                    default:
+                        this.send(build.ERROR.NOTIFY.UNSUPPORTED_VERB(msg.id));
+                        break;
+                }
+                break;
+            case MESSAGE.PEER_JWS:
+                switch (msg.verb) {
+                    case VERB.NOTIFY:
+                        // Ignore PEER_JWS NOTIFY messages
+                        break;
                     default:
                         this.send(build.ERROR.NOTIFY.UNSUPPORTED_VERB(msg.id));
                         break;
