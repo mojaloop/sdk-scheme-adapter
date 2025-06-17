@@ -81,11 +81,11 @@
     "tslib": "2.8.1"
   },
   "devDependencies": {
-    "@types/jest": "29.5.14",
-    "@types/node": "22.15.30",
+    "@types/jest": "30.0.0",
+    "@types/node": "24.0.3",
     "@types/node-cache": "4.2.5",
-    "@typescript-eslint/eslint-plugin": "8.33.1",
-    "@typescript-eslint/parser": "8.33.1",
+    "@typescript-eslint/eslint-plugin": "8.34.1",
+    "@typescript-eslint/parser": "8.34.1",
     "audit-ci": "7.1.0",
     "eslint": "9.15.0",
     "eslint-config-airbnb-typescript": "18.0.0",
@@ -97,7 +97,7 @@
     "npm-check-updates": "16.7.10",
     "replace": "1.2.2",
     "standard-version": "9.5.0",
-    "ts-jest": "29.3.4",
+    "ts-jest": "29.4.0",
     "ts-node": "10.9.2",
     "typescript": "5.8.3",
     "yarn-audit-fix": "10.1.1"
