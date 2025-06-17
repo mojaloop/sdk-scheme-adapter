@@ -443,5 +443,36 @@
         "Ustrd": "Payment for invoice 12345"
       }
     }
+  },
+  "patchTransfersRequest": {
+    "GrpHdr": {
+      "MsgId": "01JB251SPSN3NERYQ78MREHP9X",
+      "CreDtTm": "2024-10-25T15:34:49.305Z"
+    },
+    "TxInfAndSts": {
+      "StsId": "01JB251SPTD685SBNWGG9KVH58",
+      "OrgnlInstrId": "undefined",
+      "OrgnlEndToEndId": "undefined",
+      "OrgnlTxId": "01JB251RGPWJ31SEWCZQCQCSHE",
+      "OrgnlUETR": "123e4567-e89b-12d3-a456-426614174000",
+      "TxSts": "COMM",
+      "StsRsnInf": {
+        "Rsn": {
+          "Prtry": "COMM"
+        },
+        "AddtlInf": "ADDITIONAL"
+      },
+      "AccptncDtTm": "2024-10-25T15:34:49.305Z",
+      "PrcgDt": {
+        "DtTm": "2024-10-25T15:34:49.305Z"
+      },
+      "AcctSvcrRef": "ACCTSVCRREF",
+      "ClrSysRef": "CLRSYSREF",
+      "ExctnConf": "yc8z3j2C5RQofE0XEP5acBylI-hzWK7Zo6KMw2cxElk",
+      "SplmtryData": {
+        "PlcAndNm": "PLACE",
+        "Envlp": {}
+      }
+    }
   }
 }
