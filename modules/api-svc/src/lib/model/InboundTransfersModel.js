@@ -416,6 +416,7 @@ class InboundTransfersModel {
      * the result
      */
     async prepareTransfer(request, sourceFspId, headers) {
+        this.metrics.transferPrepares.inc();
         const prepareRequest = request.body;
         try {
             // retrieve our quote data
