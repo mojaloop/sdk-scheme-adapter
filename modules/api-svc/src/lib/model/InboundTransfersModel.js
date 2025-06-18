@@ -54,10 +54,13 @@ class InboundTransfersModel {
         this._supportedCurrencies = config.supportedCurrencies;
 
         this.metrics = {
-        transferPrepares: config.metricsClient.getCounter(
-            'cntr_mojaloop_connector_inbound_transfer_prepare_count',
-            'Count of inbound transfer prepare requests received'
-        )
+            quoteRequests: config.metricsClient.getCounter(
+                'mojaloop_connector_inbound_quote_request_count',
+                'Count of inbound quote requests sent'),
+            transferPrepares: config.metricsClient.getCounter(
+                'mojaloop_connector_inbound_transfer_prepare_count',
+                'Count of inbound transfer prepare requests received'),
+            
         };
         console.log('[DEBUG] Metrics initialized:', this.metrics);
 
@@ -243,8 +246,7 @@ class InboundTransfersModel {
 
             if(!response) {
                 // make an error callback to the source fsp
-                return 'No response from backend';
-            }
+                return 'No response from backend';            }
 
             if(!response.expiration) {
                 const expiration = new Date().getTime() + (this._expirySeconds * 1000);
@@ -279,6 +281,7 @@ class InboundTransfersModel {
                 headers: res.originalRequest?.headers,
                 body: mojaloopResponse,
             };
+            this.metrics.quoteRequests.inc();
             this.data.currentState = SDKStateEnum.WAITING_FOR_QUOTE_ACCEPTANCE;
             await this._save();
 
