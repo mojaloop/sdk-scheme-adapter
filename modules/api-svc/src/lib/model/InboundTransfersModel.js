@@ -53,6 +53,14 @@ class InboundTransfersModel {
         this._allowDifferentTransferTransactionId = config.allowDifferentTransferTransactionId;
         this._supportedCurrencies = config.supportedCurrencies;
 
+        this.metrics = {
+        transferPrepares: config.metricsClient.getCounter(
+            'cntr_mojaloop_connector_inbound_transfer_prepare_count',
+            'Count of inbound transfer prepare requests received'
+        )
+        };
+        console.log('[DEBUG] Metrics initialized:', this.metrics);
+
         this._mojaloopRequests = new MojaloopRequests({
             logger: this._logger,
             peerEndpoint: config.peerEndpoint,
@@ -387,6 +395,7 @@ class InboundTransfersModel {
      * the result
      */
     async prepareTransfer(request, sourceFspId, headers) {
+        this.metrics.transferPrepares.inc();
         const prepareRequest = request.body;
         try {
             // retrieve our quote data
