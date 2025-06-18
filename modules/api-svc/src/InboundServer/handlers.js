@@ -76,6 +76,7 @@ const createInboundTransfersModel = (ctx) => new InboundTransfersModel({
     logger: ctx.state.logger,
     wso2: ctx.state.wso2,
     resourceVersions: ctx.resourceVersions,
+    metricsClient: ctx.state.metricsClient,
 });
 
 const prepareResponse = ctx => {
@@ -1203,6 +1204,16 @@ module.exports = {
         get: getTransfersById,
         put: putTransfersById,
         patch: patchTransfersById
+    },'/transfers': {
+        post: postTransfers
+    },
+    '/transfers/{ID}': {
+        get: getTransfersById,
+        put: putTransfersById,
+        patch: patchTransfersById
+    },
+    '/transfers/{ID}/error': {
+        put: putTransfersByIdError
     },
     '/transfers/{ID}/error': {
         put: putTransfersByIdError
