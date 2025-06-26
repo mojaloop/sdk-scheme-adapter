@@ -1,4 +1,11 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+### [24.10.3](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.10.2...v24.10.3) (2025-06-26)
+
+
+### Bug Fixes
+
+* add logic to transform iso to fspiop for payee notif ([#569](https://github.com/mojaloop/sdk-scheme-adapter/issues/569)) ([019a652](https://github.com/mojaloop/sdk-scheme-adapter/commit/019a652390569fc8d3ce6bd9237c27bd4fa2e81f))
+
 ### [24.10.2](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.10.1...v24.10.2) (2025-06-17)
 
 
