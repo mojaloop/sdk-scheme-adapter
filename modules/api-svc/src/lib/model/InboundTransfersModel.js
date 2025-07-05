@@ -60,6 +60,26 @@ class InboundTransfersModel {
             transferPrepares: config.metricsClient.getCounter(
                 'mojaloop_connector_inbound_transfer_prepare_count',
                 'Count of inbound transfer prepare requests received'),
+            transferFulfils: config.metricsClient.getCounter(
+                'mojaloop_connector_inbound_transfer_fulfil_response_count',
+                'Count of responses received to inbound transfer prepares'),
+            quoteGetRequests: config.metricsClient.getCounter(
+                'mojaloop_connector_inbound_quote_get_request_count',
+                'Count of GET /quotes/{ID} requests received'),
+            quoteGetResponseSends: config.metricsClient.getCounter(
+            'mojaloop_connector_put_quote_response_count',
+            'Count of PUT /quotes/{ID} quote responses sent to source FSP'),
+            quoteGetResponseErrors: config.metricsClient.getCounter(
+            'mojaloop_connector_put_quote_response_error_count',
+            'Count of error responses sent for GET /quotes/{ID} (e.g., quote not found)'),
+            authorizationGetResponses: config.metricsClient.getCounter(
+            'mojaloop_connector_put_authorization_response_count',
+            'Count of successful PUT /authorizations/{ID} responses sent'),
+            authorizationGetResponseErrors: config.metricsClient.getCounter(
+            'mojaloop_connector_put_authorization_response_error_count',
+            'Count of error responses sent for GET /authorizations/{ID} (e.g., backend failure or no OTP found)'),
+
+
             
         };
         console.log('[DEBUG] Metrics initialized:', this.metrics);
@@ -112,7 +132,9 @@ class InboundTransfersModel {
     }
 
     /**
-     * Queries the backend API for the specified party and makes a callback to the originator with the result
+     * RECOMMENDED BY CHATGPT
+     * Retrieves authorization information (e.g. OTP) from the backend
+     * and makes a callback to the originator with the result.
      */
     async getAuthorizations(transactionRequestId, sourceFspId) {
         try {
@@ -131,6 +153,7 @@ class InboundTransfersModel {
                 },
                 responseType: 'ENTERED'
             };
+            this.metrics.authorizationGetResponses.inc();
             // make a callback to the source fsp with the party info
             return this._mojaloopRequests.putAuthorizations(transactionRequestId, mlAuthorization, sourceFspId);
         }
@@ -138,6 +161,7 @@ class InboundTransfersModel {
             this._logger.isErrorEnabled && this._logger.push({ err, transactionRequestId }).error('Error in getOTP');
             const mojaloopError = await this._handleError(err);
             this._logger.isInfoEnabled && this._logger.push({ mojaloopError }).info(`Sending error response to ${sourceFspId}`);
+            this.metrics.authorizationGetResponseErrors.inc();
             return this._mojaloopRequests.putAuthorizationsError(transactionRequestId, mojaloopError, sourceFspId);
         }
     }
@@ -291,6 +315,7 @@ class InboundTransfersModel {
             log.push({ err }).error('Error in quoteRequest');
             const mojaloopError = await this._handleError(err);
             log.isInfoEnabled && log.push({ mojaloopError }).info(`Sending error response to ${sourceFspId}`);
+            this.metrics.quoteGetResponseErrors.inc();
             return this._mojaloopRequests.putQuotesError(quoteRequest.quoteId, mojaloopError, sourceFspId, headers);
         }
     }
@@ -337,6 +362,7 @@ class InboundTransfersModel {
      */
     async getQuoteRequest(quoteId, sourceFspId, headers) {
         try {
+            this.metrics.quoteGetRequests.inc(); 
             // Get the quoteResponse data for the quoteId from the cache to be sent as a response to GET /quotes/{ID}
             const quoteResponse = await this._cache.get(`quoteResponse_${quoteId}`);
 
@@ -348,6 +374,7 @@ class InboundTransfersModel {
                 return await this._mojaloopRequests.putQuotesError(quoteId, mojaloopError, sourceFspId, headers);
             }
             // Make a PUT /quotes/{ID} callback to the source fsp with the quote response
+            this.metrics.quoteGetResponseSends.inc();
             return this._mojaloopRequests.putQuotes(quoteId, quoteResponse, sourceFspId, headers);
         }
         catch(err) {
@@ -555,6 +582,9 @@ class InboundTransfersModel {
                     },
                 },
             };
+
+            // Increment the transferFulfils metric for a successful outbound transfer fulfilment
+            this.metrics.transferFulfils.inc();
 
             // make a callback to the source fsp with the transfer fulfilment
             return this._mojaloopRequests.putTransfers(transferId, mojaloopResponse, sourceFspId, headers);
