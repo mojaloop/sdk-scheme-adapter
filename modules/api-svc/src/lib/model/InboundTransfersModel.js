@@ -309,6 +309,7 @@ class InboundTransfersModel {
             log.push({ err }).error('Error in quoteRequest');
             const mojaloopError = await this._handleError(err);
             log.isInfoEnabled && log.push({ mojaloopError }).info(`Sending error response to ${sourceFspId}`);
+            this.metrics.quoteGetResponseErrors.inc();
             return this._mojaloopRequests.putQuotesError(quoteRequest.quoteId, mojaloopError, sourceFspId, headers);
         }
     }
@@ -355,6 +356,7 @@ class InboundTransfersModel {
      */
     async getQuoteRequest(quoteId, sourceFspId, headers) {
         try {
+            this.metrics.quoteGetRequests.inc(); 
             // Get the quoteResponse data for the quoteId from the cache to be sent as a response to GET /quotes/{ID}
             const quoteResponse = await this._cache.get(`quoteResponse_${quoteId}`);
 
@@ -366,6 +368,7 @@ class InboundTransfersModel {
                 return await this._mojaloopRequests.putQuotesError(quoteId, mojaloopError, sourceFspId, headers);
             }
             // Make a PUT /quotes/{ID} callback to the source fsp with the quote response
+            this.metrics.quoteGetResponseSends.inc();
             return this._mojaloopRequests.putQuotes(quoteId, quoteResponse, sourceFspId, headers);
         }
         catch(err) {

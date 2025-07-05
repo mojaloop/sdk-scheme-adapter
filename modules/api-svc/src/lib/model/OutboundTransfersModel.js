@@ -226,7 +226,6 @@ class OutboundTransfersModel {
      */
     async initialize(data) {
         this.data = data;
-        this.metrics.transferPrepares.inc(); // This increments the counter for each actual transfer
 
         // add a transferId if one is not present e.g. on first submission
         if(!this.data.hasOwnProperty('transferId')) {
