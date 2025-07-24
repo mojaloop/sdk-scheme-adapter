@@ -103,7 +103,6 @@
     "yarn-audit-fix": "10.1.1"
   },
   "overrides": {
-    "@eslint/plugin-kit": "0.3.3",
     "express": "4.21.2",
     "serve-static": "1.16.2",
     "send": "0.19.0",
@@ -123,6 +122,7 @@
     "yargs-parser": "21.1.1"
   },
   "resolutions": {
+    "@eslint/plugin-kit": "0.3.3",
     "axios": "1.8.2",
     "body-parser": "1.20.3",
     "cacache/tar": "6.2.1",
