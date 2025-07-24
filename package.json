@@ -103,12 +103,12 @@
     "yarn-audit-fix": "10.1.1"
   },
   "overrides": {
+    "@eslint/plugin-kit": "0.3.3",
     "express": "4.21.2",
     "serve-static": "1.16.2",
     "send": "0.19.0",
     "cookie": "1.0.2",
     "formidable": "3.5.4",
-    "form-data": "4.0.4",
     "on-headers": "1.1.0",
     "brace-expansion": "2.0.2",
     "body-parser": "1.20.3",
@@ -126,6 +126,7 @@
     "axios": "1.8.2",
     "body-parser": "1.20.3",
     "cacache/tar": "6.2.1",
+    "form-data": "4.0.4",
     "path-to-regexp": "0.1.12",
     "shins/ejs": "3.1.10",
     "shins/sanitize-html": "2.12.1",
