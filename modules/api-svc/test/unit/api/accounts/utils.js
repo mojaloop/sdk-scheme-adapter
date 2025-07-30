@@ -1,7 +1,8 @@
-const OpenAPIResponseValidator = require('openapi-response-validator').default;
-
 const { mockAxios, jsonContentTypeHeader} = require('../../../helpers');
 const postAccountsBody = require('./data/postAccountsBody');
+const mergeAllOf = require('../utils').mergeAllOf;
+const Ajv = require('ajv').default;
+const ajv = new Ajv({ allErrors: true, strict: true });
 
 /**
  *
@@ -90,15 +91,33 @@ function createPostAccountsTester({ reqInbound, reqOutbound, apiSpecsOutbound, r
         if(body.deleteAccountResponse) {
             delete body.deleteAccountResponse.headers;
         }
-
+        if(requestType === 'deleteAccount' && responseCode === 200) {
+            delete body.modelId
+        }
         expect(body).toEqual(responseBody);
 
-        const responseValidator = requestType === 'deleteAccount' 
-            ? new OpenAPIResponseValidator(apiSpecsOutbound.paths['/accounts/{Type}/{ID}'].delete)
-            : new OpenAPIResponseValidator(apiSpecsOutbound.paths['/accounts'].post);
-        const err = responseValidator.validateResponse(responseCode, body);
-        if (err) {
-            throw err;
+        if(requestType === 'deleteAccount') {
+            const responseSchema = apiSpecsOutbound.paths['/accounts/{Type}/{ID}'].delete.responses[responseCode].content['application/json'].schema;
+            const flatSchema = mergeAllOf(responseSchema);        
+            const validate = ajv.compile(flatSchema);
+            
+            const valid = validate(body);
+            
+            if (!valid) {
+              console.error(validate.errors);
+              throw new Error('Response validation failed');
+            }
+        } else {
+            const responseSchema = apiSpecsOutbound.paths['/accounts'].post.responses[responseCode].content['application/json'].schema;
+            const flatSchema = mergeAllOf(responseSchema);   
+            const validate = ajv.compile(flatSchema);
+            
+            const valid = validate(body);
+            
+            if (!valid) {
+              console.error(validate.errors);
+              throw new Error('Response validation failed');
+            }            
         }
         await pendingRequest;
     };

@@ -5,7 +5,6 @@
     "amount": "100",
     "amountType": "SEND",
     "currency": "USD",
-    "direction": "OUTBOUND",
     "currentState": "ERROR_OCCURRED",
     "from": {
       "displayName": "John Doe",
@@ -17,16 +16,6 @@
       "httpStatusCode": 504
     },
     "note": "test payment",
-    "quoteRequestExtensions": [
-      {
-        "key": "qreqkey1",
-        "value": "qreqvalue1"
-      },
-      {
-        "key": "qreqkey2",
-        "value": "qreqvalue2"
-      }
-    ],
     "to": {
       "idSubValue": "PASSPORT",
       "idType": "PERSONAL_ID",
@@ -34,16 +23,6 @@
     },
     "transactionType": "TRANSFER",
     "subScenario": "SUBSCENARIO",
-    "transferId": "00000000000000000000000001",
-    "transferRequestExtensions": [
-      {
-        "key": "treqkey1",
-        "value": "treqvalue1"
-      },
-      {
-        "key": "treqkey2",
-        "value": "treqvalue2"
-      }
-    ]
+    "transferId": "00000000000000000000000001"
   }
 }

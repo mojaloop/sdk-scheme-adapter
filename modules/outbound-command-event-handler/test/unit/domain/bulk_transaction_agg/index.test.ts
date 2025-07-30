@@ -183,7 +183,7 @@ describe('BulkTransactionAggregate', () => {
         test('createBatches should throw error when called second time', async () => {
             try {
                 await expect(bulkTransactionAgg.generateBulkQuoteBatches(10)).resolves.toBeDefined();
-                await expect(bulkTransactionAgg.generateBulkQuoteBatches(10)).rejects.toThrowError(/BulkQuotesTotalCount/);
+                await expect(bulkTransactionAgg.generateBulkQuoteBatches(10)).rejects.toThrow(/BulkQuotesTotalCount/);
             } catch (err) {
                 console.dir(err);
                 expect(err).toBeUndefined()

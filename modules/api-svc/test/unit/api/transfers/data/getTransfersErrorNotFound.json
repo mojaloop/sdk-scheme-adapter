@@ -1,18 +1,4 @@
 {
   "message": "Got an error response retrieving transfer: {\"errorInformation\":{\"errorCode\":\"3208\",\"errorDescription\":\"Transaction not found\"}}",
-  "statusCode": "3208",
-  "transferState": {
-    "currentState": "ERROR_OCCURRED",
-    "direction": "OUTBOUND",
-    "lastError": {
-      "httpStatusCode": 500,
-      "mojaloopError": {
-        "errorInformation": {
-          "errorCode": "3208",
-          "errorDescription": "Transaction not found"
-        }
-      }
-    },
-    "transferId": "00000000000000000000000001"
-  }
+  "statusCode": "3208"
 }

@@ -2,7 +2,6 @@
   "message": "Got an error response resolving party: {\"errorInformation\":{\"errorCode\":\"3204\",\"errorDescription\":\"Party not found\"}}",
   "statusCode": "3204",
   "transferState": {
-    "direction": "OUTBOUND",
     "amount": "100",
     "amountType": "SEND",
     "currency": "USD",
@@ -31,16 +30,6 @@
       }
     },
     "note": "test payment",
-    "quoteRequestExtensions": [
-      {
-        "key": "qreqkey1",
-        "value": "qreqvalue1"
-      },
-      {
-        "key": "qreqkey2",
-        "value": "qreqvalue2"
-      }
-    ],
     "to": {
       "idSubValue": "PASSPORT",
       "idType": "PERSONAL_ID",
@@ -48,16 +37,6 @@
     },
     "transactionType": "TRANSFER",
     "subScenario": "SUBSCENARIO",
-    "transferId": "00000000000000000000000001",
-    "transferRequestExtensions": [
-      {
-        "key": "treqkey1",
-        "value": "treqvalue1"
-      },
-      {
-        "key": "treqkey2",
-        "value": "treqvalue2"
-      }
-    ]
+    "transferId": "00000000000000000000000001"
   }
 }

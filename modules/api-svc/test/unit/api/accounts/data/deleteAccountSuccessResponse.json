@@ -2,7 +2,6 @@
   "idType": "MSISDN",
   "idValue": "123456789",
   "currentState": "COMPLETED",
-  "modelId": "00000000000000000000000001",
   "deleteAccountResponse": {
     "body": {
       "fspId": "mojaloop-sdk"

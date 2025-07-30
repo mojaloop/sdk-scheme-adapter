@@ -90,8 +90,66 @@ const destroyTestServers = async (serversInfo) => {
     await serversInfo.serverInbound.stop();
 };
 
+const mergeAllOf = (schema) => {
+    const removeKeys = ['example', 'nullable', 'deprecated', 'readOnly', 'writeOnly', 'xml', 'externalDocs'];
+  
+    const stripOpenAPIKeywords = (obj) => {
+      if (Array.isArray(obj)) {
+        obj.forEach(stripOpenAPIKeywords);
+      } else if (obj && typeof obj === 'object') {
+        for (const key of removeKeys) {
+          delete obj[key];
+        }
+        for (const k in obj) {
+          stripOpenAPIKeywords(obj[k]);
+        }
+      }
+    };
+  
+    if (!schema || typeof schema !== 'object') return schema;
+  
+    // If schema has allOf, merge them recursively
+    if (Array.isArray(schema.allOf)) {
+      const merged = schema.allOf.reduce((acc, subSchema) => {
+        const flatSub = mergeAllOf(subSchema);
+  
+        if (flatSub.properties) {
+          acc.properties = { ...(acc.properties || {}), ...flatSub.properties };
+        }
+        if (Array.isArray(flatSub.required)) {
+          acc.required = [...new Set([...(acc.required || []), ...flatSub.required])];
+        }
+        for (const key of Object.keys(flatSub)) {
+          if (key === 'properties' || key === 'required' || key === 'allOf') continue;
+          acc[key] = flatSub[key];
+        }
+  
+        return acc;
+      }, {});
+  
+      stripOpenAPIKeywords(merged);
+      return merged;
+    }
+  
+    // Recursively flatten nested properties
+    if (schema.properties) {
+      const newProps = {};
+      for (const key of Object.keys(schema.properties)) {
+        newProps[key] = mergeAllOf(schema.properties[key]);
+      }
+      const result = { ...schema, properties: newProps };
+      stripOpenAPIKeywords(result);
+      return result;
+    }
+  
+    const cloned = { ...schema };
+    stripOpenAPIKeywords(cloned);
+    return cloned;
+  };
+
 module.exports = {
     createValidators,
     createTestServers,
     destroyTestServers,
+    mergeAllOf,
 };

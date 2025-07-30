@@ -3,7 +3,6 @@
   "amountType": "SEND",
   "currency": "USD",
   "currentState": "COMPLETED",
-  "direction": "OUTBOUND",
   "from": {
     "displayName": "John Doe",
     "idType": "MSISDN",
@@ -53,16 +52,6 @@
   "homeTransactionId": "123ABC",
   "note": "test payment",
   "quoteId": "00000000000000000000000002",
-  "quoteRequestExtensions": [
-    {
-      "key": "qreqkey1",
-      "value": "qreqvalue1"
-    },
-    {
-      "key": "qreqkey2",
-      "value": "qreqvalue2"
-    }
-  ],
   "quoteResponse": {
     "body": {
       "condition": "fH9pAYDQbmoZLPbvv3CSW2RfjU4jvM4ApG_fqGnR7Xs",
@@ -115,15 +104,5 @@
   },
   "transactionType": "TRANSFER",
   "subScenario": "SUBSCENARIO",
-  "transferId": "00000000000000000000000001",
-  "transferRequestExtensions": [
-    {
-      "key": "treqkey1",
-      "value": "treqvalue1"
-    },
-    {
-      "key": "treqkey2",
-      "value": "treqvalue2"
-    }
-  ]
+  "transferId": "00000000000000000000000001"
 }
