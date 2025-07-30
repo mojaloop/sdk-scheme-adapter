@@ -130,7 +130,7 @@ describe('PersistentStateMachine', () => {
             checkPSMLayout(psm);
 
             psm.init();
-            expect(() => psm.gogo()).toThrowError('Transition \'gogo\' requested while another transition is in progress');
+            expect(() => psm.gogo()).toThrow('Transition \'gogo\' requested while another transition is in progress');
 
         });
 

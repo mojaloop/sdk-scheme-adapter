@@ -115,6 +115,7 @@
     "yargs-parser": "21.1.1"
   },
   "resolutions": {
+    "@mojaloop/api-snippets": "17.10.3",
     "axios": "1.8.2",
     "body-parser": "1.20.3",
     "cacache/tar": "6.2.1",
