@@ -149,7 +149,7 @@ describe('QuotesModel', () => {
         });
 
         it('should handle lack of quoteId param', () => {
-            expect(() => Model.generateKey({ })).toThrowError(new Error('QuotesModel args requires \'quoteId\' is nonempty string and mandatory property'));
+            expect(() => Model.generateKey({ })).toThrow(new Error('QuotesModel args requires \'quoteId\' is nonempty string and mandatory property'));
         });
 
     });

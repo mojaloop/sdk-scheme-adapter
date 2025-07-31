@@ -82,7 +82,7 @@ describe('handleBulkTransfersCallbackReceived', () => {
     const sampleDomainEventDataObj = new BulkTransfersCallbackReceivedDmEvt(sampleBulkTransfersCallbackReceivedMessageData);
     handleBulkTransfersCallbackReceived(sampleDomainEventDataObj, domainEventHandlerOptions, logger)
     expect(domainEventHandlerOptions.commandProducer.sendCommandEvent)
-      .toBeCalledWith(
+      .toHaveBeenCalledWith(
         expect.objectContaining({
           _data: expect.objectContaining({
             key: bulkId,
