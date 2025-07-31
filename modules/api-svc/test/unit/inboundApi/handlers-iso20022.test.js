@@ -104,7 +104,7 @@ describe('Inbound API handlers transforming incoming ISO20022 message bodies', (
             await expect(handlers['/quotes/{ID}'].put(mockContext)).resolves.toBe(undefined);
 
             expect(triggerDeferredJobSpy).toHaveBeenCalledTimes(1);
-            expect(triggerDeferredJobSpy).toBeCalledWith({
+            expect(triggerDeferredJobSpy).toHaveBeenCalledWith({
                 cache: mockContext.state.cache,
                 message: {
                     body: mockContext.request.body,
@@ -155,7 +155,7 @@ describe('Inbound API handlers transforming incoming ISO20022 message bodies', (
             await expect(handlers['/parties/{Type}/{ID}'].put(mockContext)).resolves.toBe(undefined);
 
             expect(triggerDeferredJobSpy).toHaveBeenCalledTimes(1);
-            expect(triggerDeferredJobSpy).toBeCalledWith({
+            expect(triggerDeferredJobSpy).toHaveBeenCalledWith({
                 cache: mockContext.state.cache,
                 message: {
                     body: mockContext.request.body,
@@ -178,7 +178,7 @@ describe('Inbound API handlers transforming incoming ISO20022 message bodies', (
             await expect(handlers['/parties/{Type}/{ID}/{SubId}'].put(mockContext)).resolves.toBe(undefined);
 
             expect(triggerDeferredJobSpy).toHaveBeenCalledTimes(1);
-            expect(triggerDeferredJobSpy).toBeCalledWith({
+            expect(triggerDeferredJobSpy).toHaveBeenCalledWith({
                 cache: mockContext.state.cache,
                 message: {
                     body: mockContext.request.body,
@@ -271,7 +271,7 @@ describe('Inbound API handlers transforming incoming ISO20022 message bodies', (
             expect(triggerDeferredJobSpy.mock.calls[0][0].message.body).not.toBeUndefined();
             expect(triggerDeferredJobSpy.mock.calls[0][0].message.body).not.toEqual(isoBodies.putTransfersRequest);
 
-            expect(triggerDeferredJobSpy).toBeCalledWith({
+            expect(triggerDeferredJobSpy).toHaveBeenCalledWith({
                 cache: mockContext.state.cache,
                 message: {
                     body: mockContext.request.body,

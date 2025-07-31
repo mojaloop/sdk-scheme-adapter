@@ -150,7 +150,7 @@ describe('TransfersModel', () => {
         });
 
         it('should handle lack of transferId param', () => {
-            expect(() => Model.generateKey({ })).toThrowError(new Error('TransfersModel args requires \'transferId\' is nonempty string and mandatory property'));
+            expect(() => Model.generateKey({ })).toThrow(new Error('TransfersModel args requires \'transferId\' is nonempty string and mandatory property'));
         });
 
     });
