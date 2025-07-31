@@ -104,7 +104,6 @@
   },
   "overrides": {
     "body-parser": "1.20.3",
-    "form-data": "4.0.4",
     "shins": {
       "path-to-regexp": "0.1.12",
       "yargs-parser": "21.1.1"
@@ -120,6 +119,7 @@
     "axios": "1.8.2",
     "body-parser": "1.20.3",
     "cacache/tar": "6.2.1",
+    "form-data": "4.0.4",
     "path-to-regexp": "0.1.12",
     "shins/ejs": "3.1.10",
     "shins/sanitize-html": "2.12.1",
