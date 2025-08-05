@@ -27,6 +27,7 @@
 'use strict';
 
 const redis = require('redis');
+const EventEmitter = require('events');
 
 const CONN_ST = {
     CONNECTED: 'CONNECTED',
@@ -41,6 +42,7 @@ const CONN_ST = {
 class Cache {
     constructor(config) {
         this._config = config;
+        this._channelEmitter = new EventEmitter();
 
         if(!config.cacheUrl || !config.logger) {
             throw new Error('Cache config requires cacheUrl and logger properties');
@@ -194,6 +196,57 @@ class Cache {
         this._logger.isDebugEnabled && this._logger.debug(`Subscribed to cache pub/sub channel ${channel}`);
 
         return id;
+    }
+
+    /**
+     * Subscribes to a channel for some period and always returns resolved promise
+     *
+     * @param {string} channel - The channel name to subscribe to
+     * @param {boolean} [needParse=true] - specify if the message should be parsed before returning
+     *
+     * @returns {Promise} - Promise that resolves with a message or an error
+     */
+    async subscribeToOneMessageWithTimerNew(channel, needParse = true) {
+        let subscription;
+
+        return new Promise((resolve) => {
+
+            const timer = setTimeout(async () => {
+                if (subscription) {
+                    this._channelEmitter.removeListener(channel, subscription);
+                }
+                // If there are no listeners left for this channel, we can unsubscribe
+                if (this._channelEmitter.listenerCount(channel) === 0) {
+                    if (this._subscriptionClient) {
+                        await this._subscriptionClient.unsubscribe(channel);
+                    }
+                }
+                const errMessage = 'Timeout error in subscribeToOneMessageWithTimer';
+                this._logger.push({ channel }).warn(errMessage);
+                resolve(new Error(errMessage));
+            }, this.subscribeTimeoutSeconds * 1000);
+
+            subscription = (message) => {
+                this._logger.push({ channel, message, needParse }).debug('subscribeToOneMessageWithTimer is done');
+                clearTimeout(timer);
+                resolve(needParse ? JSON.parse(message) : message);
+            };
+            this._channelEmitter.once(channel, subscription);
+
+            this._subscriptionClient.subscribe(channel, async (msg) => {
+                this._channelEmitter.emit(channel, msg);
+                // If there are no listeners left for this channel, we can unsubscribe
+                if (this._channelEmitter.listenerCount(channel) === 0) {
+                    if (this._subscriptionClient) {
+                        await this._subscriptionClient.unsubscribe(channel);
+                    }
+                }
+            })
+                .catch(err => {
+                    this._logger.push({ channel, err }).warn(`error in subscribeToOneMessageWithTimer: ${err.message}`);
+                    resolve(err);
+                });
+        });
     }
 
     /**
