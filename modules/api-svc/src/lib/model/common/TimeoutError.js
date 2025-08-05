@@ -22,18 +22,20 @@
  * Mojaloop Foundation
  - Name Surname <name.surname@mojaloop.io>
 
- * Modusbox
- - Paweł Marzec <pawel.marzec@modusbox.com>
+ * Infitx
+ - Vijay Kumar Guthi - <vijaya.guthi@infitx.com>
  --------------
  ******/
-const Enums = require('./Enums');
-const { BackendError } = require('./BackendError');
-const { TimeoutError } = require('./TimeoutError');
-const PersistentStateMachine = require('./PersistentStateMachine');
+'use strict';
+
+class TimeoutError extends Error {
+    constructor(msg) {
+        super(msg);
+        this.name = 'TimeoutError';
+    }
+}
+
 
 module.exports = {
-    ...Enums,
-    BackendError,
-    TimeoutError,
-    PersistentStateMachine
+    TimeoutError
 };

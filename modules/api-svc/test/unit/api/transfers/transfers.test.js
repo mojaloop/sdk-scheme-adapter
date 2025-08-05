@@ -147,7 +147,7 @@ describe('Outbound Transfers API', () => {
                 parties: {
                     put: () => new Promise(
                         resolve => setTimeout(() => resolve(putPartiesBody),
-                            2000)),
+                            3000)),
                 },
             };
             return testPostTransfers(putBodyFn, 504, postTransfersErrorTimeoutResponse);
