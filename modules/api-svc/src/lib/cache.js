@@ -28,6 +28,7 @@
 
 const redis = require('redis');
 const EventEmitter = require('events');
+const { TimeoutError } = require('./model/common/TimeoutError');
 
 const CONN_ST = {
     CONNECTED: 'CONNECTED',
@@ -206,10 +207,10 @@ class Cache {
      *
      * @returns {Promise} - Promise that resolves with a message or an error
      */
-    async subscribeToOneMessageWithTimerNew(channel, needParse = true) {
+    async subscribeToOneMessageWithTimerNew(channel, requestProcessingTimeoutSeconds, needParse = true) {
         let subscription;
 
-        return new Promise((resolve) => {
+        return new Promise((resolve, reject) => {
 
             const timer = setTimeout(async () => {
                 if (subscription) {
@@ -221,10 +222,10 @@ class Cache {
                         await this._subscriptionClient.unsubscribe(channel);
                     }
                 }
-                const errMessage = 'Timeout error in subscribeToOneMessageWithTimer';
+                const errMessage = 'Timeout error';
                 this._logger.push({ channel }).warn(errMessage);
-                resolve(new Error(errMessage));
-            }, this.subscribeTimeoutSeconds * 1000);
+                reject(new TimeoutError(errMessage));
+            }, requestProcessingTimeoutSeconds * 1000);
 
             subscription = (message) => {
                 this._logger.push({ channel, message, needParse }).debug('subscribeToOneMessageWithTimer is done');
@@ -244,7 +245,7 @@ class Cache {
             })
                 .catch(err => {
                     this._logger.push({ channel, err }).warn(`error in subscribeToOneMessageWithTimer: ${err.message}`);
-                    resolve(err);
+                    reject(err);
                 });
         });
     }

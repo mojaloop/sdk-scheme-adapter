@@ -40,6 +40,7 @@ const PartiesModel = require('./PartiesModel');
 const {
     AmountTypes,
     BackendError,
+    TimeoutError,
     CacheKeyPrefixes,
     Directions,
     ErrorMessages,
@@ -325,7 +326,7 @@ class OutboundTransfersModel {
             // a GET /parties request to the switch
             try {
                 const channel = payeeKey;
-                const subscribing = this._cache.subscribeToOneMessageWithTimerNew(channel);
+                const subscribing = this._cache.subscribeToOneMessageWithTimerNew(channel, this._requestProcessingTimeoutSeconds);
 
                 latencyTimerDone = this.metrics.partyLookupLatency.startTimer();
                 const res = await this._requests.getParties(
@@ -421,7 +422,21 @@ class OutboundTransfersModel {
             }
             catch(err) {
                 this._logger.isErrorEnabled && this._logger.error(`Error in resolvePayee ${payeeKey}: ${err.stack || safeStringify(err)}`);
-                return reject(err);
+                // If type of error is BackendError, it will be handled by the state machine
+                if (err instanceof BackendError) {
+                    this.data.lastError = err;
+                    return reject(err);
+                }
+                // Check if the error is a TimeoutError, and if so, reject with a BackendError
+                if (err instanceof TimeoutError) {
+                    const error = new BackendError(`Timeout resolving payee for transfer ${this.data.transferId}`, 504);
+                    this.data.lastError = error;
+                    return reject(error);
+                }
+                // otherwise, just throw a generic error
+                const error = new BackendError(`Error resolving payee for transfer ${this.data.transferId}: ${err.message}`, 500);
+                this.data.lastError = error;
+                return reject(error);
             }
         });
     }
