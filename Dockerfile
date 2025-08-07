@@ -68,6 +68,9 @@ LABEL org.label-schema.version=$VERSION
 ## Create a non-root user: ml-user
 RUN adduser -D ml-user
 
+## Ensure /tmp is writable by non-root users (fixes EROFS from Yarn + Node 22)
+RUN chmod 1777 /tmp
+
 ## Create ml-user
 USER ml-user
 
