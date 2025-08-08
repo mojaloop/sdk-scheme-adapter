@@ -1,4 +1,16 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+### [24.10.7](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.10.6...v24.10.7) (2025-08-08)
+
+
+### Bug Fixes
+
+* revert dockerfile change ([#604](https://github.com/mojaloop/sdk-scheme-adapter/issues/604)) ([8ae897c](https://github.com/mojaloop/sdk-scheme-adapter/commit/8ae897cd4e566aed3469528f829ca201686dfeee))
+
+
+### Chore
+
+* **sbom:** update sbom [skip ci] ([e831089](https://github.com/mojaloop/sdk-scheme-adapter/commit/e831089e0a8df20a8c002b1fccda92de89631eac))
+
 ### [24.10.6](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.10.5...v24.10.6) (2025-08-07)
 
 
