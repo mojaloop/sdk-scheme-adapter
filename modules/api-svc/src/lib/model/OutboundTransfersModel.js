@@ -421,7 +421,7 @@ class OutboundTransfersModel {
                 return resolve(payee);
             }
             catch(err) {
-                this._logger.error(`Error in resolvePayee ${payeeKey}:`, err.stack || safeStringify(err));
+                this._logger.error(`Error in resolvePayee ${payeeKey}:`, err);
                 // If type of error is BackendError, it will be handled by the state machine
                 if (err instanceof BackendError) {
                     this.data.lastError = err;
