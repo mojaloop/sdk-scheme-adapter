@@ -229,9 +229,9 @@ class Cache {
                 if (this._channelEmitter.listenerCount(channel) === 0 && this._subscriptionClient) {
                     try {
                         await this._subscriptionClient.unsubscribe(channel);
-                        this._logger.isDebugEnabled && this._logger.push({ channel, reason }).debug('Unsubscribed from Redis channel');
+                        this._logger.push({ channel, reason }).debug('Unsubscribed from Redis channel');
                     } catch (unsubscribeErr) {
-                        this._logger.isWarnEnabled && this._logger.push({ channel, reason, err: unsubscribeErr }).warn('Failed to unsubscribe from Redis channel');
+                        this._logger.push({ channel, reason }).warn('Failed to unsubscribe from Redis channel', unsubscribeErr);
                     }
                 }
             };
@@ -257,7 +257,7 @@ class Cache {
                 await unsubscribeFromRedis('timeout');
 
                 const errMessage = `Subscription timeout after ${requestProcessingTimeoutSeconds}s`;
-                this._logger.isWarnEnabled && this._logger.push({ channel, timeout: requestProcessingTimeoutSeconds }).warn(errMessage);
+                this._logger.push({ channel, timeout: requestProcessingTimeoutSeconds }).warn(errMessage);
                 reject(new TimeoutError(errMessage));
             }, requestProcessingTimeoutSeconds * 1000);
 
@@ -266,7 +266,7 @@ class Cache {
                 if (isResolved) return;
                 isResolved = true;
 
-                this._logger.isDebugEnabled && this._logger.push({ channel, needParse }).debug('Received message on subscribed channel');
+                this._logger.push({ channel, needParse }).debug('Received message on subscribed channel');
                 
                 cleanup();
 
@@ -274,7 +274,7 @@ class Cache {
                     const result = needParse ? JSON.parse(message) : message;
                     resolve(result);
                 } catch (parseErr) {
-                    this._logger.isErrorEnabled && this._logger.push({ channel, message, err: parseErr }).error('Failed to parse received message');
+                    this._logger.push({ channel, message }).error('Failed to parse received message', parseErr);
                     reject(parseErr);
                 }
             };
@@ -288,7 +288,7 @@ class Cache {
                 
                 // Auto-unsubscribe if no more listeners
                 unsubscribeFromRedis('auto-cleanup').catch(err => {
-                    this._logger.isWarnEnabled && this._logger.push({ channel, err }).warn('Auto-unsubscribe failed');
+                    this._logger.push({ channel }).warn('Auto-unsubscribe failed', err);
                 });
             })
                 .catch(subscribeErr => {
@@ -296,7 +296,7 @@ class Cache {
                     isResolved = true;
 
                     cleanup();
-                    this._logger.isErrorEnabled && this._logger.push({ channel, err: subscribeErr }).error('Failed to subscribe to Redis channel');
+                    this._logger.push({ channel }).error('Failed to subscribe to Redis channel', subscribeErr);
                     reject(subscribeErr);
                 });
         });

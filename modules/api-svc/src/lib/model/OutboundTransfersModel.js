@@ -340,7 +340,7 @@ class OutboundTransfersModel {
                 this.data.getPartiesRequest = res.originalRequest;
 
                 this.metrics.partyLookupRequests.inc();
-                this._logger.isDebugEnabled && this._logger.push({ peer: res }).debug('Party lookup sent to peer');
+                this._logger.push({ peer: res }).debug('Party lookup sent to peer');
 
                 const message = await subscribing;
 
@@ -365,7 +365,7 @@ class OutboundTransfersModel {
 
                 payee = payee.party;
 
-                this._logger.isVerboseEnabled && this._logger.push({ payee }).verbose('Payee resolved');
+                this._logger.push({ payee }).verbose('Payee resolved');
 
                 // check we got the right payee and info we need
                 if(payee.partyIdInfo.partyIdType !== this.data.to.idType) {
@@ -412,7 +412,7 @@ class OutboundTransfersModel {
                     this.data.supportedCurrencies = payee.supportedCurrencies;
                 }
 
-                this._logger.isVerboseEnabled && this._logger.push({
+                this._logger.push({
                     transferId: this.data.transferId,
                     homeTransactionId: this.data.homeTransactionId,
                     needFx: this.data.needFx,
@@ -421,7 +421,7 @@ class OutboundTransfersModel {
                 return resolve(payee);
             }
             catch(err) {
-                this._logger.isErrorEnabled && this._logger.error(`Error in resolvePayee ${payeeKey}: ${err.stack || safeStringify(err)}`);
+                this._logger.error(`Error in resolvePayee ${payeeKey}:`, err.stack || safeStringify(err));
                 // If type of error is BackendError, it will be handled by the state machine
                 if (err instanceof BackendError) {
                     this.data.lastError = err;
