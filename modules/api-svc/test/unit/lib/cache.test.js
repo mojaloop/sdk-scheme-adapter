@@ -218,9 +218,9 @@ describe('Cache Tests -->', () => {
 
         const subscribing = cache.subscribeToOneMessageWithTimerNew(channel, requestProcessingTimeoutSeconds);
         
-        // Simulate a message being published to the channel
+        // Simulate a message being published to the channel via EventEmitter
         setTimeout(() => {
-            cache.publish(channel, message);
+            cache._channelEmitter.emit(channel, JSON.stringify(message));
         }, 100);
 
         const result = await subscribing;
@@ -234,9 +234,9 @@ describe('Cache Tests -->', () => {
 
         const subscribing = cache.subscribeToOneMessageWithTimerNew(channel, requestProcessingTimeoutSeconds, false);
         
-        // Simulate a message being published to the channel
+        // Simulate a message being published to the channel via EventEmitter
         setTimeout(() => {
-            cache.publish(channel, message);
+            cache._channelEmitter.emit(channel, message);
         }, 100);
 
         const result = await subscribing;
@@ -249,7 +249,99 @@ describe('Cache Tests -->', () => {
 
         const subscribing = cache.subscribeToOneMessageWithTimerNew(channel, requestProcessingTimeoutSeconds);
 
-        await expect(subscribing).rejects.toThrow('Timeout error');
+        await expect(subscribing).rejects.toThrow(`Subscription timeout after ${requestProcessingTimeoutSeconds}s`);
+        
+        // Test that it's a TimeoutError instance
+        try {
+            await subscribing;
+            expect(true).toBe(false); // Should not reach here
+        } catch (error) {
+            expect(error.constructor.name).toBe('TimeoutError');
+        }
+    });
+
+    test('subscribeToOneMessageWithTimerNew should reject when JSON parsing fails', async () => {
+        const channel = `ch-${randomUUID()}`;
+        const invalidJson = '{ invalid json }';
+        const requestProcessingTimeoutSeconds = 1;
+
+        const subscribing = cache.subscribeToOneMessageWithTimerNew(channel, requestProcessingTimeoutSeconds, true);
+        
+        // Simulate a message with invalid JSON
+        setTimeout(() => {
+            cache._channelEmitter.emit(channel, invalidJson);
+        }, 100);
+
+        await expect(subscribing).rejects.toThrow();
+    });
+
+    test('subscribeToOneMessageWithTimerNew should handle multiple subscribers to same channel', async () => {
+        const channel1 = `ch-${randomUUID()}`;
+        const channel2 = `ch-${randomUUID()}`;
+        const message1 = { id: 'msg1', data: 'test1' };
+        const message2 = { id: 'msg2', data: 'test2' };
+        const requestProcessingTimeoutSeconds = 1;
+
+        // Create two subscriptions to different channels to avoid interference
+        const subscribing1 = cache.subscribeToOneMessageWithTimerNew(channel1, requestProcessingTimeoutSeconds);
+        const subscribing2 = cache.subscribeToOneMessageWithTimerNew(channel2, requestProcessingTimeoutSeconds);
+        
+        // Emit messages to each channel separately
+        setTimeout(() => {
+            cache._channelEmitter.emit(channel1, JSON.stringify(message1));
+            cache._channelEmitter.emit(channel2, JSON.stringify(message2));
+        }, 100);
+
+        // Both should resolve with their respective messages
+        const results = await Promise.all([subscribing1, subscribing2]);
+        expect(results[0]).toStrictEqual(message1);
+        expect(results[1]).toStrictEqual(message2);
+    });
+
+    test('subscribeToOneMessageWithTimerNew should handle concurrent subscribers to same channel (party lookup scenario)', async () => {
+        const channel = `party-lookup-${randomUUID()}`;
+        const partyResponse = { party: { partyIdInfo: { partyIdType: 'MSISDN', partyIdentifier: '123456789' }}};
+        const requestProcessingTimeoutSeconds = 1;
+
+        // Create multiple concurrent subscriptions to same channel (simulating concurrent party lookups)
+        const subscribing1 = cache.subscribeToOneMessageWithTimerNew(channel, requestProcessingTimeoutSeconds);
+        const subscribing2 = cache.subscribeToOneMessageWithTimerNew(channel, requestProcessingTimeoutSeconds);
+        const subscribing3 = cache.subscribeToOneMessageWithTimerNew(channel, requestProcessingTimeoutSeconds);
+        
+        // Simulate a single party response that should resolve all subscribers
+        setTimeout(() => {
+            cache._channelEmitter.emit(channel, JSON.stringify(partyResponse));
+        }, 100);
+
+        // All subscribers should resolve with the same party response
+        const results = await Promise.all([subscribing1, subscribing2, subscribing3]);
+        expect(results[0]).toStrictEqual(partyResponse);
+        expect(results[1]).toStrictEqual(partyResponse);
+        expect(results[2]).toStrictEqual(partyResponse);
+    });
+
+    test('subscribeToOneMessageWithTimerNew should clean up resources on timeout', async () => {
+        const channel = `ch-${randomUUID()}`;
+        const requestProcessingTimeoutSeconds = 0.1;
+        
+        const removeListenerSpy = jest.spyOn(cache._channelEmitter, 'removeListener');
+        
+        const subscribing = cache.subscribeToOneMessageWithTimerNew(channel, requestProcessingTimeoutSeconds);
+
+        await expect(subscribing).rejects.toThrow(`Subscription timeout after ${requestProcessingTimeoutSeconds}s`);
+        
+        // Test that it's a TimeoutError instance
+        try {
+            await subscribing;
+            expect(true).toBe(false); // Should not reach here
+        } catch (error) {
+            expect(error.constructor.name).toBe('TimeoutError');
+        }
+        
+        // Verify cleanup was called
+        expect(removeListenerSpy).toHaveBeenCalledWith(channel, expect.any(Function));
+        
+        removeListenerSpy.mockRestore();
     });
 
     test('subscribeToOneMessageWithTimerNew should reject when subscription fails', async () => {

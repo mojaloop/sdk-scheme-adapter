@@ -200,52 +200,104 @@ class Cache {
     }
 
     /**
-     * Subscribes to a channel for some period and always returns resolved promise
+     * Subscribes to a channel and waits for a single message with timeout support.
+     * 
+     * NOTE:
+     * This implementation uses EventEmitter to handle Redis pub/sub concurrency issues
+     * that occur when multiple subscribers listen to the same channel simultaneously.
+     * It's designed to prevent race conditions in party lookups where concurrent requests
+     * for the same party ID could interfere with each other.
+     * Currently used for: Party lookup operations
+     * Future potential: This function can be extended to other scenarios and potentially
+     * replace the existing subscribe, unsubscribe, and subscribeToOneMessageWithTimer
+     * functions for a more robust and concurrency-safe pub/sub implementation.
      *
      * @param {string} channel - The channel name to subscribe to
-     * @param {boolean} [needParse=true] - specify if the message should be parsed before returning
+     * @param {number} requestProcessingTimeoutSeconds - Timeout in seconds before rejecting with TimeoutError
+     * @param {boolean} [needParse=true] - Whether to JSON.parse the received message
      *
-     * @returns {Promise} - Promise that resolves with a message or an error
+     * @returns {Promise<any>} Promise that resolves with the message or rejects with TimeoutError/Error
      */
     async subscribeToOneMessageWithTimerNew(channel, requestProcessingTimeoutSeconds, needParse = true) {
-        let subscription;
-
         return new Promise((resolve, reject) => {
+            let timeoutHandle = null;
+            let subscription = null;
+            let isResolved = false;
 
-            const timer = setTimeout(async () => {
-                if (subscription) {
-                    this._channelEmitter.removeListener(channel, subscription);
-                }
-                // If there are no listeners left for this channel, we can unsubscribe
-                if (this._channelEmitter.listenerCount(channel) === 0) {
-                    if (this._subscriptionClient) {
+            // Helper to safely unsubscribe from Redis channel
+            const unsubscribeFromRedis = async (reason = 'cleanup') => {
+                if (this._channelEmitter.listenerCount(channel) === 0 && this._subscriptionClient) {
+                    try {
                         await this._subscriptionClient.unsubscribe(channel);
+                        this._logger.isDebugEnabled && this._logger.push({ channel, reason }).debug('Unsubscribed from Redis channel');
+                    } catch (unsubscribeErr) {
+                        this._logger.isWarnEnabled && this._logger.push({ channel, reason, err: unsubscribeErr }).warn('Failed to unsubscribe from Redis channel');
                     }
                 }
-                const errMessage = 'Timeout error';
-                this._logger.push({ channel }).warn(errMessage);
+            };
+
+            // Helper to clean up resources and prevent multiple resolutions
+            const cleanup = () => {
+                if (timeoutHandle) {
+                    clearTimeout(timeoutHandle);
+                    timeoutHandle = null;
+                }
+                if (subscription) {
+                    this._channelEmitter.removeListener(channel, subscription);
+                    subscription = null;
+                }
+            };
+
+            // Set up timeout handler
+            timeoutHandle = setTimeout(async () => {
+                if (isResolved) return;
+                isResolved = true;
+
+                cleanup();
+                await unsubscribeFromRedis('timeout');
+
+                const errMessage = `Subscription timeout after ${requestProcessingTimeoutSeconds}s`;
+                this._logger.isWarnEnabled && this._logger.push({ channel, timeout: requestProcessingTimeoutSeconds }).warn(errMessage);
                 reject(new TimeoutError(errMessage));
             }, requestProcessingTimeoutSeconds * 1000);
 
+            // Set up message handler
             subscription = (message) => {
-                this._logger.push({ channel, message, needParse }).debug('subscribeToOneMessageWithTimer is done');
-                clearTimeout(timer);
-                resolve(needParse ? JSON.parse(message) : message);
+                if (isResolved) return;
+                isResolved = true;
+
+                this._logger.isDebugEnabled && this._logger.push({ channel, needParse }).debug('Received message on subscribed channel');
+                
+                cleanup();
+
+                try {
+                    const result = needParse ? JSON.parse(message) : message;
+                    resolve(result);
+                } catch (parseErr) {
+                    this._logger.isErrorEnabled && this._logger.push({ channel, message, err: parseErr }).error('Failed to parse received message');
+                    reject(parseErr);
+                }
             };
+
+            // Register the one-time listener
             this._channelEmitter.once(channel, subscription);
 
-            this._subscriptionClient.subscribe(channel, async (msg) => {
+            // Subscribe to Redis channel
+            this._subscriptionClient.subscribe(channel, (msg) => {
                 this._channelEmitter.emit(channel, msg);
-                // If there are no listeners left for this channel, we can unsubscribe
-                if (this._channelEmitter.listenerCount(channel) === 0) {
-                    if (this._subscriptionClient) {
-                        await this._subscriptionClient.unsubscribe(channel);
-                    }
-                }
+                
+                // Auto-unsubscribe if no more listeners
+                unsubscribeFromRedis('auto-cleanup').catch(err => {
+                    this._logger.isWarnEnabled && this._logger.push({ channel, err }).warn('Auto-unsubscribe failed');
+                });
             })
-                .catch(err => {
-                    this._logger.push({ channel, err }).warn(`error in subscribeToOneMessageWithTimer: ${err.message}`);
-                    reject(err);
+                .catch(subscribeErr => {
+                    if (isResolved) return;
+                    isResolved = true;
+
+                    cleanup();
+                    this._logger.isErrorEnabled && this._logger.push({ channel, err: subscribeErr }).error('Failed to subscribe to Redis channel');
+                    reject(subscribeErr);
                 });
         });
     }
