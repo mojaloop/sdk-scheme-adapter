@@ -210,4 +210,62 @@ describe('Cache Tests -->', () => {
         expect(result).toEqual(error);
         expect(unsubscribeSpy).not.toHaveBeenCalled();
     });
+
+    test('subscribeToOneMessageWithTimerNew should resolve with parsed message when received before timeout', async () => {
+        const channel = `ch-${randomUUID()}`;
+        const message = { id: randomUUID(), data: 'test-data' };
+        const requestProcessingTimeoutSeconds = 1;
+
+        const subscribing = cache.subscribeToOneMessageWithTimerNew(channel, requestProcessingTimeoutSeconds);
+        
+        // Simulate a message being published to the channel
+        setTimeout(() => {
+            cache.publish(channel, message);
+        }, 100);
+
+        const result = await subscribing;
+        expect(result).toStrictEqual(message);
+    });
+
+    test('subscribeToOneMessageWithTimerNew should resolve with unparsed message when needParse is false', async () => {
+        const channel = `ch-${randomUUID()}`;
+        const message = 'raw-string-message';
+        const requestProcessingTimeoutSeconds = 1;
+
+        const subscribing = cache.subscribeToOneMessageWithTimerNew(channel, requestProcessingTimeoutSeconds, false);
+        
+        // Simulate a message being published to the channel
+        setTimeout(() => {
+            cache.publish(channel, message);
+        }, 100);
+
+        const result = await subscribing;
+        expect(result).toBe(message);
+    });
+
+    test('subscribeToOneMessageWithTimerNew should reject with TimeoutError when no message received within timeout', async () => {
+        const channel = `ch-${randomUUID()}`;
+        const requestProcessingTimeoutSeconds = 0.1; // 100ms timeout
+
+        const subscribing = cache.subscribeToOneMessageWithTimerNew(channel, requestProcessingTimeoutSeconds);
+
+        await expect(subscribing).rejects.toThrow('Timeout error');
+    });
+
+    test('subscribeToOneMessageWithTimerNew should reject when subscription fails', async () => {
+        const channel = `ch-${randomUUID()}`;
+        const requestProcessingTimeoutSeconds = 1;
+        const subscriptionError = new Error('subscription failed');
+
+        // Mock the _subscriptionClient.subscribe to reject
+        const originalSubscribe = cache._subscriptionClient.subscribe;
+        cache._subscriptionClient.subscribe = jest.fn().mockRejectedValue(subscriptionError);
+
+        const subscribing = cache.subscribeToOneMessageWithTimerNew(channel, requestProcessingTimeoutSeconds);
+
+        await expect(subscribing).rejects.toThrow('subscription failed');
+        
+        // Restore original method
+        cache._subscriptionClient.subscribe = originalSubscribe;
+    });
 });
