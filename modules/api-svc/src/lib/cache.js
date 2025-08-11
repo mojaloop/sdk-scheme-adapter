@@ -27,6 +27,8 @@
 'use strict';
 
 const redis = require('redis');
+const EventEmitter = require('events');
+const { TimeoutError } = require('./model/common/TimeoutError');
 
 const CONN_ST = {
     CONNECTED: 'CONNECTED',
@@ -41,6 +43,7 @@ const CONN_ST = {
 class Cache {
     constructor(config) {
         this._config = config;
+        this._channelEmitter = new EventEmitter();
 
         if(!config.cacheUrl || !config.logger) {
             throw new Error('Cache config requires cacheUrl and logger properties');
@@ -194,6 +197,109 @@ class Cache {
         this._logger.isDebugEnabled && this._logger.debug(`Subscribed to cache pub/sub channel ${channel}`);
 
         return id;
+    }
+
+    /**
+     * Subscribes to a channel and waits for a single message with timeout support.
+     * 
+     * NOTE:
+     * This implementation uses EventEmitter to handle Redis pub/sub concurrency issues
+     * that occur when multiple subscribers listen to the same channel simultaneously.
+     * It's designed to prevent race conditions in party lookups where concurrent requests
+     * for the same party ID could interfere with each other.
+     * Currently used for: Party lookup operations
+     * Future potential: This function can be extended to other scenarios and potentially
+     * replace the existing subscribe, unsubscribe, and subscribeToOneMessageWithTimer
+     * functions for a more robust and concurrency-safe pub/sub implementation.
+     *
+     * @param {string} channel - The channel name to subscribe to
+     * @param {number} requestProcessingTimeoutSeconds - Timeout in seconds before rejecting with TimeoutError
+     * @param {boolean} [needParse=true] - Whether to JSON.parse the received message
+     *
+     * @returns {Promise<any>} Promise that resolves with the message or rejects with TimeoutError/Error
+     */
+    async subscribeToOneMessageWithTimerNew(channel, requestProcessingTimeoutSeconds, needParse = true) {
+        return new Promise((resolve, reject) => {
+            let timeoutHandle = null;
+            let subscription = null;
+            let isResolved = false;
+
+            // Helper to safely unsubscribe from Redis channel
+            const unsubscribeFromRedis = async (reason = 'cleanup') => {
+                if (this._channelEmitter.listenerCount(channel) === 0 && this._subscriptionClient) {
+                    try {
+                        await this._subscriptionClient.unsubscribe(channel);
+                        this._logger.push({ channel, reason }).debug('Unsubscribed from Redis channel');
+                    } catch (unsubscribeErr) {
+                        this._logger.push({ channel, reason }).warn('Failed to unsubscribe from Redis channel', unsubscribeErr);
+                    }
+                }
+            };
+
+            // Helper to clean up resources and prevent multiple resolutions
+            const cleanup = () => {
+                if (timeoutHandle) {
+                    clearTimeout(timeoutHandle);
+                    timeoutHandle = null;
+                }
+                if (subscription) {
+                    this._channelEmitter.removeListener(channel, subscription);
+                    subscription = null;
+                }
+            };
+
+            // Set up timeout handler
+            timeoutHandle = setTimeout(async () => {
+                if (isResolved) return;
+                isResolved = true;
+
+                cleanup();
+                await unsubscribeFromRedis('timeout');
+
+                const errMessage = `Subscription timeout after ${requestProcessingTimeoutSeconds}s`;
+                this._logger.push({ channel, timeout: requestProcessingTimeoutSeconds }).warn(errMessage);
+                reject(new TimeoutError(errMessage));
+            }, requestProcessingTimeoutSeconds * 1000);
+
+            // Set up message handler
+            subscription = (message) => {
+                if (isResolved) return;
+                isResolved = true;
+
+                this._logger.push({ channel, needParse }).debug('Received message on subscribed channel');
+                
+                cleanup();
+
+                try {
+                    const result = needParse ? JSON.parse(message) : message;
+                    resolve(result);
+                } catch (parseErr) {
+                    this._logger.push({ channel, message }).error('Failed to parse received message', parseErr);
+                    reject(parseErr);
+                }
+            };
+
+            // Register the one-time listener
+            this._channelEmitter.once(channel, subscription);
+
+            // Subscribe to Redis channel
+            this._subscriptionClient.subscribe(channel, (msg) => {
+                this._channelEmitter.emit(channel, msg);
+                
+                // Auto-unsubscribe if no more listeners
+                unsubscribeFromRedis('auto-cleanup').catch(err => {
+                    this._logger.push({ channel }).warn('Auto-unsubscribe failed', err);
+                });
+            })
+                .catch(subscribeErr => {
+                    if (isResolved) return;
+                    isResolved = true;
+
+                    cleanup();
+                    this._logger.push({ channel }).error('Failed to subscribe to Redis channel', subscribeErr);
+                    reject(subscribeErr);
+                });
+        });
     }
 
     /**
