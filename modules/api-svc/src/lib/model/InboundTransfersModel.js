@@ -996,7 +996,11 @@ class InboundTransfersModel {
             }
 
             // tag the final notification body on to the state
-            this.data.finalNotification = body;
+            // According to the backend api it expects extensionList to be an array (see CSI-1680)
+            this.data.finalNotification = {
+                ...body,
+                ...(body.extensionList && { extensionList: body.extensionList.extension })
+            };
 
             if(body.transferState === FSPIOPTransferStateEnum.COMMITTED) {
                 // if the transfer was successful in the switch, set the overall transfer state to COMPLETED
