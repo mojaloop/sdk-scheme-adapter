@@ -1,4 +1,40 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+### [24.10.8](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.10.7...v24.10.8) (2025-08-11)
+
+
+### Bug Fixes
+
+* concurrency issues ([#601](https://github.com/mojaloop/sdk-scheme-adapter/issues/601)) ([b693e2f](https://github.com/mojaloop/sdk-scheme-adapter/commit/b693e2fe618f256e4511fe9fad256f48d814ca01))
+
+
+### Chore
+
+* **sbom:** update sbom [skip ci] ([63b0609](https://github.com/mojaloop/sdk-scheme-adapter/commit/63b06090017264a5d375d48bb9800ca9ae183ddd))
+
+### [24.10.7](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.10.6...v24.10.7) (2025-08-08)
+
+
+### Bug Fixes
+
+* revert dockerfile change ([#604](https://github.com/mojaloop/sdk-scheme-adapter/issues/604)) ([8ae897c](https://github.com/mojaloop/sdk-scheme-adapter/commit/8ae897cd4e566aed3469528f829ca201686dfeee))
+
+
+### Chore
+
+* **sbom:** update sbom [skip ci] ([e831089](https://github.com/mojaloop/sdk-scheme-adapter/commit/e831089e0a8df20a8c002b1fccda92de89631eac))
+
+### [24.10.6](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.10.5...v24.10.6) (2025-08-07)
+
+
+### Bug Fixes
+
+* issue EROFS from Yarn + Node 22 ([#603](https://github.com/mojaloop/sdk-scheme-adapter/issues/603)) ([503fe96](https://github.com/mojaloop/sdk-scheme-adapter/commit/503fe96d09e633b151132acd3695b518f0dd9057))
+
+
+### Chore
+
+* **sbom:** update sbom [skip ci] ([b361f4f](https://github.com/mojaloop/sdk-scheme-adapter/commit/b361f4f4f6a09b7e9e19d9e267e4e875ea76b668))
+
 ### [24.10.5](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.10.4...v24.10.5) (2025-08-01)
 
 

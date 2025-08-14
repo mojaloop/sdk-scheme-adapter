@@ -3951,6 +3951,7 @@ __metadata:
   peerDependencies:
     "@redis/client": ^5.8.1
   checksum: 10/c9440ce9350f8b04212d47ac5a2358d01973f777cb3d607fb8639819a3ab34d56bb5aaf70102251797d50825f8db15ed70adc6e9a1feda3582a4201f8b8a89d9
+
   languageName: node
   linkType: hard
 
