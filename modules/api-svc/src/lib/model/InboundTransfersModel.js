@@ -956,7 +956,7 @@ class InboundTransfersModel {
     async sendFxPutNotificationToBackend(body, conversionId) {
         const log = this._logger.child({ conversionId });
         try {
-            log.verbose('sendFxPutNotificationToBackend payload: ', { body });
+            log.verbose('sendFxPutNotificationToBackend incoming payload: ', { body });
             this.data = await this.loadFxState(conversionId);
 
             if(!this.data) {
@@ -976,7 +976,14 @@ class InboundTransfersModel {
 
             await this.saveFxState();
 
-            const res = await this._backendRequests.putFxTransfersNotification(body, conversionId);
+            const responseBody = {
+                conversionState: body.conversionState, // one of ABORTED, COMMITTED, RESERVED
+                completedTimestamp: new Date().toISOString(), // todo: get from body
+            };
+            log.verbose('sendFxPutNotificationToBackend sent body: ', { responseBody });
+
+
+            const res = await this._backendRequests.putFxTransfersNotification(responseBody, conversionId);
             return res;
         } catch (err) {
             log.error('error in sendFxPutNotificationToBackend: ', err);

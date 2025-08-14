@@ -873,7 +873,8 @@ describe('inboundModel', () => {
             await model.sendFxPutNotificationToBackend(notif.data, conversionId);
             expect(BackendRequests.__putFxTransfersNotification).toHaveBeenCalledTimes(1);
             const call = BackendRequests.__putFxTransfersNotification.mock.calls[0];
-            expect(call[0]).toEqual(fxNotificationToBackend.data);
+            expect(call[0].conversionState).toEqual(fxNotificationToBackend.data.conversionState);
+            expect(typeof call[0].completedTimestamp).toBe('string');
             expect(call[1]).toEqual(conversionId);
         });
 
@@ -891,7 +892,7 @@ describe('inboundModel', () => {
             await model.sendFxPutNotificationToBackend(notif.data, conversionId);
             expect(BackendRequests.__putFxTransfersNotification).toHaveBeenCalledTimes(1);
             const call = BackendRequests.__putFxTransfersNotification.mock.calls[0];
-            expect(call[0]).toEqual(fxNotificationAbortedToBackend.data);
+            expect(call[0].conversionState).toEqual(fxNotificationAbortedToBackend.data.conversionState);
             expect(call[1]).toEqual(conversionId);
         });
 
@@ -909,7 +910,7 @@ describe('inboundModel', () => {
             await model.sendFxPutNotificationToBackend(notif.data, conversionId);
             expect(BackendRequests.__putFxTransfersNotification).toHaveBeenCalledTimes(1);
             const call = BackendRequests.__putFxTransfersNotification.mock.calls[0];
-            expect(call[0]).toEqual(fxNotificationReservedToBackend.data);
+            expect(call[0].conversionState).toEqual(fxNotificationReservedToBackend.data.conversionState);
             expect(call[1]).toEqual(conversionId);
         });
 
