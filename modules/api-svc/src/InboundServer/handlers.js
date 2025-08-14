@@ -1079,7 +1079,7 @@ const patchFxTransfersById = async (ctx) => {
 
     const model = createInboundTransfersModel(ctx);
 
-    const response = await model.sendFxPatchNotificationToBackend(req.data, idValue);
+    const response = await model.sendFxPutNotificationToBackend(req.data, idValue);
 
     // log the result
     ctx.state.logger.isDebugEnabled && ctx.state.logger.push({response}).

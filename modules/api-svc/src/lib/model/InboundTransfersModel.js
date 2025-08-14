@@ -953,8 +953,10 @@ class InboundTransfersModel {
         }
     }
 
-    async sendFxPatchNotificationToBackend(body, conversionId) {
+    async sendFxPutNotificationToBackend(body, conversionId) {
+        const log = this._logger.child({ conversionId });
         try {
+            log.verbose('sendFxPutNotificationToBackend payload: ', { body });
             this.data = await this.loadFxState(conversionId);
 
             if(!this.data) {
@@ -974,10 +976,10 @@ class InboundTransfersModel {
 
             await this.saveFxState();
 
-            const res = await this._backendRequests.patchFxTransfersNotification(this.data,conversionId);
+            const res = await this._backendRequests.putFxTransfersNotification(body, conversionId);
             return res;
         } catch (err) {
-            this._logger.isErrorEnabled && this._logger.push({ err, conversionId }).error(`Error notifying backend of final conversionId state equal to: ${body.conversionState} `);
+            log.error('error in sendFxPutNotificationToBackend: ', err);
         }
     }
     /**
