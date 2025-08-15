@@ -978,10 +978,9 @@ class InboundTransfersModel {
 
             const responseBody = {
                 conversionState: body.conversionState, // one of ABORTED, COMMITTED, RESERVED
-                completedTimestamp: new Date().toISOString(), // todo: get from body
+                completedTimestamp: body.completedTimestamp,
             };
-            log.verbose('sendFxPutNotificationToBackend sent body: ', { responseBody });
-
+            log.verbose('sendFxPutNotificationToBackend body sent to cc: ', { responseBody });
 
             const res = await this._backendRequests.putFxTransfersNotification(responseBody, conversionId);
             return res;
