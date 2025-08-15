@@ -1075,8 +1075,8 @@ describe('Inbound API handlers:', () => {
             };
         });
 
-        test('calls `model.sendFxPatchNotificationToBackend with expected arguments', async () => {
-            const notificationSpy = jest.spyOn(Model.prototype, 'sendFxPatchNotificationToBackend');
+        test('calls `model.sendFxPutNotificationToBackend with expected arguments', async () => {
+            const notificationSpy = jest.spyOn(Model.prototype, 'sendFxPutNotificationToBackend');
 
             await expect(handlers['/fxTransfers/{ID}'].patch(mockNotificationMessage)).resolves.toBe(undefined);
             expect(notificationSpy).toHaveBeenCalledTimes(1);
