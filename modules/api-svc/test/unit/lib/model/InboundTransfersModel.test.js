@@ -842,7 +842,7 @@ describe('inboundModel', () => {
 
     });
 
-    describe('sendFxPatchNotificationToBackend:', () => {
+    describe('sendFxPutNotificationToBackend:', () => {
         const conversionId = '1234';
         let cache;
 
@@ -860,13 +860,8 @@ describe('inboundModel', () => {
         });
 
         test('sends notification to fsp backend', async () => {
-            BackendRequests.__patchFxTransfersNotification = jest.fn().mockReturnValue(Promise.resolve({}));
+            BackendRequests.__putFxTransfersNotification = jest.fn().mockReturnValue(Promise.resolve({}));
             const notif = JSON.parse(JSON.stringify(fxNotificationToBackend));
-
-            const expectedRequest = {
-                currentState: SDKStateEnum.COMPLETED,
-                finalNotification: notif.data,
-            };
 
             const model = new Model({
                 ...config,
@@ -875,21 +870,16 @@ describe('inboundModel', () => {
             });
             model.saveFxState = jest.fn().mockReturnValue(Promise.resolve({}));
 
-            await model.sendFxPatchNotificationToBackend(notif.data, conversionId);
-            expect(BackendRequests.__patchFxTransfersNotification).toHaveBeenCalledTimes(1);
-            const call = BackendRequests.__patchFxTransfersNotification.mock.calls[0];
-            expect(call[0]).toEqual(expectedRequest);
+            await model.sendFxPutNotificationToBackend(notif.data, conversionId);
+            expect(BackendRequests.__putFxTransfersNotification).toHaveBeenCalledTimes(1);
+            const call = BackendRequests.__putFxTransfersNotification.mock.calls[0];
+            expect(call[0]).toEqual(fxNotificationToBackend.data);
             expect(call[1]).toEqual(conversionId);
         });
 
         test('sends ABORTED notification to fsp backend', async () => {
-            BackendRequests.__patchFxTransfersNotification = jest.fn().mockReturnValue(Promise.resolve({}));
+            BackendRequests.__putFxTransfersNotification = jest.fn().mockReturnValue(Promise.resolve({}));
             const notif = JSON.parse(JSON.stringify(fxNotificationAbortedToBackend));
-
-            const expectedRequest = {
-                currentState: SDKStateEnum.ABORTED,
-                finalNotification: notif.data,
-            };
 
             const model = new Model({
                 ...config,
@@ -898,22 +888,16 @@ describe('inboundModel', () => {
             });
             model.saveFxState = jest.fn().mockReturnValue(Promise.resolve({}));
 
-            await model.sendFxPatchNotificationToBackend(notif.data, conversionId);
-            expect(BackendRequests.__patchFxTransfersNotification).toHaveBeenCalledTimes(1);
-            const call = BackendRequests.__patchFxTransfersNotification.mock.calls[0];
-            expect(call[0]).toEqual(expectedRequest);
+            await model.sendFxPutNotificationToBackend(notif.data, conversionId);
+            expect(BackendRequests.__putFxTransfersNotification).toHaveBeenCalledTimes(1);
+            const call = BackendRequests.__putFxTransfersNotification.mock.calls[0];
+            expect(call[0]).toEqual(fxNotificationAbortedToBackend.data);
             expect(call[1]).toEqual(conversionId);
         });
 
         test('sends RESERVED notification to fsp backend', async () => {
-            BackendRequests.__patchFxTransfersNotification = jest.fn().mockReturnValue(Promise.resolve({}));
+            BackendRequests.__putFxTransfersNotification = jest.fn().mockReturnValue(Promise.resolve({}));
             const notif = JSON.parse(JSON.stringify(fxNotificationReservedToBackend));
-
-            const expectedRequest = {
-                currentState: SDKStateEnum.ERROR_OCCURRED,
-                finalNotification: notif.data,
-                lastError: 'Final notification state not COMMITTED or ABORTED',
-            };
 
             const model = new Model({
                 ...config,
@@ -922,13 +906,12 @@ describe('inboundModel', () => {
             });
             model.saveFxState = jest.fn().mockReturnValue(Promise.resolve({}));
 
-            await model.sendFxPatchNotificationToBackend(notif.data, conversionId);
-            expect(BackendRequests.__patchFxTransfersNotification).toHaveBeenCalledTimes(1);
-            const call = BackendRequests.__patchFxTransfersNotification.mock.calls[0];
-            expect(call[0]).toEqual(expectedRequest);
+            await model.sendFxPutNotificationToBackend(notif.data, conversionId);
+            expect(BackendRequests.__putFxTransfersNotification).toHaveBeenCalledTimes(1);
+            const call = BackendRequests.__putFxTransfersNotification.mock.calls[0];
+            expect(call[0]).toEqual(fxNotificationReservedToBackend.data);
             expect(call[1]).toEqual(conversionId);
         });
-
     });
 
     describe('error handling:', () => {

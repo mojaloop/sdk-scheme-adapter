@@ -953,8 +953,10 @@ class InboundTransfersModel {
         }
     }
 
-    async sendFxPatchNotificationToBackend(body, conversionId) {
+    async sendFxPutNotificationToBackend(body, conversionId) {
+        const log = this._logger.child({ conversionId });
         try {
+            log.verbose('sendFxPutNotificationToBackend incoming payload: ', { body });
             this.data = await this.loadFxState(conversionId);
 
             if(!this.data) {
@@ -974,10 +976,16 @@ class InboundTransfersModel {
 
             await this.saveFxState();
 
-            const res = await this._backendRequests.patchFxTransfersNotification(this.data,conversionId);
+            const responseBody = {
+                conversionState: body.conversionState, // one of ABORTED, COMMITTED, RESERVED
+                completedTimestamp: body.completedTimestamp,
+            };
+            log.verbose('sendFxPutNotificationToBackend body sent to cc: ', { responseBody });
+
+            const res = await this._backendRequests.putFxTransfersNotification(responseBody, conversionId);
             return res;
         } catch (err) {
-            this._logger.isErrorEnabled && this._logger.push({ err, conversionId }).error(`Error notifying backend of final conversionId state equal to: ${body.conversionState} `);
+            log.error('error in sendFxPutNotificationToBackend: ', err);
         }
     }
     /**
@@ -994,7 +1002,11 @@ class InboundTransfersModel {
             }
 
             // tag the final notification body on to the state
-            this.data.finalNotification = body;
+            // According to the backend api it expects extensionList to be an array (see CSI-1680)
+            this.data.finalNotification = {
+                ...body,
+                ...(body.extensionList && { extensionList: body.extensionList.extension })
+            };
 
             if(body.transferState === FSPIOPTransferStateEnum.COMMITTED) {
                 // if the transfer was successful in the switch, set the overall transfer state to COMPLETED
