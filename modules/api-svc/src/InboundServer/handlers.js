@@ -1071,19 +1071,19 @@ const postFxTransfers = async (ctx) => {
 };
 
 const patchFxTransfersById = async (ctx) => {
-    const req = {
-        headers: { ...ctx.request.headers },
-        data: { ...ctx.request.body }
-    };
+    if (ctx.state.conf.isIsoApi) {
+        ctx.state.logger.push(ctx.request.body).debug('Transforming incoming ISO20022 patch fxTransfers body to FSPIOP');
+        const target = await TransformFacades.FSPIOPISO20022.fxTransfers.patch({ body: ctx.request.body }, { rollUpUnmappedAsExtensions: true });
+        ctx.request.body = target.body;
+    }
+
+    const data = { ...ctx.request.body };
     const idValue = ctx.state.path.params.ID;
 
     const model = createInboundTransfersModel(ctx);
+    const response = await model.sendFxPutNotificationToBackend(data, idValue);
 
-    const response = await model.sendFxPatchNotificationToBackend(req.data, idValue);
-
-    // log the result
-    ctx.state.logger.isDebugEnabled && ctx.state.logger.push({response}).
-        debug('Inbound Transfers model handled PATCH /fxTransfers/{ID} request');
+    ctx.state.logger.push({ response }).debug('Inbound Transfers model handled PATCH /fxTransfers/{ID} request');
 };
 
 /**
