@@ -1,4 +1,16 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+### [24.10.9](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.10.8...v24.10.9) (2025-08-18)
+
+
+### Bug Fixes
+
+* **csi-1680:** changed PATCH transfers/fxTransfers logic of sending notifications ([#605](https://github.com/mojaloop/sdk-scheme-adapter/issues/605)) ([749d84a](https://github.com/mojaloop/sdk-scheme-adapter/commit/749d84a785a571b7f401b2e98f2852bc2ae175d8))
+
+
+### Chore
+
+* **sbom:** update sbom [skip ci] ([071b19e](https://github.com/mojaloop/sdk-scheme-adapter/commit/071b19e185aff5e3f5e17681c4032d85b8bc35e8))
+
 ### [24.10.8](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.10.7...v24.10.8) (2025-08-11)
 
 
