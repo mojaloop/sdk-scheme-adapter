@@ -170,7 +170,7 @@ describe('OutboundTransfersModel Tests', () => {
             expectError = 'Transfer fulfil missed expiry deadline';
         }
         if (expectError) {
-            await expect(model.run()).rejects.toThrowError(expectError);
+            await expect(model.run()).rejects.toThrow(expectError);
         } else {
             const result = await model.run();
             await expect(result.currentState).toBe(SDKStateEnum.COMPLETED);
@@ -1687,7 +1687,7 @@ describe('OutboundTransfersModel Tests', () => {
             });
             expect(model.data.currentState).toBe(States.START);
             await expect(model.run())
-                .rejects.toThrowError(ErrorMessages.noSupportedCurrencies);
+                .rejects.toThrow(ErrorMessages.noSupportedCurrencies);
         });
 
         test('should wait for acceptQuotes callback if FX is needed and amountType is RECEIVE', async () => {
@@ -1738,7 +1738,7 @@ describe('OutboundTransfersModel Tests', () => {
                 supportedCurrencies: ['USD'],
             });
             expect(model.data.currentState).toBe(States.PAYEE_RESOLVED);
-            await expect(model.run()).rejects.toThrowError(`${ErrorMessages.responseMissedExpiryDeadline} (fxQuote)`);
+            await expect(model.run()).rejects.toThrow(`${ErrorMessages.responseMissedExpiryDeadline} (fxQuote)`);
         });
 
         test('should process callback for POST fxTransfers request', async () => {
@@ -1791,7 +1791,7 @@ describe('OutboundTransfersModel Tests', () => {
                 }
             });
             expect(model.data.currentState).toBe(States.QUOTE_RECEIVED);
-            await expect(model.run()).rejects.toThrowError(`${ErrorMessages.responseMissedExpiryDeadline} (fxTransfers fulfil)`);
+            await expect(model.run()).rejects.toThrow(`${ErrorMessages.responseMissedExpiryDeadline} (fxTransfers fulfil)`);
         });
 
         test('should throw error on invalid transfer fulfil when config checkIlp is truthy', async () => {
@@ -1815,7 +1815,7 @@ describe('OutboundTransfersModel Tests', () => {
                 }
             });
             expect(model.data.currentState).toBe(States.QUOTE_RECEIVED);
-            await expect(model.run()).rejects.toThrowError(ErrorMessages.invalidFulfilment);
+            await expect(model.run()).rejects.toThrow(ErrorMessages.invalidFulfilment);
         });
 
         test('should pass e2e FX transfer SEND flow (no autoAccept... configs)', async () => {

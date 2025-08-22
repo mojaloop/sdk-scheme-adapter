@@ -75,7 +75,7 @@ describe('BackendEventHandler', () => {
         const handler = KafkaDomainEventConsumer.mock.ctor.mock.calls[0][0];
         await handler(event);
 
-        expect(putBulkTransactions).toBeCalledWith(bulkId, {
+        expect(putBulkTransactions).toHaveBeenCalledWith(bulkId, {
             ...request,
             currentState: 'WAITING_FOR_PARTY_ACCEPTANCE',
         });
@@ -109,7 +109,7 @@ describe('BackendEventHandler', () => {
         const handler = KafkaDomainEventConsumer.mock.ctor.mock.calls[0][0];
         await handler(event);
 
-        expect(putBulkTransactions).toBeCalledWith(bulkId, {
+        expect(putBulkTransactions).toHaveBeenCalledWith(bulkId, {
             ...bulkAcceptQuoteRequest,
             currentState: 'WAITING_FOR_QUOTE_ACCEPTANCE',
         });
@@ -134,7 +134,7 @@ describe('BackendEventHandler', () => {
         const handler = KafkaDomainEventConsumer.mock.ctor.mock.calls[0][0];
         await handler(event);
 
-        expect(putBulkTransactions).toBeCalledWith(bulkId, {
+        expect(putBulkTransactions).toHaveBeenCalledWith(bulkId, {
             ...bulkTransactionResponse,
             currentState: SDKStateEnum.COMPLETED,
         });

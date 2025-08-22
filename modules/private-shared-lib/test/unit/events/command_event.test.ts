@@ -82,22 +82,22 @@ describe ('CommandEvent', () => {
   });
   describe("Negative scenarios", () => {
     it("should throw an error if the .key is null", () => {
-      expect(() => { CommandEvent.CreateFromIMessage({ ...sampleIMessage, key: null}) }).toThrowError()
+      expect(() => { CommandEvent.CreateFromIMessage({ ...sampleIMessage, key: null}) }).toThrow()
     });
     it("should throw an error if the .value is null", () => {
-      expect(() => { CommandEvent.CreateFromIMessage({ ...sampleIMessage, value: null}) }).toThrowError()
+      expect(() => { CommandEvent.CreateFromIMessage({ ...sampleIMessage, value: null}) }).toThrow()
     });
     it("should throw an error if the .value is not object", () => {
-      expect(() => { CommandEvent.CreateFromIMessage({ ...sampleIMessage, value: 'some-string'}) }).toThrowError()
+      expect(() => { CommandEvent.CreateFromIMessage({ ...sampleIMessage, value: 'some-string'}) }).toThrow()
     });
     it("should throw an error if the .value.eventType doesn't exist", () => {
-      expect(() => { CommandEvent.CreateFromIMessage({ ...sampleIMessage, value: {...sampleIMessage.value, eventType: null}}) }).toThrowError()
+      expect(() => { CommandEvent.CreateFromIMessage({ ...sampleIMessage, value: {...sampleIMessage.value, eventType: null}}) }).toThrow()
     });
     it("should throw an error if the .value.eventName doesn't exist", () => {
-      expect(() => { CommandEvent.CreateFromIMessage({ ...sampleIMessage, value: {...sampleIMessage.value, eventName: null}}) }).toThrowError()
+      expect(() => { CommandEvent.CreateFromIMessage({ ...sampleIMessage, value: {...sampleIMessage.value, eventName: null}}) }).toThrow()
     });
     it("should throw an error if the .value.eventType is not COMMAND_EVENT", () => {
-      expect(() => { CommandEvent.CreateFromIMessage({ ...sampleIMessage, value: {...sampleIMessage.value, eventType: EventType.DOMAIN_EVENT}}) }).toThrowError()
+      expect(() => { CommandEvent.CreateFromIMessage({ ...sampleIMessage, value: {...sampleIMessage.value, eventType: EventType.DOMAIN_EVENT}}) }).toThrow()
     });
   });
 
