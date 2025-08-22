@@ -124,9 +124,9 @@ class BackendRequests {
         return this._post('fxTransfers', payload);
     }
 
-    async patchFxTransfersNotification(notification, conversionId) {
+    async putFxTransfersNotification(notification, conversionId) {
         const url = `fxTransfers/${conversionId}`;
-        return this._patch(url, notification);
+        return this._put(url, notification);
     }
 
     /**

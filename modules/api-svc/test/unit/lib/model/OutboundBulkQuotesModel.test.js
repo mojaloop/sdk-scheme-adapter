@@ -98,7 +98,7 @@ describe('OutboundBulkQuotesModel', () => {
         }
 
         if (expectError) {
-            await expect(model.run()).rejects.toThrowError(expectError);
+            await expect(model.run()).rejects.toThrow(expectError);
         } else {
             const result = await model.run();
             await expect(result.currentState).toBe(SDKStateEnum.COMPLETED);

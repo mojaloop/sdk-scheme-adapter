@@ -579,10 +579,10 @@ describe('Outbound API handlers:', () => {
                 logger: state.logger,
                 wso2: state.wso2
             };
-            expect(createSpy).toBeCalledWith({}, cacheKey, expectedConfig);
+            expect(createSpy).toHaveBeenCalledWith({}, cacheKey, expectedConfig);
 
             // run workflow
-            expect(mockedPSM.run).toBeCalledWith({
+            expect(mockedPSM.run).toHaveBeenCalledWith({
                 type: 'MSISDN',
                 id: '1234567890',
                 subId: 'abcdefgh'
@@ -635,10 +635,10 @@ describe('Outbound API handlers:', () => {
                 logger: state.logger,
                 wso2: state.wso2
             };
-            expect(createSpy).toBeCalledWith({}, cacheKey, expectedConfig);
+            expect(createSpy).toHaveBeenCalledWith({}, cacheKey, expectedConfig);
 
             // run workflow
-            expect(mockedPSM.run).toBeCalledWith({
+            expect(mockedPSM.run).toHaveBeenCalledWith({
                 type: 'MSISDN',
                 id: '1234567890',
                 subId: 'abcdefgh'
@@ -693,10 +693,10 @@ describe('Outbound API handlers:', () => {
                 logger: state.logger,
                 wso2: state.wso2
             };
-            expect(createSpy).toBeCalledWith({}, cacheKey, expectedConfig);
+            expect(createSpy).toHaveBeenCalledWith({}, cacheKey, expectedConfig);
 
             // run workflow
-            expect(mockedPSM.run).toBeCalledWith({ type: 'MSISDN', id: '1234567890', subId: undefined });
+            expect(mockedPSM.run).toHaveBeenCalledWith({ type: 'MSISDN', id: '1234567890', subId: undefined });
 
             // response
             expect(mockContext.response.status).toBe(200);
@@ -727,10 +727,10 @@ describe('Outbound API handlers:', () => {
                 logger: state.logger,
                 wso2: state.wso2
             };
-            expect(createSpy).toBeCalledWith({}, cacheKey, expectedConfig);
+            expect(createSpy).toHaveBeenCalledWith({}, cacheKey, expectedConfig);
 
             // run workflow
-            expect(mockedPSM.run).toBeCalledWith({
+            expect(mockedPSM.run).toHaveBeenCalledWith({
                 type: 'MSISDN',
                 id: '1234567890',
                 subId: undefined
@@ -765,10 +765,10 @@ describe('Outbound API handlers:', () => {
                 logger: state.logger,
                 wso2: state.wso2
             };
-            expect(createSpy).toBeCalledWith({}, cacheKey, expectedConfig);
+            expect(createSpy).toHaveBeenCalledWith({}, cacheKey, expectedConfig);
 
             // run workflow
-            expect(mockedPSM.run).toBeCalledWith({
+            expect(mockedPSM.run).toHaveBeenCalledWith({
                 type: 'MSISDN',
                 id: '1234567890',
                 subId: undefined
@@ -806,10 +806,10 @@ describe('Outbound API handlers:', () => {
                 logger: state.logger,
                 wso2: state.wso2
             };
-            expect(createSpy).toBeCalledWith({}, cacheKey, expectedConfig);
+            expect(createSpy).toHaveBeenCalledWith({}, cacheKey, expectedConfig);
 
             // run workflow
-            expect(mockedPSM.run).toBeCalledWith({
+            expect(mockedPSM.run).toHaveBeenCalledWith({
                 type: 'MSISDN',
                 id: '1234567890',
                 subId: undefined
@@ -869,10 +869,10 @@ describe('Outbound API handlers:', () => {
                 logger: state.logger,
                 wso2: state.wso2
             };
-            expect(createSpy).toBeCalledWith({}, cacheKey, expectedConfig);
+            expect(createSpy).toHaveBeenCalledWith({}, cacheKey, expectedConfig);
 
             // run workflow
-            expect(mockedPSM.run).toBeCalledWith({
+            expect(mockedPSM.run).toHaveBeenCalledWith({
                 quoteId: mockContext.request.body.quotesPostRequest.quoteId,
                 fspId: mockContext.request.body.fspId,
                 quote: mockContext.request.body.quotesPostRequest
@@ -906,10 +906,10 @@ describe('Outbound API handlers:', () => {
                 logger: state.logger,
                 wso2: state.wso2
             };
-            expect(createSpy).toBeCalledWith({}, cacheKey, expectedConfig);
+            expect(createSpy).toHaveBeenCalledWith({}, cacheKey, expectedConfig);
 
             // run workflow
-            expect(mockedPSM.run).toBeCalledWith({
+            expect(mockedPSM.run).toHaveBeenCalledWith({
                 quoteId: mockContext.request.body.quotesPostRequest.quoteId,
                 fspId: mockContext.request.body.fspId,
                 quote: mockContext.request.body.quotesPostRequest
@@ -968,10 +968,10 @@ describe('Outbound API handlers:', () => {
                 logger: state.logger,
                 wso2: state.wso2
             };
-            expect(createSpy).toBeCalledWith({}, cacheKey, expectedConfig);
+            expect(createSpy).toHaveBeenCalledWith({}, cacheKey, expectedConfig);
 
             // run workflow
-            expect(mockedPSM.run).toBeCalledWith({
+            expect(mockedPSM.run).toHaveBeenCalledWith({
                 transferId: mockContext.request.body.transfersPostRequest.transferId,
                 fspId: mockContext.request.body.fspId,
                 transfer: mockContext.request.body.transfersPostRequest
@@ -1005,10 +1005,10 @@ describe('Outbound API handlers:', () => {
                 logger: state.logger,
                 wso2: state.wso2
             };
-            expect(createSpy).toBeCalledWith({}, cacheKey, expectedConfig);
+            expect(createSpy).toHaveBeenCalledWith({}, cacheKey, expectedConfig);
 
             // run workflow
-            expect(mockedPSM.run).toBeCalledWith({
+            expect(mockedPSM.run).toHaveBeenCalledWith({
                 transferId: mockContext.request.body.transfersPostRequest.transferId,
                 fspId: mockContext.request.body.fspId,
                 transfer: mockContext.request.body.transfersPostRequest

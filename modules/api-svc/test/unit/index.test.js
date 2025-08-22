@@ -98,5 +98,30 @@ describe('Server', () => {
             expect(server.restart).toHaveBeenCalledTimes(1);
             expect(server.restart).toHaveBeenCalledWith(newConf);
         });
+
+        it('restarts inbound server if inbound or outbound is different', async () => {
+            // Clone the conf and change inbound config
+            const newConfInbound = JSON.parse(JSON.stringify(conf));
+            newConfInbound.inbound = { ...conf.inbound, newProp: 'value' };
+
+            expect(server._shouldUpdateInboundServer(newConfInbound)).toBe(true);
+
+            controlServer.broadcastConfigChange(newConfInbound);
+            await new Promise((wait) => setTimeout(wait, 1000));
+            expect(server.restart).toHaveBeenCalledWith(newConfInbound);
+
+            // Reset mock
+            server.restart.mockClear();
+
+            // Clone the conf and change outbound config
+            const newConfOutbound = JSON.parse(JSON.stringify(conf));
+            newConfOutbound.outbound = { ...conf.outbound, anotherProp: 'value' };
+
+            expect(server._shouldUpdateInboundServer(newConfOutbound)).toBe(true);
+
+            controlServer.broadcastConfigChange(newConfOutbound);
+            await new Promise((wait) => setTimeout(wait, 1000));
+            expect(server.restart).toHaveBeenCalledWith(newConfOutbound);
+        });
     });
 });

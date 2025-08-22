@@ -143,7 +143,7 @@ describe('Inbound API handlers:', () => {
             await expect(handlers['/quotes/{ID}'].put(mockContext)).resolves.toBe(undefined);
 
             expect(triggerDeferredJobSpy).toHaveBeenCalledTimes(1);
-            expect(triggerDeferredJobSpy).toBeCalledWith({
+            expect(triggerDeferredJobSpy).toHaveBeenCalledWith({
                 cache: mockContext.state.cache,
                 message: {
                     body: mockContext.request.body,
@@ -670,7 +670,7 @@ describe('Inbound API handlers:', () => {
             await expect(handlers['/parties/{Type}/{ID}'].put(mockContext)).resolves.toBe(undefined);
 
             expect(triggerDeferredJobSpy).toHaveBeenCalledTimes(1);
-            expect(triggerDeferredJobSpy).toBeCalledWith({
+            expect(triggerDeferredJobSpy).toHaveBeenCalledWith({
                 cache: mockContext.state.cache,
                 message: {
                     body: mockContext.request.body,
@@ -692,7 +692,7 @@ describe('Inbound API handlers:', () => {
             await expect(handlers['/parties/{Type}/{ID}/{SubId}'].put(mockContext)).resolves.toBe(undefined);
 
             expect(triggerDeferredJobSpy).toHaveBeenCalledTimes(1);
-            expect(triggerDeferredJobSpy).toBeCalledWith({
+            expect(triggerDeferredJobSpy).toHaveBeenCalledWith({
                 cache: mockContext.state.cache,
                 message: {
                     body: mockContext.request.body,
@@ -742,7 +742,7 @@ describe('Inbound API handlers:', () => {
             await expect(handlers['/transfers/{ID}'].put(mockContext)).resolves.toBe(undefined);
 
             expect(triggerDeferredJobSpy).toHaveBeenCalledTimes(1);
-            expect(triggerDeferredJobSpy).toBeCalledWith({
+            expect(triggerDeferredJobSpy).toHaveBeenCalledWith({
                 cache: mockContext.state.cache,
                 message: {
                     body: mockContext.request.body,
@@ -760,7 +760,7 @@ describe('Inbound API handlers:', () => {
             await expect(handlers['/transfers/{ID}'].put(mockContext)).resolves.toBe(undefined);
 
             expect(triggerDeferredJobSpy).toHaveBeenCalledTimes(1);
-            expect(triggerDeferredJobSpy).toBeCalledWith({
+            expect(triggerDeferredJobSpy).toHaveBeenCalledWith({
                 cache: mockContext.state.cache,
                 message: {
                     body: mockContext.request.body,
@@ -809,7 +809,7 @@ describe('Inbound API handlers:', () => {
             await expect(handlers['/transfers/{ID}'].put(mockContext)).resolves.toBe(undefined);
 
             expect(triggerDeferredJobSpy).toHaveBeenCalledTimes(1);
-            expect(triggerDeferredJobSpy).toBeCalledWith({
+            expect(triggerDeferredJobSpy).toHaveBeenCalledWith({
                 cache: mockContext.state.cache,
                 message: {
                     body: mockContext.request.body,
@@ -827,7 +827,7 @@ describe('Inbound API handlers:', () => {
             await expect(handlers['/transfers/{ID}/error'].put(mockContext)).resolves.toBe(undefined);
 
             expect(triggerDeferredJobSpy).toHaveBeenCalledTimes(1);
-            expect(triggerDeferredJobSpy).toBeCalledWith({
+            expect(triggerDeferredJobSpy).toHaveBeenCalledWith({
                 cache: mockContext.state.cache,
                 message: {
                     body: mockContext.request.body,
@@ -1075,8 +1075,8 @@ describe('Inbound API handlers:', () => {
             };
         });
 
-        test('calls `model.sendFxPatchNotificationToBackend with expected arguments', async () => {
-            const notificationSpy = jest.spyOn(Model.prototype, 'sendFxPatchNotificationToBackend');
+        test('calls `model.sendFxPutNotificationToBackend with expected arguments', async () => {
+            const notificationSpy = jest.spyOn(Model.prototype, 'sendFxPutNotificationToBackend');
 
             await expect(handlers['/fxTransfers/{ID}'].patch(mockNotificationMessage)).resolves.toBe(undefined);
             expect(notificationSpy).toHaveBeenCalledTimes(1);

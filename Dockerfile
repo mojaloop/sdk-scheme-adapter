@@ -27,7 +27,6 @@ COPY ./package.json .
 COPY ./yarn.lock .
 COPY ./.yarnrc.yml .
 COPY ./.yarn/releases/ ./.yarn/releases/
-COPY ./.yarn/plugins/ ./.yarn/plugins/
 COPY ./.nvmrc .
 COPY ./nx.json .
 COPY ./tsconfig.json .

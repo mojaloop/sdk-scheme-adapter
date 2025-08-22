@@ -68,7 +68,7 @@ describe('handleSDKOutboundBulkPartyInfoRequested', () => {
     const sampleDomainEventDataObj = new SDKOutboundBulkPartyInfoRequestedDmEvt(sampleSDKOutboundBulkPartyInfoRequestedMessage);
     handleSDKOutboundBulkPartyInfoRequested(sampleDomainEventDataObj, domainEventHandlerOptions, logger)
     expect(domainEventHandlerOptions.commandProducer.sendCommandEvent)
-      .toBeCalledWith(
+      .toHaveBeenCalledWith(
         expect.objectContaining({
           _data: expect.objectContaining({
             key: bulkId,

@@ -67,7 +67,9 @@ paths:
         - ping
       operationId: handlePostPing
       requestBody:
-        description: The object sent in the POST/PUT `/ping` requests with validation request ID.
+        description: >-
+          The object sent in the POST/PUT `/ping` requests with validation
+          request ID.
         required: true
         content:
           application/json:

@@ -156,7 +156,7 @@ describe('PartiesModel', () => {
 
         it('should handle lack of id param', () => {
             const type = uuid();
-            expect(() => Model.generateKey({ type })).toThrowError(new Error('PartiesModel args required at least two string arguments: \'type\' and \'id\''));
+            expect(() => Model.generateKey({ type })).toThrow(new Error('PartiesModel args required at least two string arguments: \'type\' and \'id\''));
         });
 
         it('should handle all params', () => {

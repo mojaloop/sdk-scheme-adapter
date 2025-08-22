@@ -91,7 +91,7 @@ describe('handlePartyInfoCallbackReceived', () => {
     const sampleDomainEventDataObj = new PartyInfoCallbackReceivedDmEvt(samplePartyInfoCallbackReceivedMessageData);
     handlePartyInfoCallbackReceived(sampleDomainEventDataObj, domainEventHandlerOptions, logger)
     expect(domainEventHandlerOptions.commandProducer.sendCommandEvent)
-      .toBeCalledWith(
+      .toHaveBeenCalledWith(
         expect.objectContaining({
           _data: expect.objectContaining({
             key:bulkId,

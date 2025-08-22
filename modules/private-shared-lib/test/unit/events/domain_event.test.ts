@@ -82,22 +82,22 @@ describe ('DomainEvent', () => {
   });
   describe("Negative scenarios", () => {
     it("should throw an error if the .key is null", () => {
-      expect(() => { DomainEvent.CreateFromIMessage({ ...sampleIMessage, key: null}) }).toThrowError()
+      expect(() => { DomainEvent.CreateFromIMessage({ ...sampleIMessage, key: null}) }).toThrow()
     });
     it("should throw an error if the .value is null", () => {
-      expect(() => { DomainEvent.CreateFromIMessage({ ...sampleIMessage, value: null}) }).toThrowError()
+      expect(() => { DomainEvent.CreateFromIMessage({ ...sampleIMessage, value: null}) }).toThrow()
     });
     it("should throw an error if the .value is not object", () => {
-      expect(() => { DomainEvent.CreateFromIMessage({ ...sampleIMessage, value: 'some-string'}) }).toThrowError()
+      expect(() => { DomainEvent.CreateFromIMessage({ ...sampleIMessage, value: 'some-string'}) }).toThrow()
     });
     it("should throw an error if the .value.eventType doesn't exist", () => {
-      expect(() => { DomainEvent.CreateFromIMessage({ ...sampleIMessage, value: {...sampleIMessage.value, eventType: null}}) }).toThrowError()
+      expect(() => { DomainEvent.CreateFromIMessage({ ...sampleIMessage, value: {...sampleIMessage.value, eventType: null}}) }).toThrow()
     });
     it("should throw an error if the .value.eventName doesn't exist", () => {
-      expect(() => { DomainEvent.CreateFromIMessage({ ...sampleIMessage, value: {...sampleIMessage.value, eventName: null}}) }).toThrowError()
+      expect(() => { DomainEvent.CreateFromIMessage({ ...sampleIMessage, value: {...sampleIMessage.value, eventName: null}}) }).toThrow()
     });
     it("should throw an error if the .value.eventType is not DOMAIN_EVENT", () => {
-      expect(() => { DomainEvent.CreateFromIMessage({ ...sampleIMessage, value: {...sampleIMessage.value, eventType: EventType.COMMAND_EVENT}}) }).toThrowError()
+      expect(() => { DomainEvent.CreateFromIMessage({ ...sampleIMessage, value: {...sampleIMessage.value, eventType: EventType.COMMAND_EVENT}}) }).toThrow()
     });
   });
 

@@ -52,7 +52,7 @@ class InboundApi extends EventEmitter {
         super({ captureExceptions: true });
         this._conf = conf;
         this._cache = cache;
-        this._metricsClient = metricsClient;
+        this._logger = logger;
         _initialize ||= _validator.initialise(apiSpecs, conf);
 
         if (conf.validateInboundJws) {

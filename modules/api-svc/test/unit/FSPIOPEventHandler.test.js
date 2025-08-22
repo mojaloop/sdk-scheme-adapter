@@ -125,7 +125,7 @@ describe('FSPIOPEventHandler', () => {
         expect(createSpy.mock.calls[0][1]).toEqual(cacheKey);
 
         // run workflow
-        expect(mockedPSM.run).toBeCalledWith({
+        expect(mockedPSM.run).toHaveBeenCalledWith({
             type: request.partyIdType,
             id: request.partyIdentifier,
             subId: request.partySubIdOrType
@@ -195,7 +195,7 @@ describe('FSPIOPEventHandler', () => {
         expect(createSpy.mock.calls[0][1]).toEqual(cacheKey);
 
         // run workflow
-        expect(mockedPSM.run).toBeCalledWith({
+        expect(mockedPSM.run).toHaveBeenCalledWith({
             type: request.partyIdType,
             id: request.partyIdentifier,
             subId: request.partySubIdOrType
@@ -272,7 +272,7 @@ describe('FSPIOPEventHandler', () => {
         await handler(event);
 
         // run workflow
-        expect(initializeSpy).toBeCalledWith(bulkQuoteRequest);
+        expect(initializeSpy).toHaveBeenCalledWith(bulkQuoteRequest);
 
         const sent = KafkaDomainEventProducer.mock.sendDomainEvent.mock.calls[0][0];
         expect(sent._data.name).toEqual('BulkQuotesCallbackReceivedDmEvt');
@@ -344,7 +344,7 @@ describe('FSPIOPEventHandler', () => {
         await handler(bulkTransfersRequestedDmEvt);
 
         // run workflow
-        expect(initializeSpy).toBeCalledWith(bulkTransfersRequestedDmEvt.request);
+        expect(initializeSpy).toHaveBeenCalledWith(bulkTransfersRequestedDmEvt.request);
 
         await new Promise((resolve) => setTimeout(resolve, 1500));
 

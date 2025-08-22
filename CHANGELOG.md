@@ -1,4 +1,135 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+### [24.10.9](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.10.8...v24.10.9) (2025-08-18)
+
+
+### Bug Fixes
+
+* **csi-1680:** changed PATCH transfers/fxTransfers logic of sending notifications ([#605](https://github.com/mojaloop/sdk-scheme-adapter/issues/605)) ([749d84a](https://github.com/mojaloop/sdk-scheme-adapter/commit/749d84a785a571b7f401b2e98f2852bc2ae175d8))
+
+
+### Chore
+
+* **sbom:** update sbom [skip ci] ([071b19e](https://github.com/mojaloop/sdk-scheme-adapter/commit/071b19e185aff5e3f5e17681c4032d85b8bc35e8))
+
+### [24.10.8](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.10.7...v24.10.8) (2025-08-11)
+
+
+### Bug Fixes
+
+* concurrency issues ([#601](https://github.com/mojaloop/sdk-scheme-adapter/issues/601)) ([b693e2f](https://github.com/mojaloop/sdk-scheme-adapter/commit/b693e2fe618f256e4511fe9fad256f48d814ca01))
+
+
+### Chore
+
+* **sbom:** update sbom [skip ci] ([63b0609](https://github.com/mojaloop/sdk-scheme-adapter/commit/63b06090017264a5d375d48bb9800ca9ae183ddd))
+
+### [24.10.7](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.10.6...v24.10.7) (2025-08-08)
+
+
+### Bug Fixes
+
+* revert dockerfile change ([#604](https://github.com/mojaloop/sdk-scheme-adapter/issues/604)) ([8ae897c](https://github.com/mojaloop/sdk-scheme-adapter/commit/8ae897cd4e566aed3469528f829ca201686dfeee))
+
+
+### Chore
+
+* **sbom:** update sbom [skip ci] ([e831089](https://github.com/mojaloop/sdk-scheme-adapter/commit/e831089e0a8df20a8c002b1fccda92de89631eac))
+
+### [24.10.6](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.10.5...v24.10.6) (2025-08-07)
+
+
+### Bug Fixes
+
+* issue EROFS from Yarn + Node 22 ([#603](https://github.com/mojaloop/sdk-scheme-adapter/issues/603)) ([503fe96](https://github.com/mojaloop/sdk-scheme-adapter/commit/503fe96d09e633b151132acd3695b518f0dd9057))
+
+
+### Chore
+
+* **sbom:** update sbom [skip ci] ([b361f4f](https://github.com/mojaloop/sdk-scheme-adapter/commit/b361f4f4f6a09b7e9e19d9e267e4e875ea76b668))
+
+### [24.10.5](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.10.4...v24.10.5) (2025-08-01)
+
+
+### Chore
+
+* fix vuls and update deps ([#599](https://github.com/mojaloop/sdk-scheme-adapter/issues/599)) ([f40131a](https://github.com/mojaloop/sdk-scheme-adapter/commit/f40131a9f65b888dce3cea5eb0149c1044e5a062))
+* **sbom:** update sbom [skip ci] ([f42ef94](https://github.com/mojaloop/sdk-scheme-adapter/commit/f42ef94e6708d0fc8483d0da50c820a9838182e0))
+
+### [24.10.4](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.10.3...v24.10.4) (2025-07-31)
+
+
+### Bug Fixes
+
+* functional tests ([#598](https://github.com/mojaloop/sdk-scheme-adapter/issues/598)) ([cc3f56d](https://github.com/mojaloop/sdk-scheme-adapter/commit/cc3f56d4acfbd2224503779ead7a3ea8801d5229))
+
+
+### Chore
+
+* add initial sbom ([#595](https://github.com/mojaloop/sdk-scheme-adapter/issues/595)) ([8f89c4c](https://github.com/mojaloop/sdk-scheme-adapter/commit/8f89c4c5486afbda382ba97c1c2a6cefb10783d2))
+
+### [24.10.3](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.10.2...v24.10.3) (2025-06-26)
+
+
+### Bug Fixes
+
+* add logic to transform iso to fspiop for payee notif ([#569](https://github.com/mojaloop/sdk-scheme-adapter/issues/569)) ([019a652](https://github.com/mojaloop/sdk-scheme-adapter/commit/019a652390569fc8d3ce6bd9237c27bd4fa2e81f))
+
+### [24.10.2](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.10.1...v24.10.2) (2025-06-17)
+
+
+### Chore
+
+* bump deps for rdkafka ([#590](https://github.com/mojaloop/sdk-scheme-adapter/issues/590)) ([41efe48](https://github.com/mojaloop/sdk-scheme-adapter/commit/41efe48781421f3e05d35b533ba9bdcbca7c2ae0))
+
+### [24.10.1](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.10.0...v24.10.1) (2025-06-09)
+
+
+### Chore
+
+* **csi-1494:** more restarting logic ([#587](https://github.com/mojaloop/sdk-scheme-adapter/issues/587)) ([fcaa375](https://github.com/mojaloop/sdk-scheme-adapter/commit/fcaa3753ccb974669f1814d2cd7ca031305b8e8f))
+
+## [24.10.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.9.7...v24.10.0) (2025-06-05)
+
+
+### Features
+
+* bump up the node version to v22.15.1 ([#586](https://github.com/mojaloop/sdk-scheme-adapter/issues/586)) ([2c09d28](https://github.com/mojaloop/sdk-scheme-adapter/commit/2c09d28363d065c826899b5613c148dc8d0dd0b4))
+
+### [24.9.7](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.9.6...v24.9.7) (2025-06-02)
+
+
+### Chore
+
+* **deps:** bump undici from 6.21.1 to 6.21.3 ([#583](https://github.com/mojaloop/sdk-scheme-adapter/issues/583)) ([b2d51ad](https://github.com/mojaloop/sdk-scheme-adapter/commit/b2d51adaa37b1c01b4433c3e028ef17c33ec0347))
+
+### [24.9.6](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.9.5...v24.9.6) (2025-06-01)
+
+
+### Chore
+
+* fix faulty jws replacement logic  [@kleyow](https://github.com/kleyow) ([#585](https://github.com/mojaloop/sdk-scheme-adapter/issues/585)) ([efa7ce1](https://github.com/mojaloop/sdk-scheme-adapter/commit/efa7ce19f869a601f868f57ea569202110c9d7f9))
+
+### [24.9.5](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.9.4...v24.9.5) (2025-05-30)
+
+
+### Chore
+
+* hot mutate peerJwsKeys instead of restart ([#584](https://github.com/mojaloop/sdk-scheme-adapter/issues/584)) ([08983fc](https://github.com/mojaloop/sdk-scheme-adapter/commit/08983fcc5ab7cde0042cb3e17545d581accb9d3a))
+
+### [24.9.4](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.9.3...v24.9.4) (2025-05-30)
+
+
+### Chore
+
+* restart inbound on diff peerJwsKeys ([#582](https://github.com/mojaloop/sdk-scheme-adapter/issues/582)) ([c388481](https://github.com/mojaloop/sdk-scheme-adapter/commit/c388481185ff7aab08c6e6151825adc849bf6124))
+
+### [24.9.3](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.9.2...v24.9.3) (2025-05-27)
+
+
+### Chore
+
+* updated sdk-s-c ([#580](https://github.com/mojaloop/sdk-scheme-adapter/issues/580)) ([46b4fd4](https://github.com/mojaloop/sdk-scheme-adapter/commit/46b4fd4e46a830071073583bbe6e2e777fe04c7a))
+
 ### [24.9.2](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.9.1...v24.9.2) (2025-05-22)
 
 
