@@ -26,6 +26,7 @@
  ******/
 'use strict';
 
+const { hostname } = require('node:os');
 const EventEmitter = require('node:events');
 const _ = require('lodash');
 const { name, version } = require('../../../package.json');
@@ -493,7 +494,7 @@ async function start(config) {
         process.exit(1);
     });
 
-    logger.info('SDK server is started!', { name, version });
+    logger.info('SDK server is started!', { name, version, hostname: hostname() });
 }
 
 if (require.main === module) {
