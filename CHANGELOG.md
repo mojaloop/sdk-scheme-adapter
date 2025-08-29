@@ -1,16 +1,4 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
-### [24.10.10](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.10.9...v24.10.10) (2025-08-27)
-
-
-### Bug Fixes
-
-* **csi-1708:** updated deps ([#607](https://github.com/mojaloop/sdk-scheme-adapter/issues/607)) ([42f7baf](https://github.com/mojaloop/sdk-scheme-adapter/commit/42f7baf2e828e4eea2eb4edc41cd847d4e15651c))
-
-
-### Chore
-
-* **sbom:** update sbom [skip ci] ([c05eac1](https://github.com/mojaloop/sdk-scheme-adapter/commit/c05eac19196b19b1b3ff3c6cafc0744207e4b43d))
-
 ### [24.10.9](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.10.8...v24.10.9) (2025-08-18)
 
 

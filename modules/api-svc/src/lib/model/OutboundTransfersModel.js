@@ -1473,7 +1473,7 @@ class OutboundTransfersModel {
             log.isVerboseEnabled && log.verbose(`Transfer model state machine transition completed in state: ${this.stateMachine.state}. Recursing to handle next transition.`);
             return this.run();
         } catch (err) {
-            log.error('error running outbound transfer model: ', err);
+            log.isErrorEnabled && log.push({ err }).error(`error running outbound transfer model: ${err?.message}`);
 
             // as this function is recursive, we dont want to error the state machine multiple times
             if (this.data.currentState !== States.ERRORED) {
