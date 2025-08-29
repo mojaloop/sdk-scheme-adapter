@@ -2846,9 +2846,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@jest/transform@npm:30.1.0":
-  version: 30.1.0
-  resolution: "@jest/transform@npm:30.1.0"
+"@jest/transform@npm:30.1.1":
+  version: 30.1.1
+  resolution: "@jest/transform@npm:30.1.1"
   dependencies:
     "@babel/core": "npm:^7.27.4"
     "@jest/types": "npm:30.0.5"
@@ -2865,7 +2865,7 @@ __metadata:
     pirates: "npm:^4.0.7"
     slash: "npm:^3.0.0"
     write-file-atomic: "npm:^5.0.1"
-  checksum: 10/bb6ff22bee18026d33cd4f9ecf7bbfc8539a0ed5e8b33aaa51d00f7af2d758b5080abd9dd419dfdb355af647419f2344d16b49b3eeaaf6daae9d8f7b555eccf3
+  checksum: 10/8d61e7bdaeabf97f6f410b4579cd83217a771225c4a9a0cb8610453f9352eb1d385c5e9d1783a6ed616affb23be075a1bd95396adeaef9735567674ad08edf93
   languageName: node
   linkType: hard
 
@@ -3076,6 +3076,20 @@ __metadata:
     triple-beam: "npm:1.4.1"
     winston: "npm:3.17.0"
   checksum: 10/b9676a5f951f1f33907e5b8ec4cf2ca13ad3db177fa0e24a890760bc0bda3386a26946f7e5689c1941b6c83605e31549a9256c1a6de2ca3148a1ac7702a5d53c
+  languageName: node
+  linkType: hard
+
+"@mojaloop/central-services-logger@npm:11.9.1":
+  version: 11.9.1
+  resolution: "@mojaloop/central-services-logger@npm:11.9.1"
+  dependencies:
+    "@opentelemetry/api": "npm:1.9.0"
+    parse-strings-in-object: "npm:2.0.0"
+    rc: "npm:1.2.8"
+    safe-stable-stringify: "npm:^2.5.0"
+    triple-beam: "npm:1.4.1"
+    winston: "npm:3.17.0"
+  checksum: 10/0cb45b91c9a771c064f1027dbbe371d73253f81da558e132d4e452dfbbe2b9cdefb8697d3440dfb632f2b43c8a64a52ea98a80d9fbd2499c5f16899b0f4ec592
   languageName: node
   linkType: hard
 
@@ -3344,20 +3358,20 @@ __metadata:
     "@koa/cors": "npm:5.0.0"
     "@mojaloop/api-snippets": "npm:18.1.1"
     "@mojaloop/central-services-error-handling": "npm:13.1.0"
-    "@mojaloop/central-services-logger": "npm:11.9.0"
+    "@mojaloop/central-services-logger": "npm:11.9.1"
     "@mojaloop/central-services-metrics": "npm:12.6.0"
     "@mojaloop/central-services-shared": "npm:18.30.7"
     "@mojaloop/event-sdk": "npm:14.6.1"
     "@mojaloop/logging-bc-client-lib": "npm:0.5.8"
     "@mojaloop/ml-schema-transformer-lib": "npm:2.7.7"
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^"
-    "@mojaloop/sdk-standard-components": "npm:19.16.6"
+    "@mojaloop/sdk-standard-components": "npm:19.16.7"
     "@redocly/openapi-cli": "npm:1.0.0-beta.95"
     "@types/jest": "npm:30.0.0"
     ajv: "npm:8.17.1"
     axios: "npm:1.11.0"
     axios-mock-adapter: "npm:2.1.0"
-    babel-jest: "npm:30.1.0"
+    babel-jest: "npm:30.1.1"
     body-parser: "npm:2.2.0"
     co-body: "npm:6.2.0"
     dotenv: "npm:17.2.1"
@@ -3534,11 +3548,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@mojaloop/sdk-standard-components@npm:19.16.6":
-  version: 19.16.6
-  resolution: "@mojaloop/sdk-standard-components@npm:19.16.6"
+"@mojaloop/sdk-standard-components@npm:19.16.7":
+  version: 19.16.7
+  resolution: "@mojaloop/sdk-standard-components@npm:19.16.7"
   dependencies:
-    "@mojaloop/central-services-logger": "npm:11.9.0"
+    "@mojaloop/central-services-logger": "npm:11.9.1"
     "@mojaloop/ml-schema-transformer-lib": "npm:2.7.7"
     axios: "npm:1.11.0"
     axios-retry: "npm:4.5.0"
@@ -3548,7 +3562,7 @@ __metadata:
     ilp-packet-v1: "npm:2.2.0"
     jsonwebtoken: "npm:9.0.2"
     jws: "npm:4.0.0"
-  checksum: 10/a8ff00d2cb078797ef9866b4a17d690153c43947c45e2b6bac21e4a70105f530dd116e8225cc9b8cfb12eccd81e241c0a309e59b1742475b3afdea8d8bcb9c2d
+  checksum: 10/6fcf72a4a0f9cc7e9e581a5210085da0ffb3a1621f45a1f1bb29e57cd4bf131005d8be86b62ee4d6971766069c5ae1991f57c16116c770437d0db7e91245bcca
   languageName: node
   linkType: hard
 
@@ -5710,11 +5724,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"babel-jest@npm:30.1.0":
-  version: 30.1.0
-  resolution: "babel-jest@npm:30.1.0"
+"babel-jest@npm:30.1.1":
+  version: 30.1.1
+  resolution: "babel-jest@npm:30.1.1"
   dependencies:
-    "@jest/transform": "npm:30.1.0"
+    "@jest/transform": "npm:30.1.1"
     "@types/babel__core": "npm:^7.20.5"
     babel-plugin-istanbul: "npm:^7.0.0"
     babel-preset-jest: "npm:30.0.1"
@@ -5723,7 +5737,7 @@ __metadata:
     slash: "npm:^3.0.0"
   peerDependencies:
     "@babel/core": ^7.11.0
-  checksum: 10/c703a7d1eeb581acb9aad10550c054c26407f9e24a5885787c3d76e4281f752bf7533cb4c499b1644472679f78d5e103a695e35f2b31a2f6e7fb7162e8de0e0a
+  checksum: 10/1358a53a42d42174841670fe5e796f63b76930e39c188c54d5a2db1ddf9db429ce7d04b323ff301b4f67c44935f591307d3e07f000c400eae2a91d2a1a18b10b
   languageName: node
   linkType: hard
 

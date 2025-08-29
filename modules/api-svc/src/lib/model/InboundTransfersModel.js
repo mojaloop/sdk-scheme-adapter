@@ -53,6 +53,33 @@ class InboundTransfersModel {
         this._allowDifferentTransferTransactionId = config.allowDifferentTransferTransactionId;
         this._supportedCurrencies = config.supportedCurrencies;
 
+        this.metrics = {
+            // like-for-like with outbound (quotes)
+            quoteRequests: config.metricsClient.getCounter(
+                'mojaloop_connector_inbound_quote_request_count',
+                'Count of inbound quote requests received'),
+            quoteResponses: config.metricsClient.getCounter(
+                'mojaloop_connector_inbound_quote_response_count',
+                'Count of responses sent for inbound quotes (success or error)'),
+            quoteRequestLatency: config.metricsClient.getHistogram(
+                'mojaloop_connector_inbound_quote_request_latency',
+                'Time from receiving POST /quotes to sending PUT /quotes/{ID}'),
+
+            // like-for-like with outbound (transfers)
+            transferPrepares: config.metricsClient.getCounter(
+                'mojaloop_connector_inbound_transfer_prepare_count',
+                'Count of inbound transfer prepare requests received'),
+            transferFulfils: config.metricsClient.getCounter(
+                'mojaloop_connector_inbound_transfer_fulfil_response_count',
+                'Count of successful PUT /transfers/{ID} fulfils sent'),
+            transferLatency: config.metricsClient.getHistogram(
+                'mojaloop_connector_inbound_transfer_latency',
+                'Time from receiving POST /transfers to sending PUT /transfers/{ID} fulfil')
+        };
+
+        this._quoteTimers = new Map();
+        this._transferTimers = new Map();
+
         this._mojaloopRequests = new MojaloopRequests({
             logger: this._logger,
             peerEndpoint: config.peerEndpoint,
@@ -101,8 +128,8 @@ class InboundTransfersModel {
     }
 
     /**
-     * Queries the backend API for the specified party and makes a callback to the originator with the result
-     */
+    * Queries the backend API for the specified party and makes a callback to the originator with the result
+    */
     async getAuthorizations(transactionRequestId, sourceFspId) {
         try {
             // make a call to the backend to resolve the party lookup
@@ -120,6 +147,7 @@ class InboundTransfersModel {
                 },
                 responseType: 'ENTERED'
             };
+            // this.metrics.authorizationGetResponses.inc();
             // make a callback to the source fsp with the party info
             return this._mojaloopRequests.putAuthorizations(transactionRequestId, mlAuthorization, sourceFspId);
         }
@@ -127,6 +155,7 @@ class InboundTransfersModel {
             this._logger.isErrorEnabled && this._logger.push({ err, transactionRequestId }).error('Error in getOTP');
             const mojaloopError = await this._handleError(err);
             this._logger.isInfoEnabled && this._logger.push({ mojaloopError }).info(`Sending error response to ${sourceFspId}`);
+            // this.metrics.authorizationGetResponseErrors.inc();
             return this._mojaloopRequests.putAuthorizationsError(transactionRequestId, mojaloopError, sourceFspId);
         }
     }
@@ -454,6 +483,10 @@ class InboundTransfersModel {
             // project the incoming transfer prepare into an internal transfer request
             const internalForm = shared.mojaloopPrepareToInternalTransfer(prepareRequest, quote, this._ilp, this._checkIlp);
 
+            this.metrics.transferPrepares.inc();                     // count it
+            const endTimer = this.metrics.transferLatency.startTimer(); // start latency timer
+            this._transferTimers.set(prepareRequest.transferId, endTimer);           // store timer
+
             // make a call to the backend to inform it of the incoming transfer
             const response = await this._backendRequests.postTransfers(internalForm);
 
@@ -482,6 +515,8 @@ class InboundTransfersModel {
                 prepareRequest.transferId, mojaloopResponse, sourceFspId, headers
             );
 
+            // increment fulfil metric now that we’ve sent the fulfil to the payer
+            this.metrics.transferFulfils.inc();
             this.data.fulfil = {
                 headers: res.originalRequest.headers,
                 body: mojaloopResponse,
@@ -543,6 +578,12 @@ class InboundTransfersModel {
                     },
                 },
             };
+
+            const end = this._transferTimers.get(transferId);
+            if (end) {
+                end();
+                this._transferTimers.delete(transferId);
+            }
 
             // make a callback to the source fsp with the transfer fulfilment
             return this._mojaloopRequests.putTransfers(transferId, mojaloopResponse, sourceFspId, headers);
