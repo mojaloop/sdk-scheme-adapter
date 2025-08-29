@@ -147,6 +147,7 @@ class InboundTransfersModel {
                 },
                 responseType: 'ENTERED'
             };
+            // this.metrics.authorizationGetResponses.inc();
             // make a callback to the source fsp with the party info
             return this._mojaloopRequests.putAuthorizations(transactionRequestId, mlAuthorization, sourceFspId);
         }
@@ -154,6 +155,7 @@ class InboundTransfersModel {
             this._logger.isErrorEnabled && this._logger.push({ err, transactionRequestId }).error('Error in getOTP');
             const mojaloopError = await this._handleError(err);
             this._logger.isInfoEnabled && this._logger.push({ mojaloopError }).info(`Sending error response to ${sourceFspId}`);
+            // this.metrics.authorizationGetResponseErrors.inc();
             return this._mojaloopRequests.putAuthorizationsError(transactionRequestId, mojaloopError, sourceFspId);
         }
     }
@@ -528,6 +530,8 @@ class InboundTransfersModel {
                 prepareRequest.transferId, mojaloopResponse, sourceFspId, headers
             );
 
+            // increment fulfil metric now that we’ve sent the fulfil to the payer
+            this.metrics.transferFulfils.inc();
             this.data.fulfil = {
                 headers: res.originalRequest.headers,
                 body: mojaloopResponse,
@@ -589,9 +593,6 @@ class InboundTransfersModel {
                     },
                 },
             };
-
-            // Increment the transferFulfils metric for a successful outbound transfer fulfilment
-            this.metrics.transferFulfils.inc();
 
             const end = this._transferTimers.get(transferId);
             if (end) {
