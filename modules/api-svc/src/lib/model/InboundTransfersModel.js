@@ -75,7 +75,7 @@ class InboundTransfersModel {
             transferLatency: config.metricsClient.getHistogram(
                 'mojaloop_connector_inbound_transfer_latency',
                 'Time from receiving POST /transfers to sending PUT /transfers/{ID} fulfil')
-            };
+        };
 
         this._quoteTimers = new Map();
         this._transferTimers = new Map();
@@ -127,9 +127,9 @@ class InboundTransfersModel {
             : this.saveFxState();
     }
 
-     /**
-     * Queries the backend API for the specified party and makes a callback to the originator with the result
-     */
+    /**
+    * Queries the backend API for the specified party and makes a callback to the originator with the result
+    */
     async getAuthorizations(transactionRequestId, sourceFspId) {
         try {
             // make a call to the backend to resolve the party lookup
@@ -498,7 +498,7 @@ class InboundTransfersModel {
 
             this.metrics.transferPrepares.inc();                     // count it
             const endTimer = this.metrics.transferLatency.startTimer(); // start latency timer
-            this._transferTimers.set(transferId, endTimer);           // store timer
+            this._transferTimers.set(prepareRequest.transferId, endTimer);           // store timer
 
             // make a call to the backend to inform it of the incoming transfer
             const response = await this._backendRequests.postTransfers(internalForm);
