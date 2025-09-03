@@ -1210,16 +1210,6 @@ module.exports = {
         get: getTransfersById,
         put: putTransfersById,
         patch: patchTransfersById
-    },'/transfers': {
-        post: postTransfers
-    },
-    '/transfers/{ID}': {
-        get: getTransfersById,
-        put: putTransfersById,
-        patch: patchTransfersById
-    },
-    '/transfers/{ID}/error': {
-        put: putTransfersByIdError
     },
     '/transfers/{ID}/error': {
         put: putTransfersByIdError
