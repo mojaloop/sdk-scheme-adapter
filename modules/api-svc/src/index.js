@@ -85,6 +85,7 @@ class Server extends EventEmitter {
             this.conf,
             this.logger,
             this.cache,
+            this.metricsClient,
             this.wso2,
         );
         this.inboundServer.on('error', (...args) => {
@@ -291,6 +292,7 @@ class Server extends EventEmitter {
                 newConf,
                 this.logger,
                 this.cache,
+                this.metricsClient,
                 this.wso2,
             );
             this.inboundServer.on('error', (...args) => {
