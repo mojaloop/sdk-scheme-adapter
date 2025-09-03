@@ -259,12 +259,17 @@ class InboundTransfersModel {
                 }
             }
 
+            this.metrics.quoteRequests.inc();
+            const endTimer = this.metrics.quoteRequestLatency.startTimer();
+            this._quoteTimers.set(quoteRequest.quoteId, endTimer);
+
             // make a call to the backend to ask for a quote response
             const response = await this._backendRequests.postQuoteRequests(internalForm);
 
             if(!response) {
                 // make an error callback to the source fsp
-                return 'No response from backend';            }
+                return 'No response from backend';            
+            }
 
             if(!response.expiration) {
                 const expiration = new Date().getTime() + (this._expirySeconds * 1000);
@@ -293,6 +298,11 @@ class InboundTransfersModel {
             if (headers.tracestate && headers.traceparent) {
                 headers.tracestate += `,${TRACESTATE_KEY_CALLBACK_START_TS}=${Date.now()}`;
             }
+
+            this.metrics.quoteResponses.inc();
+            const end = this._quoteTimers.get(quoteRequest.quoteId);
+            if (end) { end(); this._quoteTimers.delete(quoteRequest.quoteId); }
+
             const res = await this._mojaloopRequests.putQuotes(quoteRequest.quoteId, mojaloopResponse, sourceFspId, headers, { isoPostQuote: request.isoPostQuote });
 
             this.data.quoteResponse = {
@@ -310,6 +320,11 @@ class InboundTransfersModel {
             const mojaloopError = await this._handleError(err);
             log.isInfoEnabled && log.push({ mojaloopError }).info(`Sending error response to ${sourceFspId}`);
             this.metrics.quoteGetResponseErrors.inc();
+
+            this.metrics.quoteResponses.inc();
+            const end = this._quoteTimers.get(quoteRequest.quoteId);
+            if (end) { end(); this._quoteTimers.delete(quoteRequest.quoteId); }
+
             return this._mojaloopRequests.putQuotesError(quoteRequest.quoteId, mojaloopError, sourceFspId, headers);
         }
     }
@@ -596,6 +611,12 @@ class InboundTransfersModel {
             this._logger.isErrorEnabled && this._logger.push({ err, transferId }).error('Error in getTransfers');
             const mojaloopError = await this._handleError(err);
             this._logger.isInfoEnabled && this._logger.push({ mojaloopError }).info(`Sending error response to ${sourceFspId}`);
+
+            const end = this._transferTimers.get(transferId);
+            if (end) {
+                end(); // still stop latency timer, even for errors
+                this._transferTimers.delete(transferId);
+            }
             return this._mojaloopRequests.putTransfersError(transferId, mojaloopError, sourceFspId, headers);
         }
     }
