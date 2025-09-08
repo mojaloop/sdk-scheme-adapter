@@ -67,9 +67,9 @@
     "@mojaloop/api-snippets": "18.1.1",
     "@mojaloop/central-services-error-handling": "13.1.0",
     "@mojaloop/central-services-logger": "11.9.1",
-    "@mojaloop/central-services-metrics": "12.6.0",
-    "@mojaloop/central-services-shared": "18.30.8",
-    "@mojaloop/event-sdk": "14.6.1",
+    "@mojaloop/central-services-metrics": "12.7.1",
+    "@mojaloop/central-services-shared": "18.32.0",
+    "@mojaloop/event-sdk": "14.7.0",
     "@mojaloop/logging-bc-client-lib": "0.5.8",
     "@mojaloop/ml-schema-transformer-lib": "2.7.7",
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^",
@@ -101,7 +101,7 @@
     "ws": "8.18.3"
   },
   "devDependencies": {
-    "@babel/core": "7.28.3",
+    "@babel/core": "7.28.4",
     "@babel/preset-env": "7.28.3",
     "@redocly/openapi-cli": "1.0.0-beta.95",
     "@types/jest": "30.0.0",

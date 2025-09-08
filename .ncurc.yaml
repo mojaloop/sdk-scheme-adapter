@@ -14,5 +14,6 @@ reject: [
   ## express >5 introduces breaking changes that are not compatible with the current codebase.
   "express",
   ## jest 30 is released but libraries that work with jest have not been updated to support it yet.
-  "jest"
+  "jest",
+  "uuid"
 ]
