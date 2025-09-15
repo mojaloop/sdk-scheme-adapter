@@ -3311,6 +3311,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@mojaloop/ml-number@npm:^11.3.0":
+  version: 11.3.0
+  resolution: "@mojaloop/ml-number@npm:11.3.0"
+  dependencies:
+    bignumber.js: "npm:9.3.1"
+  checksum: 10/84357947095c3becfd03c70c8ea6460333d4baebd7d55cddfcf244d7f4c3eafecd47e5b81fe7721855ba7448d74bea63740f701fe0af670ba2eb8fca80c9eac9
+  languageName: node
+  linkType: hard
+
 "@mojaloop/ml-schema-transformer-lib@npm:2.7.8":
   version: 2.7.8
   resolution: "@mojaloop/ml-schema-transformer-lib@npm:2.7.8"
@@ -3376,7 +3385,7 @@ __metadata:
     "@mojaloop/logging-bc-client-lib": "npm:0.5.8"
     "@mojaloop/ml-schema-transformer-lib": "npm:2.7.8"
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^"
-    "@mojaloop/sdk-standard-components": "npm:19.16.8"
+    "@mojaloop/sdk-standard-components": "npm:19.16.9"
     "@redocly/openapi-cli": "npm:1.0.0-beta.95"
     "@types/jest": "npm:30.0.0"
     ajv: "npm:8.17.1"
@@ -3559,11 +3568,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@mojaloop/sdk-standard-components@npm:19.16.8":
-  version: 19.16.8
-  resolution: "@mojaloop/sdk-standard-components@npm:19.16.8"
+"@mojaloop/sdk-standard-components@npm:19.16.9":
+  version: 19.16.9
+  resolution: "@mojaloop/sdk-standard-components@npm:19.16.9"
   dependencies:
     "@mojaloop/central-services-logger": "npm:11.9.3"
+    "@mojaloop/ml-number": "npm:^11.3.0"
     "@mojaloop/ml-schema-transformer-lib": "npm:2.7.8"
     axios: "npm:1.12.2"
     axios-retry: "npm:4.5.0"
@@ -3573,7 +3583,7 @@ __metadata:
     ilp-packet-v1: "npm:2.2.0"
     jsonwebtoken: "npm:9.0.2"
     jws: "npm:4.0.0"
-  checksum: 10/16ffb7eddc8f4a276514e6d76598d4898e8693b0c92eb77049f05f93efbc8085ef7c35becbe3183eb8d686826a942dbf95088bcf84c903d5e35941d3b519935e
+  checksum: 10/7a4f57c3e7affafb9d80a553c5769a4aea495aa27daf29aa36d55532a5a27509dc9640597d407cf69d68186e3538f15682ad5c8b795923995bca33c7e4aee131
   languageName: node
   linkType: hard
 
@@ -5802,6 +5812,13 @@ __metadata:
   version: 3.0.3
   resolution: "bath-es5@npm:3.0.3"
   checksum: 10/094e917ac086b13307fd290ee53c3b2c87cc55a73fd086b6a364488bb63e704e182a82b6f08280feedb1b196f7fe505fb86367a9bc5110c910096e0591490ca3
+  languageName: node
+  linkType: hard
+
+"bignumber.js@npm:9.3.1":
+  version: 9.3.1
+  resolution: "bignumber.js@npm:9.3.1"
+  checksum: 10/1be0372bf0d6d29d0a49b9e6a9cefbd54dad9918232ad21fcd4ec39030260773abf0c76af960c6b3b98d3115a3a71e61c6a111812d1395040a039cfa178e0245
   languageName: node
   linkType: hard
 
