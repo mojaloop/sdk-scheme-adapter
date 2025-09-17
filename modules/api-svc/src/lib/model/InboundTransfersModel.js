@@ -1042,8 +1042,8 @@ class InboundTransfersModel {
             log.verbose('sendFxPutNotificationToBackend body sent to cc: ', { responseBody });
 
             const { enabled, maxRetries, retryDelayMs, maxRetryDelayMs, backoffFactor } = this._backendRequestRetry || {};
-            let res;
             const shouldRetry = enabled !== false; // default to true if not set
+            let res;
 
             if (shouldRetry) {
                 const operation = retry.operation({
@@ -1057,13 +1057,10 @@ class InboundTransfersModel {
                     operation.attempt(async (currentAttempt) => {
                         try {
                             res = await this._backendRequests.putFxTransfersNotification(responseBody, conversionId);
-                            if (res) {
-                                return resolve();
-                            }
-                            log.warn(`putFxTransfersNotification attempt ${currentAttempt} got no response, retrying...`);
-                            if (!operation.retry(new Error('No response'))) {
-                                resolve();
-                            }
+                            // Consider success as long as it doesn't throw
+                            // `sendRequest` only seems to return `data` of the request which could
+                            // be empty for a 200 response
+                            return resolve();
                         } catch (err) {
                             log.warn(`putFxTransfersNotification attempt ${currentAttempt} threw error, retrying...`, err);
                             if (!operation.retry(err)) {
@@ -1072,14 +1069,11 @@ class InboundTransfersModel {
                         }
                     });
                 });
-
-                if (!res) {
-                    log.error(`putFxTransfersNotification failed after ${operation.attempts()} attempts`);
-                }
             } else {
-                res = await this._backendRequests.putFxTransfersNotification(responseBody, conversionId);
-                if (!res) {
-                    log.error('putFxTransfersNotification failed');
+                try {
+                    res = await this._backendRequests.putFxTransfersNotification(responseBody, conversionId);
+                } catch (err) {
+                    log.error('putFxTransfersNotification failed', err);
                 }
             }
             return res;
@@ -1140,15 +1134,12 @@ class InboundTransfersModel {
                     operation.attempt(async (currentAttempt) => {
                         try {
                             res = await this._backendRequests.putTransfersNotification(this.data, transferId);
-                            if (res) {
-                                const cacheKey = `patchNotificationSent_${transferId}`;
-                                await this._cache.set(cacheKey, true, 60);
-                                return resolve();
-                            }
-                            this._logger.warn(`putTransfersNotification attempt ${currentAttempt} got no response, retrying...`);
-                            if (!operation.retry(new Error('No response'))) {
-                                resolve();
-                            }
+                            // Consider success as long as it doesn't throw
+                            // `sendRequest` only seems to return `data` of the request which could
+                            // be empty for a 200 response
+                            const cacheKey = `patchNotificationSent_${transferId}`;
+                            await this._cache.set(cacheKey, true, 60);
+                            return resolve();
                         } catch (err) {
                             this._logger.warn(`putTransfersNotification attempt ${currentAttempt} threw error, retrying...`, err);
                             if (!operation.retry(err)) {
@@ -1157,14 +1148,13 @@ class InboundTransfersModel {
                         }
                     });
                 });
-
-                if (!res) {
-                    this._logger.error(`putTransfersNotification failed after ${operation.attempts()} attempts`);
-                }
             } else {
-                res = await this._backendRequests.putTransfersNotification(this.data, transferId);
-                if (!res) {
-                    this._logger.error('putTransfersNotification failed');
+                try {
+                    res = await this._backendRequests.putTransfersNotification(this.data, transferId);
+                    const cacheKey = `patchNotificationSent_${transferId}`;
+                    await this._cache.set(cacheKey, true, 60);
+                } catch (err) {
+                    this._logger.error('putTransfersNotification failed', err);
                 }
             }
             return res;
