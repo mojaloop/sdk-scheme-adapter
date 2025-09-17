@@ -3189,9 +3189,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/central-services-shared@npm:18.33.0":
-  version: 18.33.0
-  resolution: "@mojaloop/central-services-shared@npm:18.33.0"
+"@mojaloop/central-services-shared@npm:18.33.2":
+  version: 18.33.2
+  resolution: "@mojaloop/central-services-shared@npm:18.33.2"
   dependencies:
     "@hapi/catbox": "npm:12.1.1"
     "@hapi/catbox-memory": "npm:5.0.1"
@@ -3209,7 +3209,7 @@ __metadata:
     event-stream: "npm:4.0.1"
     fast-safe-stringify: "npm:2.1.1"
     immutable: "npm:5.1.3"
-    ioredis: "npm:5.7.0"
+    ioredis: "npm:5.6.1"
     joi: "npm:18.0.1"
     lodash: "npm:4.17.21"
     mustache: "npm:4.2.0"
@@ -3249,7 +3249,7 @@ __metadata:
       optional: false
     mysql2:
       optional: false
-  checksum: 10/98d4f0e2ceb3470f6035452b1c5732f24e334686ccce8bef28f0fcd142a18f26befe28e004b1519ce145634975158d1ff6b1fe9e33d5b6f7a0f09e214a208512
+  checksum: 10/a80777e9e9c917d78fa73a9664df4c5736665b8c132ab3433687de24fbbbceb17f4f9f0094420943751d29f857c1c329e448668f5d333142e10d0834cde2e54d
   languageName: node
   linkType: hard
 
@@ -3390,7 +3390,7 @@ __metadata:
     "@mojaloop/central-services-error-handling": "npm:13.1.2"
     "@mojaloop/central-services-logger": "npm:11.9.3"
     "@mojaloop/central-services-metrics": "npm:12.7.1"
-    "@mojaloop/central-services-shared": "npm:18.33.0"
+    "@mojaloop/central-services-shared": "npm:18.33.2"
     "@mojaloop/event-sdk": "npm:14.7.0"
     "@mojaloop/logging-bc-client-lib": "npm:0.5.8"
     "@mojaloop/ml-schema-transformer-lib": "npm:2.7.8"
@@ -3450,7 +3450,7 @@ __metadata:
   dependencies:
     "@eslint/compat": "npm:1.3.2"
     "@mojaloop/api-snippets": "npm:18.1.1"
-    "@mojaloop/central-services-shared": "npm:18.33.0"
+    "@mojaloop/central-services-shared": "npm:18.33.2"
     "@mojaloop/logging-bc-client-lib": "npm:0.5.8"
     "@mojaloop/logging-bc-public-types-lib": "npm:0.5.6"
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^"
@@ -3529,7 +3529,7 @@ __metadata:
   dependencies:
     "@eslint/compat": "npm:1.3.2"
     "@mojaloop/api-snippets": "npm:18.1.1"
-    "@mojaloop/central-services-shared": "npm:18.33.0"
+    "@mojaloop/central-services-shared": "npm:18.33.2"
     "@mojaloop/logging-bc-public-types-lib": "npm:0.5.6"
     "@mojaloop/platform-shared-lib-messaging-types-lib": "npm:0.7.3"
     "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib": "npm:0.5.18"

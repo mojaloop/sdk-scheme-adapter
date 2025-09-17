@@ -42,7 +42,7 @@
   },
   "dependencies": {
     "@mojaloop/api-snippets": "18.1.1",
-    "@mojaloop/central-services-shared": "18.33.0",
+    "@mojaloop/central-services-shared": "18.33.2",
     "@mojaloop/logging-bc-client-lib": "0.5.8",
     "@mojaloop/logging-bc-public-types-lib": "0.5.6",
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^",
