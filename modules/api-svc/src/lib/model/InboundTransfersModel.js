@@ -504,6 +504,7 @@ class InboundTransfersModel {
 
                 setTimeout(async () => {
                     try {
+                        this._logger.isInfoEnabled && this._logger.push({ transferId }).info('Patch notification grace time expired, attempting GET /transfers/{ID}');
                         const notified = await this._cache.get(cacheKey);
 
                         if (!notified) {
@@ -529,7 +530,7 @@ class InboundTransfersModel {
                                         // Mark as notified to prevent duplicate notification
                                         await this._cache.set(cacheKey, true, 60);
                                         // Send notification to payee
-                                        await this.sendNotificationToPayee(message.data, transferId);
+                                        await this.sendNotificationToPayee(message.data.body, transferId);
                                         break;
                                     }
                                 } catch (err) {
