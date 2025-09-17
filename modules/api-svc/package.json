@@ -1,6 +1,6 @@
 {
   "name": "@mojaloop/sdk-scheme-adapter-api-svc",
-  "version": "21.0.0-snapshot.58",
+  "version": "21.0.0-snapshot.59",
   "description": "An adapter for connecting to Mojaloop API enabled switches.",
   "main": "src/index.js",
   "types": "src/index.d.ts",
