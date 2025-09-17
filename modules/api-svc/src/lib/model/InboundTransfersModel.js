@@ -1057,11 +1057,11 @@ class InboundTransfersModel {
                     operation.attempt(async (currentAttempt) => {
                         try {
                             res = await this._backendRequests.putFxTransfersNotification(responseBody, conversionId);
-                            if ((res && (res.status === 200 || res.statusCode === 200)) || res === true) {
+                            if (res) {
                                 return resolve();
                             }
-                            log.warn(`putFxTransfersNotification attempt ${currentAttempt} failed, retrying...`);
-                            if (!operation.retry(new Error('Non-200 response'))) {
+                            log.warn(`putFxTransfersNotification attempt ${currentAttempt} got no response, retrying...`);
+                            if (!operation.retry(new Error('No response'))) {
                                 resolve();
                             }
                         } catch (err) {
@@ -1073,12 +1073,12 @@ class InboundTransfersModel {
                     });
                 });
 
-                if ((res && (res.status !== 200 && res.statusCode !== 200)) && res !== true) {
+                if (!res) {
                     log.error(`putFxTransfersNotification failed after ${operation.attempts()} attempts`);
                 }
             } else {
                 res = await this._backendRequests.putFxTransfersNotification(responseBody, conversionId);
-                if ((res && (res.status !== 200 && res.statusCode !== 200)) && res !== true) {
+                if (!res) {
                     log.error('putFxTransfersNotification failed');
                 }
             }
@@ -1140,13 +1140,13 @@ class InboundTransfersModel {
                     operation.attempt(async (currentAttempt) => {
                         try {
                             res = await this._backendRequests.putTransfersNotification(this.data, transferId);
-                            if ((res && (res.status === 200 || res.statusCode === 200)) || res === true) {
+                            if (res) {
                                 const cacheKey = `patchNotificationSent_${transferId}`;
                                 await this._cache.set(cacheKey, true, 60);
                                 return resolve();
                             }
-                            this._logger.warn(`putTransfersNotification attempt ${currentAttempt} failed, retrying...`);
-                            if (!operation.retry(new Error('Non-200 response'))) {
+                            this._logger.warn(`putTransfersNotification attempt ${currentAttempt} got no response, retrying...`);
+                            if (!operation.retry(new Error('No response'))) {
                                 resolve();
                             }
                         } catch (err) {
@@ -1158,12 +1158,12 @@ class InboundTransfersModel {
                     });
                 });
 
-                if ((res && (res.status !== 200 && res.statusCode !== 200)) && res !== true) {
+                if (!res) {
                     this._logger.error(`putTransfersNotification failed after ${operation.attempts()} attempts`);
                 }
             } else {
                 res = await this._backendRequests.putTransfersNotification(this.data, transferId);
-                if ((res && (res.status !== 200 && res.statusCode !== 200)) && res !== true) {
+                if (!res) {
                     this._logger.error('putTransfersNotification failed');
                 }
             }
