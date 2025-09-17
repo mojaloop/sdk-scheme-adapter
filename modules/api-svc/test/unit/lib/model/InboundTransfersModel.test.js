@@ -295,44 +295,46 @@ describe('inboundModel', () => {
             MojaloopRequests.__putTransfersError.mockClear();
             BackendRequests.__postTransfers = jest.fn().mockReturnValue(Promise.resolve({}));
             MojaloopRequests.__putTransfers = jest.fn().mockReturnValue(Promise.resolve({
-                originalRequest: {
-                    headers: {},
-                    body: {},
-                }
+            originalRequest: {
+                headers: {},
+                body: {},
+            }
             }));
 
             cache = new Cache({
-                cacheUrl: 'redis://dummy:1234',
-                logger,
-                unsubscribeTimeoutMs: 5000
+            cacheUrl: 'redis://dummy:1234',
+            logger,
+            unsubscribeTimeoutMs: 5000
             });
             await cache.connect();
         });
 
         afterEach(async () => {
             await cache.disconnect();
+            jest.clearAllTimers();
+            jest.useRealTimers();
         });
 
         test('fail on quote `expiration` deadline.', async () => {
             const TRANSFER_ID = 'fake-transfer-id';
             const model = new Model({
-                ...config,
-                cache,
-                logger,
-                rejectTransfersOnExpiredQuotes: true,
+            ...config,
+            cache,
+            logger,
+            rejectTransfersOnExpiredQuotes: true,
             });
             cache.set(`transferModel_in_${TRANSFER_ID}`, {
-                transferId: TRANSFER_ID,
-                quote: {
-                    mojaloopResponse: {
-                        expiration: new Date(new Date().getTime() - 1000).toISOString(),
-                    }
+            transferId: TRANSFER_ID,
+            quote: {
+                mojaloopResponse: {
+                expiration: new Date(new Date().getTime() - 1000).toISOString(),
                 }
+            }
             });
             const args = {
-                body: {
-                    transferId: TRANSFER_ID,
-                }
+            body: {
+                transferId: TRANSFER_ID,
+            }
             };
 
             await model.prepareTransfer(args, mockArgs.fspId);
@@ -351,9 +353,9 @@ describe('inboundModel', () => {
             BackendRequests.__getTransfers = jest.fn().mockReturnValue(Promise.resolve(backendResponse));
 
             const model = new Model({
-                ...config,
-                cache,
-                logger,
+            ...config,
+            cache,
+            logger,
             });
 
             await model.getTransfer(TRANSFER_ID, mockArgs.fspId);
@@ -373,9 +375,9 @@ describe('inboundModel', () => {
             BackendRequests.__getTransfers = jest.fn().mockReturnValue(Promise.resolve(backendResponse));
 
             const model = new Model({
-                ...config,
-                cache,
-                logger,
+            ...config,
+            cache,
+            logger,
             });
 
             await model.getTransfer(TRANSFER_ID, mockArgs.fspId);
@@ -390,18 +392,18 @@ describe('inboundModel', () => {
             const TRANSFER_ID = 'fake-transfer-id';
 
             BackendRequests.__getTransfers = jest.fn().mockReturnValue(
-                Promise.reject(new HTTPResponseError({
-                    res: {
-                        data: {
-                            statusCode: '3208'
-                        },
-                    }
-                })));
+            Promise.reject(new HTTPResponseError({
+                res: {
+                data: {
+                    statusCode: '3208'
+                },
+                }
+            })));
 
             const model = new Model({
-                ...config,
-                cache,
-                logger,
+            ...config,
+            cache,
+            logger,
             });
 
             await model.getTransfer(TRANSFER_ID, mockArgs.fspId);
@@ -415,22 +417,22 @@ describe('inboundModel', () => {
         test('fail on transfer without quote.', async () => {
             const TRANSFER_ID = 'without_quote-transfer-id';
             const args = {
-                body: {
-                    transferId: TRANSFER_ID,
-                    amount: {
-                        currency: 'USD',
-                        amount: 20.13
-                    },
-                    ilpPacket: 'mockBase64encodedIlpPacket',
-                    condition: 'mockGeneratedCondition'
-                }
+            body: {
+                transferId: TRANSFER_ID,
+                amount: {
+                currency: 'USD',
+                amount: 20.13
+                },
+                ilpPacket: 'mockBase64encodedIlpPacket',
+                condition: 'mockGeneratedCondition'
+            }
             };
 
             const model = new Model({
-                ...config,
-                cache,
-                logger,
-                allowTransferWithoutQuote: false,
+            ...config,
+            cache,
+            logger,
+            allowTransferWithoutQuote: false,
             });
 
             await model.prepareTransfer(args, mockArgs.fspId);
@@ -448,38 +450,38 @@ describe('inboundModel', () => {
 
             // mock response from dfsp acting as payee
             BackendRequests.__postTransfers = jest.fn().mockReturnValueOnce(Promise.resolve({
-                homeTransactionId: HOME_TRANSACTION_ID,
-                transferId: TRANSFER_ID
+            homeTransactionId: HOME_TRANSACTION_ID,
+            transferId: TRANSFER_ID
             }));
 
             const args = {
-                body: {
-                    transferId: TRANSFER_ID,
-                    amount: {
-                        currency: 'USD',
-                        amount: 20.13
-                    },
-                    ilpPacket: 'mockBase64encodedIlpPacket',
-                    condition: 'mockGeneratedCondition'
-                }
+            body: {
+                transferId: TRANSFER_ID,
+                amount: {
+                currency: 'USD',
+                amount: 20.13
+                },
+                ilpPacket: 'mockBase64encodedIlpPacket',
+                condition: 'mockGeneratedCondition'
+            }
             };
 
             const model = new Model({
-                ...config,
-                cache,
-                logger,
-                checkIlp: false,
-                rejectTransfersOnExpiredQuotes: false
+            ...config,
+            cache,
+            logger,
+            checkIlp: false,
+            rejectTransfersOnExpiredQuotes: false
             });
 
             cache.set(`transferModel_in_${TRANSFER_ID}`, {
-                transferId: TRANSFER_ID,
-                quote: {
-                    fulfilment: 'mockFulfilment',
-                    mojaloopResponse: {
-                        condition: 'mockCondition',
-                    }
+            transferId: TRANSFER_ID,
+            quote: {
+                fulfilment: 'mockFulfilment',
+                mojaloopResponse: {
+                condition: 'mockCondition',
                 }
+            }
             });
 
             await model.prepareTransfer(args, mockArgs.fspId);
@@ -488,36 +490,36 @@ describe('inboundModel', () => {
             expect(BackendRequests.__postTransfers).toHaveBeenCalledTimes(1);
             expect(MojaloopRequests.__putTransfers).toHaveBeenCalledTimes(1);
             expect((await cache.get(`transferModel_in_${TRANSFER_ID}`)).homeTransactionId)
-                .toEqual(HOME_TRANSACTION_ID);
+            .toEqual(HOME_TRANSACTION_ID);
         });
 
         test('pass on transfer without quote.', async () => {
             const TRANSFER_ID = 'without_quote-transfer-id';
             cache.set(`transferModel_in_${TRANSFER_ID}`, {
-                fulfilment: '',
-                mojaloopResponse: {
-                    response: ''
-                },
-                quote: null
+            fulfilment: '',
+            mojaloopResponse: {
+                response: ''
+            },
+            quote: null
             });
 
             const args = {
-                body: {
-                    transferId: TRANSFER_ID,
-                    amount: {
-                        currency: 'USD',
-                        amount: 20.13
-                    },
-                    ilpPacket: 'mockBase64encodedIlpPacket',
-                    condition: 'mockGeneratedCondition'
-                }
+            body: {
+                transferId: TRANSFER_ID,
+                amount: {
+                currency: 'USD',
+                amount: 20.13
+                },
+                ilpPacket: 'mockBase64encodedIlpPacket',
+                condition: 'mockGeneratedCondition'
+            }
             };
 
             const model = new Model({
-                ...config,
-                cache,
-                logger,
-                allowTransferWithoutQuote: true,
+            ...config,
+            cache,
+            logger,
+            allowTransferWithoutQuote: true,
             });
 
             await model.prepareTransfer(args, mockArgs.fspId);
@@ -533,36 +535,36 @@ describe('inboundModel', () => {
             shared.mojaloopPrepareToInternalTransfer = jest.fn().mockReturnValueOnce({});
 
             cache.set(`transferModel_in_${transactionId}`, {
-                fulfilment: '',
+            fulfilment: '',
+            mojaloopResponse: {
+                response: ''
+            },
+            quote: {
+                fulfilment: 'mockFulfilment',
                 mojaloopResponse: {
-                    response: ''
-                },
-                quote: {
-                    fulfilment: 'mockFulfilment',
-                    mojaloopResponse: {
-                        condition: 'mockCondition',
-                    }
+                condition: 'mockCondition',
                 }
+            }
             });
 
             const args = {
-                body: {
-                    transferId: TRANSFER_ID,
-                    amount: {
-                        currency: 'USD',
-                        amount: 20.13
-                    },
-                    ilpPacket: 'mockIlpPacket',
-                    condition: 'mockGeneratedCondition'
-                }
+            body: {
+                transferId: TRANSFER_ID,
+                amount: {
+                currency: 'USD',
+                amount: 20.13
+                },
+                ilpPacket: 'mockIlpPacket',
+                condition: 'mockGeneratedCondition'
+            }
             };
 
             const model = new Model({
-                ...config,
-                cache,
-                logger,
-                allowDifferentTransferTransactionId: true,
-                checkIlp: false,
+            ...config,
+            cache,
+            logger,
+            allowDifferentTransferTransactionId: true,
+            checkIlp: false,
             });
 
             await model.prepareTransfer(args, mockArgs.fspId);
@@ -570,6 +572,173 @@ describe('inboundModel', () => {
             expect(MojaloopRequests.__putTransfersError).toHaveBeenCalledTimes(0);
             expect(BackendRequests.__postTransfers).toHaveBeenCalledTimes(1);
             expect(MojaloopRequests.__putTransfers).toHaveBeenCalledTimes(1);
+        });
+
+        // --- Additional tests for patch notification retry logic ---
+
+        test('should getTransfer if patch notification is not called within grace time', async () => {
+            jest.useFakeTimers();
+            const TRANSFER_ID = 'patch-notify-transfer-id';
+            const PATCH_GRACE_MS = 100;
+            const backendResponse = JSON.parse(JSON.stringify(getTransfersBackendResponse));
+            backendResponse.to.fspId = config.dfspId;
+            BackendRequests.__getTransfers = jest.fn().mockResolvedValue(backendResponse);
+            // Mock shared.mojaloopPrepareToInternalTransfer to avoid undefined property errors
+            shared.mojaloopPrepareToInternalTransfer = jest.fn().mockReturnValue({
+            transferId: TRANSFER_ID,
+            amount: { currency: 'USD', amount: 20.13 },
+            ilpPacket: 'mockBase64encodedIlpPacket',
+            condition: 'mockCondition'
+            });
+
+            // Mock cache.set for patch notification logic to avoid real Redis calls and allow timer logic to proceed
+            jest.spyOn(cache, 'set').mockImplementation(async (key, value, ttl) => {
+            // For patchNotificationSent_ keys, simulate not notified yet
+            if (key.startsWith('patchNotificationSent_')) {
+                return true;
+            }
+            // For other keys, fallback to original set
+            return Cache.prototype.set.call(cache, key, value, ttl);
+            });
+            // Also mock cache.get for patch notification logic to always return false (not notified)
+            jest.spyOn(cache, 'get').mockImplementation(async (key) => {
+            if (key.startsWith('patchNotificationSent_')) {
+                return false;
+            }
+            return Cache.prototype.get.call(cache, key);
+            });
+            // Mock subscribeToOneMessageWithTimer to immediately resolve with a message to simulate successful notification
+            jest.spyOn(cache, 'subscribeToOneMessageWithTimer').mockImplementation(async () => {
+                // Simulate a successful message received
+                return { data: { transferState: 'COMMITTED' } };
+            });
+
+            // Mock backendRequests.putTransfersNotification to return 200
+            jest.spyOn(BackendRequests, '__putTransfersNotification').mockResolvedValue({ status: 200 });
+
+            // Prepare model with patch notification grace time enabled
+            const model = new Model({
+            ...config,
+            cache,
+            logger,
+            patchNotificationGraceTimeMs: PATCH_GRACE_MS,
+            });
+
+            // Mock _load to avoid actual cache access
+            jest.spyOn(model, '_load').mockImplementation(async (transferId) => {
+            return {
+                transferId,
+                quote: {
+                fulfilment: 'mockFulfilment',
+                mojaloopResponse: {
+                    condition: 'mockCondition',
+                    expiration: new Date(Date.now() + 10000).toISOString(),
+                }
+                }
+            };
+            });
+
+            // Mock _save to avoid actual cache writes
+            jest.spyOn(model, '_save').mockImplementation(async () => {});
+
+            // Set up cache with quote for transfer
+            cache.set(`transferModel_in_${TRANSFER_ID}`, {
+            transferId: TRANSFER_ID,
+            quote: {
+                fulfilment: 'mockFulfilment',
+                mojaloopResponse: {
+                condition: 'mockCondition',
+                expiration: new Date(Date.now() + 10000).toISOString(),
+                }
+            }
+            });
+
+            const args = {
+            body: {
+                transferId: TRANSFER_ID,
+                amount: {
+                currency: 'USD',
+                amount: 20.13
+                },
+                ilpPacket: 'mockBase64encodedIlpPacket',
+                condition: 'mockCondition'
+            }
+            };
+
+            // Spy on getTransfer to check if it's called by timer
+            const getTransfersSpy = jest.spyOn(model._mojaloopRequests, 'getTransfers').mockResolvedValue();
+
+            await model.prepareTransfer(args, mockArgs.fspId);
+
+            // Advance timers to simulate PATCH_GRACE_MS passing
+            jest.advanceTimersByTime(PATCH_GRACE_MS + 50);
+
+            // Wait for any pending promises
+            await Promise.resolve();
+            expect(getTransfersSpy).toHaveBeenCalled();
+
+            expect(getTransfersSpy).toHaveBeenCalledWith(TRANSFER_ID, mockArgs.fspId, undefined);
+            getTransfersSpy.mockRestore();
+            jest.useRealTimers();
+        });
+
+        test('should not set up patch notification timer if patchNotificationGraceTimeMs is 0', async () => {
+            const TRANSFER_ID = 'patch-notify-transfer-id-no-timer';
+            shared.mojaloopPrepareToInternalTransfer = jest.fn().mockReturnValue({
+            transferId: TRANSFER_ID,
+            amount: { currency: 'USD', amount: 20.13 },
+            ilpPacket: 'mockBase64encodedIlpPacket',
+            condition: 'mockCondition'
+            });
+
+            const model = new Model({
+            ...config,
+            cache,
+            logger,
+            patchNotificationGraceTimeMs: 0,
+            });
+
+            jest.spyOn(model._mojaloopRequests, 'getTransfers');
+            jest.spyOn(model, '_load').mockImplementation(async (transferId) => {
+            return {
+                transferId,
+                quote: {
+                fulfilment: 'mockFulfilment',
+                mojaloopResponse: {
+                    condition: 'mockCondition',
+                    expiration: new Date(Date.now() + 10000).toISOString(),
+                }
+                }
+            };
+            });
+            jest.spyOn(model, '_save').mockImplementation(async () => {});
+
+            cache.set(`transferModel_in_${TRANSFER_ID}`, {
+            transferId: TRANSFER_ID,
+            quote: {
+                fulfilment: 'mockFulfilment',
+                mojaloopResponse: {
+                condition: 'mockCondition',
+                expiration: new Date(Date.now() + 10000).toISOString(),
+                }
+            }
+            });
+
+            const args = {
+            body: {
+                transferId: TRANSFER_ID,
+                amount: {
+                currency: 'USD',
+                amount: 20.13
+                },
+                ilpPacket: 'mockBase64encodedIlpPacket',
+                condition: 'mockCondition'
+            }
+            };
+
+            await model.prepareTransfer(args, mockArgs.fspId);
+            // getTransfers should not be called at all
+            expect(model._mojaloopRequests.getTransfers).not.toHaveBeenCalled();
         });
     });
 
@@ -774,7 +943,7 @@ describe('inboundModel', () => {
         });
 
         test('sends notification to fsp backend', async () => {
-            BackendRequests.__putTransfersNotification = jest.fn().mockReturnValue(Promise.resolve({}));
+            BackendRequests.__putTransfersNotification = jest.fn().mockReturnValue(Promise.resolve({ status: 200 }));
             const notif = JSON.parse(JSON.stringify(notificationToPayee));
 
             const expectedRequest = {
@@ -796,7 +965,7 @@ describe('inboundModel', () => {
         });
 
         test('sends ABORTED notification to fsp backend', async () => {
-            BackendRequests.__putTransfersNotification = jest.fn().mockReturnValue(Promise.resolve({}));
+            BackendRequests.__putTransfersNotification = jest.fn().mockReturnValue(Promise.resolve({ status: 200 }));
             const notif = JSON.parse(JSON.stringify(notificationAbortedToPayee));
 
             const expectedRequest = {
@@ -818,7 +987,7 @@ describe('inboundModel', () => {
         });
 
         test('sends RESERVED notification to fsp backend', async () => {
-            BackendRequests.__putTransfersNotification = jest.fn().mockReturnValue(Promise.resolve({}));
+            BackendRequests.__putTransfersNotification = jest.fn().mockReturnValue(Promise.resolve({ status: 200 }));
             const notif = JSON.parse(JSON.stringify(notificationReservedToPayee));
 
             const expectedRequest = {
@@ -838,6 +1007,50 @@ describe('inboundModel', () => {
             const call = BackendRequests.__putTransfersNotification.mock.calls[0];
             expect(call[0]).toEqual(expectedRequest);
             expect(call[1]).toEqual(transferId);
+        });
+
+        test('retries notification to fsp backend on failure', async () => {
+            // Simulate failure for first 2 attempts, then success
+            const mockFn = jest.fn()
+                .mockRejectedValueOnce(new Error('fail1'))
+                .mockRejectedValueOnce(new Error('fail2'))
+                .mockResolvedValue({ status: 200 });
+            BackendRequests.__putTransfersNotification = mockFn;
+
+            const notif = JSON.parse(JSON.stringify(notificationToPayee));
+            const model = new Model({
+                ...config,
+                cache,
+                logger,
+                backendRequestRetry: {
+                    enabled: true,
+                    maxRetries: 3,
+                    retryDelayMs: 10,
+                    maxRetryDelayMs: 20,
+                    backoffFactor: 1
+                }
+            });
+
+            await model.sendNotificationToPayee(notif.data, transferId);
+            expect(BackendRequests.__putTransfersNotification).toHaveBeenCalledTimes(3);
+        });
+
+        test('does not retry notification to fsp backend if disabled', async () => {
+            const mockFn = jest.fn().mockResolvedValue({ status: 200 });
+            BackendRequests.__putTransfersNotification = mockFn;
+
+            const notif = JSON.parse(JSON.stringify(notificationToPayee));
+            const model = new Model({
+                ...config,
+                cache,
+                logger,
+                backendRequestRetry: {
+                    enabled: false
+                }
+            });
+
+            await model.sendNotificationToPayee(notif.data, transferId);
+            expect(BackendRequests.__putTransfersNotification).toHaveBeenCalledTimes(1);
         });
 
     });
@@ -860,7 +1073,7 @@ describe('inboundModel', () => {
         });
 
         test('sends notification to fsp backend', async () => {
-            BackendRequests.__putFxTransfersNotification = jest.fn().mockReturnValue(Promise.resolve({}));
+            BackendRequests.__putFxTransfersNotification = jest.fn().mockReturnValue(Promise.resolve({ status: 200 }));
             const notif = JSON.parse(JSON.stringify(fxNotificationToBackend));
 
             const model = new Model({
@@ -878,7 +1091,7 @@ describe('inboundModel', () => {
         });
 
         test('sends ABORTED notification to fsp backend', async () => {
-            BackendRequests.__putFxTransfersNotification = jest.fn().mockReturnValue(Promise.resolve({}));
+            BackendRequests.__putFxTransfersNotification = jest.fn().mockReturnValue(Promise.resolve({ status: 200 }));
             const notif = JSON.parse(JSON.stringify(fxNotificationAbortedToBackend));
 
             const model = new Model({
@@ -896,7 +1109,7 @@ describe('inboundModel', () => {
         });
 
         test('sends RESERVED notification to fsp backend', async () => {
-            BackendRequests.__putFxTransfersNotification = jest.fn().mockReturnValue(Promise.resolve({}));
+            BackendRequests.__putFxTransfersNotification = jest.fn().mockReturnValue(Promise.resolve({ status: 200 }));
             const notif = JSON.parse(JSON.stringify(fxNotificationReservedToBackend));
 
             const model = new Model({
@@ -911,6 +1124,158 @@ describe('inboundModel', () => {
             const call = BackendRequests.__putFxTransfersNotification.mock.calls[0];
             expect(call[0]).toEqual(fxNotificationReservedToBackend.data);
             expect(call[1]).toEqual(conversionId);
+        });
+
+        test('retries notification to backend on failure for sendFxPutNotificationToBackend if enabled', async () => {
+            // Simulate failure for first 2 attempts, then success
+            const mockFn = jest.fn()
+            .mockRejectedValueOnce(new Error('fail1'))
+            .mockRejectedValueOnce(new Error('fail2'))
+            .mockResolvedValue({ status: 200 });
+            BackendRequests.__putFxTransfersNotification = mockFn;
+
+            const notif = JSON.parse(JSON.stringify(fxNotificationToBackend));
+            const model = new Model({
+            ...config,
+            cache,
+            logger,
+            backendRequestRetry: {
+            enabled: true,
+            maxRetries: 3,
+            retryDelayMs: 10,
+            maxRetryDelayMs: 20,
+            backoffFactor: 1
+            }
+            });
+            model.saveFxState = jest.fn().mockReturnValue(Promise.resolve({}));
+
+            await model.sendFxPutNotificationToBackend(notif.data, conversionId);
+            expect(BackendRequests.__putFxTransfersNotification).toHaveBeenCalledTimes(3);
+        });
+
+        test('does not retry notification to backend for sendFxPutNotificationToBackend if disabled', async () => {
+            const mockFn = jest.fn().mockResolvedValue({ status: 200 });
+            BackendRequests.__putFxTransfersNotification = mockFn;
+
+            const notif = JSON.parse(JSON.stringify(fxNotificationToBackend));
+            const model = new Model({
+            ...config,
+            cache,
+            logger,
+            backendRequestRetry: {
+            enabled: false
+            }
+            });
+            model.saveFxState = jest.fn().mockReturnValue(Promise.resolve({}));
+
+            await model.sendFxPutNotificationToBackend(notif.data, conversionId);
+            expect(BackendRequests.__putFxTransfersNotification).toHaveBeenCalledTimes(1);
+        });
+
+        test('sendFxPutNotificationToBackend handles error and still saves state', async () => {
+            BackendRequests.__putFxTransfersNotification = jest.fn().mockRejectedValue(new Error('fail'));
+            const notif = JSON.parse(JSON.stringify(fxNotificationToBackend));
+            const model = new Model({
+            ...config,
+            cache,
+            logger,
+            backendRequestRetry: {
+            enabled: false
+            }
+            });
+            const saveFxStateSpy = jest.spyOn(model, 'saveFxState').mockResolvedValue({});
+            await expect(model.sendFxPutNotificationToBackend(notif.data, conversionId)).resolves.toBeUndefined();
+            expect(saveFxStateSpy).toHaveBeenCalled();
+        });
+
+        test('sendNotificationToPayee handles error and still returns', async () => {
+            BackendRequests.__putTransfersNotification = jest.fn().mockRejectedValue(new Error('fail'));
+            const notif = JSON.parse(JSON.stringify(notificationToPayee));
+            const model = new Model({
+            ...config,
+            cache,
+            logger,
+            backendRequestRetry: {
+            enabled: false
+            }
+            });
+            await expect(model.sendNotificationToPayee(notif.data, 'some-transfer-id')).resolves.toBeUndefined();
+        });
+
+        test('retries notification to backend on failure for sendFxPutNotificationToBackend if enabled', async () => {
+            // Simulate failure for first 2 attempts, then success
+            const mockFn = jest.fn()
+            .mockRejectedValueOnce(new Error('fail1'))
+            .mockRejectedValueOnce(new Error('fail2'))
+            .mockResolvedValue({ status: 200 });
+            BackendRequests.__putFxTransfersNotification = mockFn;
+
+            const notif = JSON.parse(JSON.stringify(fxNotificationToBackend));
+            const model = new Model({
+            ...config,
+            cache,
+            logger,
+            backendRequestRetry: {
+                enabled: true,
+                maxRetries: 3,
+                retryDelayMs: 10,
+                maxRetryDelayMs: 20,
+                backoffFactor: 1
+            }
+            });
+            model.saveFxState = jest.fn().mockReturnValue(Promise.resolve({}));
+
+            await model.sendFxPutNotificationToBackend(notif.data, conversionId);
+            expect(BackendRequests.__putFxTransfersNotification).toHaveBeenCalledTimes(3);
+        });
+
+        test('does not retry notification to backend for sendFxPutNotificationToBackend if disabled', async () => {
+            const mockFn = jest.fn().mockResolvedValue({ status: 200 });
+            BackendRequests.__putFxTransfersNotification = mockFn;
+
+            const notif = JSON.parse(JSON.stringify(fxNotificationToBackend));
+            const model = new Model({
+            ...config,
+            cache,
+            logger,
+            backendRequestRetry: {
+                enabled: false
+            }
+            });
+            model.saveFxState = jest.fn().mockReturnValue(Promise.resolve({}));
+
+            await model.sendFxPutNotificationToBackend(notif.data, conversionId);
+            expect(BackendRequests.__putFxTransfersNotification).toHaveBeenCalledTimes(1);
+        });
+
+        test('sendFxPutNotificationToBackend handles error and still saves state', async () => {
+            BackendRequests.__putFxTransfersNotification = jest.fn().mockRejectedValue(new Error('fail'));
+            const notif = JSON.parse(JSON.stringify(fxNotificationToBackend));
+            const model = new Model({
+            ...config,
+            cache,
+            logger,
+            backendRequestRetry: {
+                enabled: false
+            }
+            });
+            const saveFxStateSpy = jest.spyOn(model, 'saveFxState').mockResolvedValue({});
+            await expect(model.sendFxPutNotificationToBackend(notif.data, conversionId)).resolves.toBeUndefined();
+            expect(saveFxStateSpy).toHaveBeenCalled();
+        });
+
+        test('sendNotificationToPayee handles error and still returns', async () => {
+            BackendRequests.__putTransfersNotification = jest.fn().mockRejectedValue(new Error('fail'));
+            const notif = JSON.parse(JSON.stringify(notificationToPayee));
+            const model = new Model({
+            ...config,
+            cache,
+            logger,
+            backendRequestRetry: {
+                enabled: false
+            }
+            });
+            await expect(model.sendNotificationToPayee(notif.data, 'some-transfer-id')).resolves.toBeUndefined();
         });
     });
 

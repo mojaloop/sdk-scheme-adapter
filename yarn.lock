@@ -3388,6 +3388,7 @@ __metadata:
     "@mojaloop/sdk-standard-components": "npm:19.16.9"
     "@redocly/openapi-cli": "npm:1.0.0-beta.95"
     "@types/jest": "npm:30.0.0"
+    "@types/retry": "npm:^0"
     ajv: "npm:8.17.1"
     axios: "npm:1.12.2"
     axios-mock-adapter: "npm:2.1.0"
@@ -3424,6 +3425,7 @@ __metadata:
     redis: "npm:5.8.2"
     redis-mock: "npm:0.56.3"
     replace: "npm:1.2.2"
+    retry: "npm:^0.13.1"
     standard-version: "npm:9.5.0"
     supertest: "npm:7.1.4"
     swagger-cli: "npm:4.0.4"
@@ -4678,6 +4680,13 @@ __metadata:
   version: 1.2.7
   resolution: "@types/range-parser@npm:1.2.7"
   checksum: 10/95640233b689dfbd85b8c6ee268812a732cf36d5affead89e806fe30da9a430767af8ef2cd661024fd97e19d61f3dec75af2df5e80ec3bea000019ab7028629a
+  languageName: node
+  linkType: hard
+
+"@types/retry@npm:^0":
+  version: 0.12.5
+  resolution: "@types/retry@npm:0.12.5"
+  checksum: 10/3fb6bf91835ca0eb2987567d6977585235a7567f8aeb38b34a8bb7bbee57ac050ed6f04b9998cda29701b8c893f5dfe315869bc54ac17e536c9235637fe351a2
   languageName: node
   linkType: hard
 
@@ -14702,7 +14711,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"retry@npm:0.13.1":
+"retry@npm:0.13.1, retry@npm:^0.13.1":
   version: 0.13.1
   resolution: "retry@npm:0.13.1"
   checksum: 10/6125ec2e06d6e47e9201539c887defba4e47f63471db304c59e4b82fc63c8e89ca06a77e9d34939a9a42a76f00774b2f46c0d4a4cbb3e287268bd018ed69426d

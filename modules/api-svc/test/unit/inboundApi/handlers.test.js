@@ -624,12 +624,13 @@ describe('Inbound API handlers:', () => {
             };
         });
 
-        test('calls `model.sendNotificationToPayee with expected arguments', async () => {
+        test('calls `model.sendNotificationToPayee` with expected arguments and responds 200', async () => {
             const notificationSpy = jest.spyOn(Model.prototype, 'sendNotificationToPayee');
 
             await expect(handlers['/transfers/{ID}'].patch(mockNotificationMessage)).resolves.toBe(undefined);
             expect(notificationSpy).toHaveBeenCalledTimes(1);
             expect(notificationSpy.mock.calls[0][1]).toBe(mockNotificationMessage.state.path.params.ID);
+            expect(mockNotificationMessage.response.status).toBe(200);
         });
 
     });
@@ -1075,12 +1076,13 @@ describe('Inbound API handlers:', () => {
             };
         });
 
-        test('calls `model.sendFxPutNotificationToBackend with expected arguments', async () => {
+        test('calls `model.sendFxPutNotificationToBackend` with expected arguments and responds 200', async () => {
             const notificationSpy = jest.spyOn(Model.prototype, 'sendFxPutNotificationToBackend');
 
             await expect(handlers['/fxTransfers/{ID}'].patch(mockNotificationMessage)).resolves.toBe(undefined);
             expect(notificationSpy).toHaveBeenCalledTimes(1);
             expect(notificationSpy.mock.calls[0][1]).toBe(mockNotificationMessage.state.path.params.ID);
+            expect(mockNotificationMessage.response.status).toBe(200);
         });
 
     });

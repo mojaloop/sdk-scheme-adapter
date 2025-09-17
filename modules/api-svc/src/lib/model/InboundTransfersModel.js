@@ -30,6 +30,7 @@ const safeStringify = require('fast-safe-stringify');
 const { MojaloopRequests, Ilp, Errors } = require('@mojaloop/sdk-standard-components');
 const FSPIOPTransferStateEnum = require('@mojaloop/central-services-shared').Enum.Transfers.TransferState;
 const FSPIOPBulkTransferStateEnum = require('@mojaloop/central-services-shared').Enum.Transfers.BulkTransferState;
+const retry = require('retry');
 
 const dto = require('../dto');
 const shared = require('./lib/shared');
@@ -52,6 +53,9 @@ class InboundTransfersModel {
         this._reserveNotification = config.reserveNotification;
         this._allowDifferentTransferTransactionId = config.allowDifferentTransferTransactionId;
         this._supportedCurrencies = config.supportedCurrencies;
+        this._patchNotificationGraceTimeMs = config.patchNotificationGraceTimeMs;
+        this._getTransferRequestRetry = config.getTransferRequestRetry;
+        this._backendRequestRetry = config.backendRequestRetry;
 
         this._mojaloopRequests = new MojaloopRequests({
             logger: this._logger,
@@ -489,6 +493,60 @@ class InboundTransfersModel {
             this.data.currentState = response.transferState || (this._reserveNotification ? SDKStateEnum.RESERVED : SDKStateEnum.COMPLETED);
 
             await this._save();
+
+            // --- PATCH NOTIFICATION TIMER LOGIC ---
+            // Set a timer to trigger GET /transfers/{ID} if sendNotificationToPayee is not called in time
+            if (this._patchNotificationGraceTimeMs > 0) {
+                const transferId = prepareRequest.transferId;
+                const cacheKey = `patchNotificationSent_${transferId}`;
+                // Mark as not notified yet
+                await this._cache.set(cacheKey, false, Math.ceil(this._patchNotificationGraceTimeMs / 1000) + 5);
+
+                setTimeout(async () => {
+                    try {
+                        const notified = await this._cache.get(cacheKey);
+
+                        if (!notified) {
+                            // Subscribe to transfer callback channel
+                            const transferKey = `tf_${transferId}`;
+                            const unsubscribeTimeout = this._getTransferRequestRetry?.retryDelayMs || 1000;
+                            let gotCallback = false;
+
+                            // Subscribe for one message with a timeout
+                            const messagePromise = this._cache.subscribeToOneMessageWithTimer(transferKey, Math.ceil(unsubscribeTimeout / 1000));
+                            // Kick off GET /transfers/{ID}
+                            await this._mojaloopRequests.getTransfers(transferId, sourceFspId, headers);
+
+                            // Retry logic
+                            let attempts = 0;
+                            const maxAttempts = (this._getTransferRequestRetry?.maxRetries || 3);
+                            const retryDelay = this._getTransferRequestRetry?.retryDelayMs || 1000;
+                            while (attempts < maxAttempts && !gotCallback) {
+                                try {
+                                    const message = await messagePromise;
+                                    if (message && message.data) {
+                                        gotCallback = true;
+                                        // Mark as notified to prevent duplicate notification
+                                        await this._cache.set(cacheKey, true, 60);
+                                        // Send notification to payee
+                                        await this.sendNotificationToPayee(message.data, transferId);
+                                        break;
+                                    }
+                                } catch (err) {
+                                    this._logger.isErrorEnabled && this._logger.push({ err, transferId }).error('Error while waiting for transfer callback in patch notification grace timer logic');
+                                }
+                                attempts++;
+                                if (!gotCallback && attempts < maxAttempts) {
+                                    await this._mojaloopRequests.getTransfers(transferId, sourceFspId, headers);
+                                    await new Promise(r => setTimeout(r, retryDelay));
+                                }
+                            }
+                        }
+                    } catch (err) {
+                        this._logger.isErrorEnabled && this._logger.push({ err, transferId }).error('Error in patch notification grace timer logic');
+                    }
+                }, this._patchNotificationGraceTimeMs);
+            }
             return res;
         } catch(err) {
             this._logger.isErrorEnabled && this._logger.push({ err }).error(`Error in prepareTransfer: ${prepareRequest?.transferId}`);
@@ -982,7 +1040,47 @@ class InboundTransfersModel {
             };
             log.verbose('sendFxPutNotificationToBackend body sent to cc: ', { responseBody });
 
-            const res = await this._backendRequests.putFxTransfersNotification(responseBody, conversionId);
+            const { enabled, maxRetries, retryDelayMs, maxRetryDelayMs, backoffFactor } = this._backendRequestRetry || {};
+            let res;
+            const shouldRetry = enabled !== false; // default to true if not set
+
+            if (shouldRetry) {
+                const operation = retry.operation({
+                    retries: maxRetries || 5,
+                    factor: backoffFactor || 2,
+                    minTimeout: retryDelayMs || 1000,
+                    maxTimeout: maxRetryDelayMs || 10000,
+                });
+
+                await new Promise((resolve) => {
+                    operation.attempt(async (currentAttempt) => {
+                        try {
+                            res = await this._backendRequests.putFxTransfersNotification(responseBody, conversionId);
+                            if ((res && (res.status === 200 || res.statusCode === 200)) || res === true) {
+                                return resolve();
+                            }
+                            log.warn(`putFxTransfersNotification attempt ${currentAttempt} failed, retrying...`);
+                            if (!operation.retry(new Error('Non-200 response'))) {
+                                resolve();
+                            }
+                        } catch (err) {
+                            log.warn(`putFxTransfersNotification attempt ${currentAttempt} threw error, retrying...`, err);
+                            if (!operation.retry(err)) {
+                                resolve();
+                            }
+                        }
+                    });
+                });
+
+                if ((res && (res.status !== 200 && res.statusCode !== 200)) && res !== true) {
+                    log.error(`putFxTransfersNotification failed after ${operation.attempts()} attempts`);
+                }
+            } else {
+                res = await this._backendRequests.putFxTransfersNotification(responseBody, conversionId);
+                if ((res && (res.status !== 200 && res.statusCode !== 200)) && res !== true) {
+                    log.error('putFxTransfersNotification failed');
+                }
+            }
             return res;
         } catch (err) {
             log.error('error in sendFxPutNotificationToBackend: ', err);
@@ -1025,7 +1123,49 @@ class InboundTransfersModel {
 
             await this._save();
 
-            const res = await this._backendRequests.putTransfersNotification(this.data, transferId);
+            const { enabled, maxRetries, retryDelayMs, maxRetryDelayMs, backoffFactor } = this._backendRequestRetry || {};
+            let res;
+            const shouldRetry = enabled !== false; // default to true if not set
+
+            if (shouldRetry) {
+                const operation = retry.operation({
+                    retries: maxRetries || 5,
+                    factor: backoffFactor || 2,
+                    minTimeout: retryDelayMs || 1000,
+                    maxTimeout: maxRetryDelayMs || 10000,
+                });
+
+                await new Promise((resolve) => {
+                    operation.attempt(async (currentAttempt) => {
+                        try {
+                            res = await this._backendRequests.putTransfersNotification(this.data, transferId);
+                            if ((res && (res.status === 200 || res.statusCode === 200)) || res === true) {
+                                const cacheKey = `patchNotificationSent_${transferId}`;
+                                await this._cache.set(cacheKey, true, 60);
+                                return resolve();
+                            }
+                            this._logger.warn(`putTransfersNotification attempt ${currentAttempt} failed, retrying...`);
+                            if (!operation.retry(new Error('Non-200 response'))) {
+                                resolve();
+                            }
+                        } catch (err) {
+                            this._logger.warn(`putTransfersNotification attempt ${currentAttempt} threw error, retrying...`, err);
+                            if (!operation.retry(err)) {
+                                resolve();
+                            }
+                        }
+                    });
+                });
+
+                if ((res && (res.status !== 200 && res.statusCode !== 200)) && res !== true) {
+                    this._logger.error(`putTransfersNotification failed after ${operation.attempts()} attempts`);
+                }
+            } else {
+                res = await this._backendRequests.putTransfersNotification(this.data, transferId);
+                if ((res && (res.status !== 200 && res.statusCode !== 200)) && res !== true) {
+                    this._logger.error('putTransfersNotification failed');
+                }
+            }
             return res;
         } catch (err) {
             this._logger.isErrorEnabled && this._logger.push({ err, transferId }).error(`Error notifying backend of final transfer state equal to: ${body.transferState}`);

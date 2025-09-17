@@ -729,12 +729,22 @@ const patchTransfersById = async (ctx) => {
     // use the transfers model to execute asynchronous stages with the switch
     const model = createInboundTransfersModel(ctx);
 
-    // sends notification to the payee fsp
-    const response = await model.sendNotificationToPayee(req.data, idValue);
+    // kick off an asynchronous operation to handle the request
+    (async () => {
+        try {
+            // sends notification to the payee fsp
+            const response = await model.sendNotificationToPayee(req.data, idValue);
 
-    // log the result
-    ctx.state.logger.isDebugEnabled && ctx.state.logger.push({response}).
-        debug('Inbound transfers model handled PATCH /transfers/{ID} request');
+            // log the result
+            ctx.state.logger.isDebugEnabled && ctx.state.logger.push({ response }).
+                debug('Inbound transfers model handled PATCH /transfers/{ID} request');
+        } catch (err) {
+            ctx.state.logger.isErrorEnabled && ctx.state.logger.push({ err }).error('Error handling PATCH /transfers/{ID}');
+        }
+    })();
+
+    ctx.response.status = ReturnCodes.OK.CODE;
+    ctx.response.body = '';
 };
 
 /**
@@ -1080,10 +1090,18 @@ const patchFxTransfersById = async (ctx) => {
     const data = { ...ctx.request.body };
     const idValue = ctx.state.path.params.ID;
 
-    const model = createInboundTransfersModel(ctx);
-    const response = await model.sendFxPutNotificationToBackend(data, idValue);
+    (async () => {
+        const model = createInboundTransfersModel(ctx);
+        try {
+            const response = await model.sendFxPutNotificationToBackend(data, idValue);
+            ctx.state.logger.push({ response }).debug('Inbound Transfers model handled PATCH /fxTransfers/{ID} request');
+        } catch (err) {
+            ctx.state.logger.push({ err }).error('Error handling PATCH /fxTransfers/{ID}');
+        }
+    })();
 
-    ctx.state.logger.push({ response }).debug('Inbound Transfers model handled PATCH /fxTransfers/{ID} request');
+    ctx.response.status = ReturnCodes.OK.CODE;
+    ctx.response.body = '';
 };
 
 /**
