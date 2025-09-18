@@ -315,7 +315,7 @@ describe('Inbound API handlers transforming incoming ISO20022 message bodies', (
 
         });
 
-        test('calls `prepareTransfer` with the expected arguments.', async () => {
+        test('calls `prepareTransfer` with the expected arguments and sets 200 status.', async () => {
             const transferRequestSpy = jest.spyOn(Model.prototype, 'sendNotificationToPayee');
 
             await expect(handlers['/transfers/{ID}'].patch(mockContext)).resolves.toBe(undefined);
@@ -324,6 +324,7 @@ describe('Inbound API handlers transforming incoming ISO20022 message bodies', (
             expect(transferRequestSpy.mock.calls[0][0]).not.toBeUndefined();
             expect(transferRequestSpy.mock.calls[0][0]).not.toEqual(isoBodies.patchTransfersRequest);
             expect(transferRequestSpy.mock.calls[0][0].transferState).toBe('COMMITTED');
+            expect(mockContext.response.status).toBe(200);
         });
     });
 

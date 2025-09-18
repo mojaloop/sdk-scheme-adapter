@@ -3076,6 +3076,30 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@mojaloop/central-services-error-handling@npm:13.1.2":
+  version: 13.1.2
+  resolution: "@mojaloop/central-services-error-handling@npm:13.1.2"
+  dependencies:
+    fast-safe-stringify: "npm:2.1.1"
+    lodash: "npm:4.17.21"
+  checksum: 10/1357eefd2444e8b97f051f4fcb1c1b68e049fd62e4ae7205c736720568e8c64f6c1befc9b93ae05b6c49b10c6bc23172b60550f4f7c107338588e73cfbb0457e
+  languageName: node
+  linkType: hard
+
+"@mojaloop/central-services-logger@npm:11.10.0":
+  version: 11.10.0
+  resolution: "@mojaloop/central-services-logger@npm:11.10.0"
+  dependencies:
+    "@opentelemetry/api": "npm:1.9.0"
+    parse-strings-in-object: "npm:2.0.0"
+    rc: "npm:1.2.8"
+    safe-stable-stringify: "npm:^2.5.0"
+    triple-beam: "npm:1.4.1"
+    winston: "npm:3.17.0"
+  checksum: 10/f062b89e9e5d366a134afba6385241cc7aff16b0798f9f787a7b3ab2c2b161b8664dec6768d46dbc2f73e6ad97e56e17a3984adf132e8929fc1c48e4915e56b8
+  languageName: node
+  linkType: hard
+
 "@mojaloop/central-services-logger@npm:11.9.0":
   version: 11.9.0
   resolution: "@mojaloop/central-services-logger@npm:11.9.0"
@@ -3179,9 +3203,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/central-services-shared@npm:18.33.0":
-  version: 18.33.0
-  resolution: "@mojaloop/central-services-shared@npm:18.33.0"
+"@mojaloop/central-services-shared@npm:18.33.2":
+  version: 18.33.2
+  resolution: "@mojaloop/central-services-shared@npm:18.33.2"
   dependencies:
     "@hapi/catbox": "npm:12.1.1"
     "@hapi/catbox-memory": "npm:5.0.1"
@@ -3199,7 +3223,7 @@ __metadata:
     event-stream: "npm:4.0.1"
     fast-safe-stringify: "npm:2.1.1"
     immutable: "npm:5.1.3"
-    ioredis: "npm:5.7.0"
+    ioredis: "npm:5.6.1"
     joi: "npm:18.0.1"
     lodash: "npm:4.17.21"
     mustache: "npm:4.2.0"
@@ -3239,7 +3263,7 @@ __metadata:
       optional: false
     mysql2:
       optional: false
-  checksum: 10/98d4f0e2ceb3470f6035452b1c5732f24e334686ccce8bef28f0fcd142a18f26befe28e004b1519ce145634975158d1ff6b1fe9e33d5b6f7a0f09e214a208512
+  checksum: 10/a80777e9e9c917d78fa73a9664df4c5736665b8c132ab3433687de24fbbbceb17f4f9f0094420943751d29f857c1c329e448668f5d333142e10d0834cde2e54d
   languageName: node
   linkType: hard
 
@@ -3377,17 +3401,18 @@ __metadata:
     "@babel/preset-env": "npm:7.28.3"
     "@koa/cors": "npm:5.0.0"
     "@mojaloop/api-snippets": "npm:18.1.1"
-    "@mojaloop/central-services-error-handling": "npm:13.1.1"
-    "@mojaloop/central-services-logger": "npm:11.9.3"
+    "@mojaloop/central-services-error-handling": "npm:13.1.2"
+    "@mojaloop/central-services-logger": "npm:11.10.0"
     "@mojaloop/central-services-metrics": "npm:12.7.1"
-    "@mojaloop/central-services-shared": "npm:18.33.0"
+    "@mojaloop/central-services-shared": "npm:18.33.2"
     "@mojaloop/event-sdk": "npm:14.7.0"
     "@mojaloop/logging-bc-client-lib": "npm:0.5.8"
     "@mojaloop/ml-schema-transformer-lib": "npm:2.7.8"
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^"
-    "@mojaloop/sdk-standard-components": "npm:19.16.9"
+    "@mojaloop/sdk-standard-components": "npm:19.17.0"
     "@redocly/openapi-cli": "npm:1.0.0-beta.95"
     "@types/jest": "npm:30.0.0"
+    "@types/retry": "npm:^0"
     ajv: "npm:8.17.1"
     axios: "npm:1.12.2"
     axios-mock-adapter: "npm:2.1.0"
@@ -3424,6 +3449,7 @@ __metadata:
     redis: "npm:5.8.2"
     redis-mock: "npm:0.56.3"
     replace: "npm:1.2.2"
+    retry: "npm:^0.13.1"
     standard-version: "npm:9.5.0"
     supertest: "npm:7.1.4"
     swagger-cli: "npm:4.0.4"
@@ -3438,14 +3464,14 @@ __metadata:
   dependencies:
     "@eslint/compat": "npm:1.3.2"
     "@mojaloop/api-snippets": "npm:18.1.1"
-    "@mojaloop/central-services-shared": "npm:18.33.0"
+    "@mojaloop/central-services-shared": "npm:18.33.2"
     "@mojaloop/logging-bc-client-lib": "npm:0.5.8"
     "@mojaloop/logging-bc-public-types-lib": "npm:0.5.6"
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^"
     "@types/convict": "npm:6.1.6"
     "@types/express": "npm:5.0.3"
     "@types/jest": "npm:30.0.0"
-    "@types/node": "npm:24.4.0"
+    "@types/node": "npm:24.5.2"
     "@types/node-cache": "npm:4.2.5"
     "@types/supertest": "npm:6.0.3"
     "@types/swagger-ui-express": "npm:4.1.8"
@@ -3466,7 +3492,7 @@ __metadata:
     replace: "npm:1.2.2"
     standard-version: "npm:9.5.0"
     swagger-ui-express: "npm:5.0.1"
-    ts-jest: "npm:29.4.1"
+    ts-jest: "npm:29.4.3"
     ts-node: "npm:10.9.2"
     typescript: "npm:5.9.2"
     yamljs: "npm:0.3.0"
@@ -3484,7 +3510,7 @@ __metadata:
     "@types/convict": "npm:6.1.6"
     "@types/express": "npm:5.0.3"
     "@types/jest": "npm:30.0.0"
-    "@types/node": "npm:24.4.0"
+    "@types/node": "npm:24.5.2"
     "@types/node-cache": "npm:4.2.5"
     "@types/supertest": "npm:6.0.3"
     "@types/swagger-ui-express": "npm:4.1.8"
@@ -3504,7 +3530,7 @@ __metadata:
     replace: "npm:1.2.2"
     standard-version: "npm:9.5.0"
     swagger-ui-express: "npm:5.0.1"
-    ts-jest: "npm:29.4.1"
+    ts-jest: "npm:29.4.3"
     ts-node: "npm:10.9.2"
     typescript: "npm:5.9.2"
     yamljs: "npm:0.3.0"
@@ -3517,11 +3543,11 @@ __metadata:
   dependencies:
     "@eslint/compat": "npm:1.3.2"
     "@mojaloop/api-snippets": "npm:18.1.1"
-    "@mojaloop/central-services-shared": "npm:18.33.0"
+    "@mojaloop/central-services-shared": "npm:18.33.2"
     "@mojaloop/logging-bc-public-types-lib": "npm:0.5.6"
     "@mojaloop/platform-shared-lib-messaging-types-lib": "npm:0.7.3"
     "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib": "npm:0.5.18"
-    "@types/node": "npm:24.4.0"
+    "@types/node": "npm:24.5.2"
     "@types/uuid": "npm:10.0.0"
     "@typescript-eslint/eslint-plugin": "npm:8.44.0"
     "@typescript-eslint/parser": "npm:8.44.0"
@@ -3532,7 +3558,7 @@ __metadata:
     redis: "npm:5.8.2"
     replace: "npm:1.2.2"
     standard-version: "npm:9.5.0"
-    ts-jest: "npm:29.4.1"
+    ts-jest: "npm:29.4.3"
     tslib: "npm:2.8.1"
     typescript: "npm:5.9.2"
     uuid: "npm:11.1.0"
@@ -3544,7 +3570,7 @@ __metadata:
   resolution: "@mojaloop/sdk-scheme-adapter@workspace:."
   dependencies:
     "@types/jest": "npm:30.0.0"
-    "@types/node": "npm:24.4.0"
+    "@types/node": "npm:24.5.2"
     "@types/node-cache": "npm:4.2.5"
     "@typescript-eslint/eslint-plugin": "npm:8.44.0"
     "@typescript-eslint/parser": "npm:8.44.0"
@@ -3560,7 +3586,7 @@ __metadata:
     nx: "npm:16.5.0"
     replace: "npm:1.2.2"
     standard-version: "npm:9.5.0"
-    ts-jest: "npm:29.4.1"
+    ts-jest: "npm:29.4.3"
     ts-node: "npm:10.9.2"
     tslib: "npm:2.8.1"
     typescript: "npm:5.9.2"
@@ -3568,9 +3594,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@mojaloop/sdk-standard-components@npm:19.16.9":
-  version: 19.16.9
-  resolution: "@mojaloop/sdk-standard-components@npm:19.16.9"
+"@mojaloop/sdk-standard-components@npm:19.17.0":
+  version: 19.17.0
+  resolution: "@mojaloop/sdk-standard-components@npm:19.17.0"
   dependencies:
     "@mojaloop/central-services-logger": "npm:11.9.3"
     "@mojaloop/ml-number": "npm:^11.3.0"
@@ -3583,7 +3609,7 @@ __metadata:
     ilp-packet-v1: "npm:2.2.0"
     jsonwebtoken: "npm:9.0.2"
     jws: "npm:4.0.0"
-  checksum: 10/7a4f57c3e7affafb9d80a553c5769a4aea495aa27daf29aa36d55532a5a27509dc9640597d407cf69d68186e3538f15682ad5c8b795923995bca33c7e4aee131
+  checksum: 10/95fef19fc423ea305d7d5b232006d222333369db89646e1595b01d3694879be7f5ce5f2a5acf29e4634e61ebfd5b44616735864b345326a00eafb6b5e1ede4ba
   languageName: node
   linkType: hard
 
@@ -4644,12 +4670,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:24.4.0":
-  version: 24.4.0
-  resolution: "@types/node@npm:24.4.0"
+"@types/node@npm:24.5.2":
+  version: 24.5.2
+  resolution: "@types/node@npm:24.5.2"
   dependencies:
-    undici-types: "npm:~7.11.0"
-  checksum: 10/8ed3a165f80f642bfffebbf416b0bcc18e36e0661670e3baf13daa76ca3a08031edb50f292dba351cc411276fece0ef2d273a5a37a214ba487815f89e6381b1f
+    undici-types: "npm:~7.12.0"
+  checksum: 10/a497aea88a12131b03382d933690b71c131ee890232596b8d5b73f0a20c90874001800b2bfc267bd37df8285bef911729b4773426be7d2dc13ef4c760904e47d
   languageName: node
   linkType: hard
 
@@ -4678,6 +4704,13 @@ __metadata:
   version: 1.2.7
   resolution: "@types/range-parser@npm:1.2.7"
   checksum: 10/95640233b689dfbd85b8c6ee268812a732cf36d5affead89e806fe30da9a430767af8ef2cd661024fd97e19d61f3dec75af2df5e80ec3bea000019ab7028629a
+  languageName: node
+  linkType: hard
+
+"@types/retry@npm:^0":
+  version: 0.12.5
+  resolution: "@types/retry@npm:0.12.5"
+  checksum: 10/3fb6bf91835ca0eb2987567d6977585235a7567f8aeb38b34a8bb7bbee57ac050ed6f04b9998cda29701b8c893f5dfe315869bc54ac17e536c9235637fe351a2
   languageName: node
   linkType: hard
 
@@ -14702,7 +14735,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"retry@npm:0.13.1":
+"retry@npm:0.13.1, retry@npm:^0.13.1":
   version: 0.13.1
   resolution: "retry@npm:0.13.1"
   checksum: 10/6125ec2e06d6e47e9201539c887defba4e47f63471db304c59e4b82fc63c8e89ca06a77e9d34939a9a42a76f00774b2f46c0d4a4cbb3e287268bd018ed69426d
@@ -16173,9 +16206,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-jest@npm:29.4.1":
-  version: 29.4.1
-  resolution: "ts-jest@npm:29.4.1"
+"ts-jest@npm:29.4.3":
+  version: 29.4.3
+  resolution: "ts-jest@npm:29.4.3"
   dependencies:
     bs-logger: "npm:^0.2.6"
     fast-json-stable-stringify: "npm:^2.1.0"
@@ -16209,7 +16242,7 @@ __metadata:
       optional: true
   bin:
     ts-jest: cli.js
-  checksum: 10/6aed48232c01a70c7d24c8e1e1fa4c10fcc7d4845913cc4b4c3def10d2d5ba32e98e495b427d3aca5682c13ac0754e6145af81d977ffcc71a26c54a2ca634d65
+  checksum: 10/818bf5ffca88f5a61651a7da1f98442218183b93d0804479ef9c4609d5b54c001a9dcb1d964d70779fb974e75a7a22a5914d7af00a5f52d009d3e24bf8c2c10c
   languageName: node
   linkType: hard
 
@@ -16562,10 +16595,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"undici-types@npm:~7.11.0":
-  version: 7.11.0
-  resolution: "undici-types@npm:7.11.0"
-  checksum: 10/0cb7230eb4f60f1080aafbee7b4a583dd42242e93054500aff60cd4665574f39846ffe8ae9f0cc38916fffc912d259bd220ebe40fc0716cfe332e9686950fb95
+"undici-types@npm:~7.12.0":
+  version: 7.12.0
+  resolution: "undici-types@npm:7.12.0"
+  checksum: 10/4a0f927c98828f76fb0d64f356e36e5ac6e074ae4c7bec08d6de8bc36b7cf08ae27a3518fa8eb703f51c1a675241e2d07359bbce63f5575299148a270cea7e43
   languageName: node
   linkType: hard
 
