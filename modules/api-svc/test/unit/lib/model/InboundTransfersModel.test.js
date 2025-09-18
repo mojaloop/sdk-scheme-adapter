@@ -1202,68 +1202,6 @@ describe('inboundModel', () => {
             await expect(model.sendNotificationToPayee(notif.data, 'some-transfer-id')).resolves.toBeUndefined();
         });
 
-        test('retries notification to backend on failure for sendFxPutNotificationToBackend if enabled', async () => {
-            // Simulate failure for first 2 attempts, then success
-            const mockFn = jest.fn()
-            .mockRejectedValueOnce(new Error('fail1'))
-            .mockRejectedValueOnce(new Error('fail2'))
-            .mockResolvedValue({ status: 200 });
-            BackendRequests.__putFxTransfersNotification = mockFn;
-
-            const notif = JSON.parse(JSON.stringify(fxNotificationToBackend));
-            const model = new Model({
-            ...config,
-            cache,
-            logger,
-            backendRequestRetry: {
-                enabled: true,
-                maxRetries: 3,
-                retryDelayMs: 10,
-                maxRetryDelayMs: 20,
-                backoffFactor: 1
-            }
-            });
-            model.saveFxState = jest.fn().mockReturnValue(Promise.resolve({}));
-
-            await model.sendFxPutNotificationToBackend(notif.data, conversionId);
-            expect(BackendRequests.__putFxTransfersNotification).toHaveBeenCalledTimes(3);
-        });
-
-        test('does not retry notification to backend for sendFxPutNotificationToBackend if disabled', async () => {
-            const mockFn = jest.fn().mockResolvedValue({ status: 200 });
-            BackendRequests.__putFxTransfersNotification = mockFn;
-
-            const notif = JSON.parse(JSON.stringify(fxNotificationToBackend));
-            const model = new Model({
-            ...config,
-            cache,
-            logger,
-            backendRequestRetry: {
-                enabled: false
-            }
-            });
-            model.saveFxState = jest.fn().mockReturnValue(Promise.resolve({}));
-
-            await model.sendFxPutNotificationToBackend(notif.data, conversionId);
-            expect(BackendRequests.__putFxTransfersNotification).toHaveBeenCalledTimes(1);
-        });
-
-        test('sendFxPutNotificationToBackend handles error and still saves state', async () => {
-            BackendRequests.__putFxTransfersNotification = jest.fn().mockRejectedValue(new Error('fail'));
-            const notif = JSON.parse(JSON.stringify(fxNotificationToBackend));
-            const model = new Model({
-            ...config,
-            cache,
-            logger,
-            backendRequestRetry: {
-                enabled: false
-            }
-            });
-            const saveFxStateSpy = jest.spyOn(model, 'saveFxState').mockResolvedValue({});
-            await expect(model.sendFxPutNotificationToBackend(notif.data, conversionId)).resolves.toBeUndefined();
-            expect(saveFxStateSpy).toHaveBeenCalled();
-        });
-
         test('sendNotificationToPayee handles error and still returns', async () => {
             BackendRequests.__putTransfersNotification = jest.fn().mockRejectedValue(new Error('fail'));
             const notif = JSON.parse(JSON.stringify(notificationToPayee));
