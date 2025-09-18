@@ -1,4 +1,16 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+## [24.11.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.10.11...v24.11.0) (2025-09-18)
+
+
+### Features
+
+* **csi-1807:** improve transfer status delivery effort ([#614](https://github.com/mojaloop/sdk-scheme-adapter/issues/614)) ([65c9d1a](https://github.com/mojaloop/sdk-scheme-adapter/commit/65c9d1a5835af0e35b1c0bbe06990f7e26bc4b35))
+
+
+### Chore
+
+* **sbom:** update sbom [skip ci] ([bdb946f](https://github.com/mojaloop/sdk-scheme-adapter/commit/bdb946f94d330b8f1d0f7f2a13b8962c4b410b11))
+
 ### [24.10.11](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.10.10...v24.10.11) (2025-09-15)
 
 
