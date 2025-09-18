@@ -1036,7 +1036,7 @@ describe('inboundModel', () => {
         });
 
         test('does not retry notification to fsp backend if disabled', async () => {
-            const mockFn = jest.fn().mockResolvedValue({ status: 200 });
+            const mockFn = jest.fn().mockRejectedValue(new Error('fail'));
             BackendRequests.__putTransfersNotification = mockFn;
 
             const notif = JSON.parse(JSON.stringify(notificationToPayee));
