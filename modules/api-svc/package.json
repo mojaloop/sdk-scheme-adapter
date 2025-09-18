@@ -75,7 +75,7 @@
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^",
     "@mojaloop/sdk-standard-components": "19.17.0",
     "ajv": "8.17.1",
-    "axios": "1.12.2",
+    "axios": "1.12.0",
     "body-parser": "2.2.0",
     "co-body": "6.2.0",
     "dotenv": "17.2.2",

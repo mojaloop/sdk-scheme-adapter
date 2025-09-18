@@ -3414,7 +3414,7 @@ __metadata:
     "@types/jest": "npm:30.0.0"
     "@types/retry": "npm:^0"
     ajv: "npm:8.17.1"
-    axios: "npm:1.12.2"
+    axios: "npm:1.12.0"
     axios-mock-adapter: "npm:2.1.0"
     babel-jest: "npm:30.1.2"
     body-parser: "npm:2.2.0"
