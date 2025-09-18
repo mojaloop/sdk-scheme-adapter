@@ -530,6 +530,7 @@ class InboundTransfersModel {
                                         // Mark as notified to prevent duplicate notification
                                         await this._cache.set(cacheKey, true, 60);
                                         // Send notification to payee
+                                        this._logger.isInfoEnabled && this._logger.push({ transferId }).info('Received transfer callback for GET /transfers/{ID} request, sending notification to payee');
                                         await this.sendNotificationToPayee(message.data.body, transferId);
                                         break;
                                     }
@@ -1056,14 +1057,17 @@ class InboundTransfersModel {
                 await new Promise((resolve) => {
                     operation.attempt(async (currentAttempt) => {
                         try {
+                            log.verbose(`putFxTransfersNotification attempt ${currentAttempt} for conversionId ${conversionId}`);
                             res = await this._backendRequests.putFxTransfersNotification(responseBody, conversionId);
                             // Consider success as long as it doesn't throw
                             // `sendRequest` only seems to return `data` of the request which could
                             // be empty for a 200 response
-                            return resolve();
+                            log.verbose(`putFxTransfersNotification attempt ${currentAttempt} succeeded for conversionId ${conversionId}`);
+                            resolve();
                         } catch (err) {
                             log.warn(`putFxTransfersNotification attempt ${currentAttempt} threw error, retrying...`, err);
                             if (!operation.retry(err)) {
+                                log.verbose(`putFxTransfersNotification giving up after ${currentAttempt} attempts`);
                                 resolve();
                             }
                         }
@@ -1071,6 +1075,7 @@ class InboundTransfersModel {
                 });
             } else {
                 try {
+                    log.verbose(`putFxTransfersNotification no-retry mode for conversionId ${conversionId}`);
                     res = await this._backendRequests.putFxTransfersNotification(responseBody, conversionId);
                 } catch (err) {
                     log.error('putFxTransfersNotification failed', err);
@@ -1085,6 +1090,7 @@ class InboundTransfersModel {
     * Forwards Switch notification for fulfiled transfer to the DFSP backend, when acting as a payee
     */
     async sendNotificationToPayee(body, transferId) {
+        const log = this._logger.child({ transferId });
         try {
             // load any cached state for this transfer e.g. quote request/response etc...
             this.data = await this._load(transferId);
@@ -1133,16 +1139,19 @@ class InboundTransfersModel {
                 await new Promise((resolve) => {
                     operation.attempt(async (currentAttempt) => {
                         try {
+                            log.verbose(`putTransfersNotification attempt ${currentAttempt} for transferId ${transferId}`);
                             res = await this._backendRequests.putTransfersNotification(this.data, transferId);
                             // Consider success as long as it doesn't throw
                             // `sendRequest` only seems to return `data` of the request which could
                             // be empty for a 200 response
                             const cacheKey = `patchNotificationSent_${transferId}`;
                             await this._cache.set(cacheKey, true, 60);
-                            return resolve();
+                            log.verbose(`putTransfersNotification attempt ${currentAttempt} succeeded for transferId ${transferId}`);
+                            resolve();
                         } catch (err) {
                             this._logger.warn(`putTransfersNotification attempt ${currentAttempt} threw error, retrying...`, err);
                             if (!operation.retry(err)) {
+                                log.verbose(`putTransfersNotification giving up after ${currentAttempt} attempts`);
                                 resolve();
                             }
                         }
@@ -1150,6 +1159,7 @@ class InboundTransfersModel {
                 });
             } else {
                 try {
+                    log.verbose(`putTransfersNotification no-retry mode for transferId ${transferId}`);
                     res = await this._backendRequests.putTransfersNotification(this.data, transferId);
                     const cacheKey = `patchNotificationSent_${transferId}`;
                     await this._cache.set(cacheKey, true, 60);
