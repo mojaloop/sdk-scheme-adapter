@@ -325,7 +325,6 @@ describe('Inbound API handlers transforming incoming ISO20022 message bodies', (
             expect(transferRequestSpy.mock.calls[0][0]).not.toEqual(isoBodies.patchTransfersRequest);
             expect(transferRequestSpy.mock.calls[0][0].transferState).toBe('COMMITTED');
             expect(mockContext.response.status).toBe(200);
-            console.log('Response body:', mockContext.response);
         });
     });
 
