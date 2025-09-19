@@ -26,7 +26,6 @@
  ******/
 'use strict';
 
-const http = require('node:http');
 const { createHttpRequester } = require('@mojaloop/sdk-standard-components').httpRequester;
 const { buildUrl, HTTPResponseError } = require('./common');
 
@@ -42,11 +41,6 @@ class BackendRequests {
 
         // FSPID of THIS DFSP
         this.dfspId = config.dfspId;
-
-        // make sure we keep alive connections to the backend
-        this.agent = new http.Agent({
-            keepAlive: true
-        });
 
         this.transportScheme = 'http';
 
