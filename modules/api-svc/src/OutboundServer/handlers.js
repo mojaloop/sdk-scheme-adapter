@@ -130,6 +130,7 @@ const createOutboundTransfersModel = (ctx) => new OutboundTransfersModel({
     logger: ctx.state.logger,
     wso2: ctx.state.wso2,
     metricsClient: ctx.state.metricsClient,
+    sharedAgents: ctx.state.sharedAgents,
 });
 
 const createOutboundBulkTransfersModel = (ctx) => new OutboundBulkTransfersModel({
@@ -466,6 +467,7 @@ const postAccounts = async (ctx) => {
             cache: ctx.state.cache,
             logger: ctx.state.logger,
             wso2: ctx.state.wso2,
+            sharedAgents: ctx.state.sharedAgents,
         });
 
         const state = {
@@ -496,6 +498,7 @@ const deleteAccountByTypeAndId = async (ctx) => {
             cache: ctx.state.cache,
             logger: ctx.state.logger,
             wso2: ctx.state.wso2,
+            sharedAgents: ctx.state.sharedAgents,
         });
 
         const args = {
