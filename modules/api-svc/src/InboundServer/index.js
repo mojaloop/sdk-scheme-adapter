@@ -55,6 +55,9 @@ class InboundApi extends EventEmitter {
         this._logger = logger;
         _initialize ||= _validator.initialise(apiSpecs, conf);
 
+        // Create shared HTTP and HTTPS agents for backend requests
+        this.sharedAgents = this._createSharedAgents();
+
         if (conf.validateInboundJws) {
             // peerJWSKey is a special config option specifically for Payment Manager for Mojaloop
             // that is populated by a management api.
@@ -68,6 +71,7 @@ class InboundApi extends EventEmitter {
             cache,
             jwsVerificationKeys: this._jwsVerificationKeys,
             wso2,
+            sharedAgents: this.sharedAgents,
         });
     }
 
@@ -114,7 +118,7 @@ class InboundApi extends EventEmitter {
         }
     }
 
-    static _SetupApi({ conf, logger, validator, cache, jwsVerificationKeys, wso2 }) {
+    static _SetupApi({ conf, logger, validator, cache, jwsVerificationKeys, wso2, sharedAgents }) {
         const api = new Koa();
 
         api.use(middlewares.createErrorHandler(logger));
@@ -126,7 +130,7 @@ class InboundApi extends EventEmitter {
             api.use(middlewares.createJwsValidator(logger, jwsVerificationKeys, jwsExclusions));
         }
 
-        api.use(middlewares.applyState({ conf, cache, wso2, logExcludePaths }));
+        api.use(middlewares.applyState({ conf, cache, wso2, logExcludePaths, sharedAgents }));
         api.use(middlewares.createPingMiddleware(conf, jwsVerificationKeys));
         api.use(middlewares.createRequestValidator(validator));
         api.use(middlewares.assignFspiopIdentifier());
@@ -154,6 +158,33 @@ class InboundApi extends EventEmitter {
                 });
         }
         return keys;
+    }
+
+    _createSharedAgents() {
+        const httpAgent = new http.Agent({
+            keepAlive: true,
+            maxSockets: this._conf.outbound?.maxSockets || 256,
+        });
+
+        // Create HTTPS agent based on TLS configuration
+        const httpsAgentOptions = {
+            keepAlive: true,
+            maxSockets: this._conf.outbound?.maxSockets || 256,
+        };
+
+        // Apply TLS configuration if mTLS is enabled
+        if (this._conf.outbound?.tls?.mutualTLS?.enabled && this._conf.outbound?.tls?.creds) {
+            Object.assign(httpsAgentOptions, this._conf.outbound.tls.creds);
+        }
+
+        const httpsAgent = new https.Agent(httpsAgentOptions);
+
+        this._logger.isInfoEnabled && this._logger.info('Created shared HTTP and HTTPS agents with keepAlive enabled for InboundServer');
+
+        return {
+            httpAgent,
+            httpsAgent
+        };
     }
 }
 

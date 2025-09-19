@@ -37,7 +37,27 @@ class BackendRequests {
     constructor(config) {
         this.config = config;
         this.logger = config.logger.push({ component: this.constructor.name });
-        this.requester = createHttpRequester({ logger: this.logger });
+
+        // Create HTTP requester with shared agents if available
+        const httpConfig = {
+            timeout: 65000,
+            withCredentials: false,
+            transitional: {
+                clarifyTimeoutError: true,
+            }
+        };
+
+        // Add shared agents to prevent connection recreation per request
+        if (config.sharedAgents) {
+            httpConfig.httpAgent = config.sharedAgents.httpAgent;
+            httpConfig.httpsAgent = config.sharedAgents.httpsAgent;
+            this.logger.isDebugEnabled && this.logger.debug('Using shared HTTP/HTTPS agents for BackendRequests');
+        }
+
+        this.requester = createHttpRequester({
+            logger: this.logger,
+            httpConfig
+        });
 
         // FSPID of THIS DFSP
         this.dfspId = config.dfspId;
