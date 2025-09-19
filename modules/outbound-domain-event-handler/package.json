@@ -71,7 +71,7 @@
         "npm-check-updates": "16.7.10",
         "replace": "1.2.2",
         "standard-version": "9.5.0",
-        "ts-jest": "29.4.3",
+        "ts-jest": "29.4.4",
         "ts-node": "10.9.2",
         "typescript": "5.9.2"
     },
