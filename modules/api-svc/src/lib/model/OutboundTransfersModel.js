@@ -71,6 +71,7 @@ class OutboundTransfersModel {
         this._useQuoteSourceFSPAsTransferPayeeFSP = config.useQuoteSourceFSPAsTransferPayeeFSP;
         this._checkIlp = config.checkIlp;
         this._multiplePartiesResponse = config.multiplePartiesResponse;
+        this._sharedAgents = config.sharedAgents;
         this._multiplePartiesResponseSeconds = config.multiplePartiesResponseSeconds;
         this._sendFinalNotificationIfRequested = config.sendFinalNotificationIfRequested;
         this._apiType = config.apiType;
@@ -82,7 +83,7 @@ class OutboundTransfersModel {
 
         this._cacheTtl = config.redisCacheTtl;
 
-        this._requests = new MojaloopRequests({
+        const mojaloopRequestsConfig = {
             logger: this._logger,
             peerEndpoint: config.peerEndpoint,
             alsEndpoint: config.alsEndpoint,
@@ -102,7 +103,16 @@ class OutboundTransfersModel {
             wso2: config.wso2,
             resourceVersions: config.resourceVersions,
             apiType: config.apiType,
-        });
+        };
+
+        // Add shared agents to prevent HTTPS agent recreation per request
+        if (this._sharedAgents) {
+            mojaloopRequestsConfig.httpAgent = this._sharedAgents.httpAgent;
+            mojaloopRequestsConfig.httpsAgent = this._sharedAgents.httpsAgent;
+            this._logger.isDebugEnabled && this._logger.debug('Using shared HTTP/HTTPS agents for MojaloopRequests');
+        }
+
+        this._requests = new MojaloopRequests(mojaloopRequestsConfig);
 
         // default to ILP 1 unless v4 is set
         const ilpVersion = config.ilpVersion === '4' ? Ilp.ILP_VERSIONS.v4 : Ilp.ILP_VERSIONS.v1;

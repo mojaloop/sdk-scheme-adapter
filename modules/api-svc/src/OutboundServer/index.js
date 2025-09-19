@@ -25,6 +25,7 @@
  --------------
  ******/
 const http = require('http');
+const https = require('https');
 
 const Koa = require('koa');
 const koaBody = require('koa-body').default;
@@ -51,7 +52,7 @@ const _validator = new Validate({ logExcludePaths });
 let _initialize;
 
 class OutboundApi extends EventEmitter {
-    constructor(conf, logger, cache, validator, metricsClient, wso2, eventProducer, eventLogger) {
+    constructor(conf, logger, cache, validator, metricsClient, wso2, eventProducer, eventLogger, sharedAgents) {
         super({ captureExceptions: true });
         this._logger = logger.push({ component: this.constructor.name });
         this._api = new Koa();
@@ -72,7 +73,8 @@ class OutboundApi extends EventEmitter {
             metricsClient,
             logExcludePaths,
             eventProducer,
-            eventLogger
+            eventLogger,
+            sharedAgents
         }));
         this._api.use(middlewares.createLogger(this._logger));
 
@@ -110,6 +112,27 @@ class OutboundServer extends EventEmitter {
         this._conf = conf;
         this._logger = logger.push({ app: this.constructor.name });
         this._server = null;
+
+        // Create shared HTTP and HTTPS agents to prevent agent recreation per request
+        this._httpAgent = new http.Agent({
+            keepAlive: true,
+            maxSockets: conf.outbound.maxSockets || 256,
+        });
+
+        // Create HTTPS agent based on TLS configuration
+        const httpsAgentOptions = {
+            keepAlive: true,
+            maxSockets: conf.outbound.maxSockets || 256,
+        };
+
+        // Apply TLS configuration if mTLS is enabled
+        if (conf.outbound.tls.mutualTLS.enabled && conf.outbound.tls.creds) {
+            Object.assign(httpsAgentOptions, conf.outbound.tls.creds);
+        }
+
+        this._httpsAgent = new https.Agent(httpsAgentOptions);
+
+        this._logger.isInfoEnabled && this._logger.info('Created shared HTTP and HTTPS agents with keepAlive enabled');
         if (conf.backendEventHandler.enabled) {
             this._eventLogger = new DefaultLogger(BC_CONFIG.bcName, 'backend-api-handler', '0.0.1', conf.logLevel);
             this._eventProducer = new KafkaDomainEventProducer(conf.backendEventHandler.domainEventProducer, this._eventLogger);
@@ -124,6 +147,10 @@ class OutboundServer extends EventEmitter {
             wso2,
             this._eventProducer,
             this._eventLogger,
+            {
+                httpAgent: this._httpAgent,
+                httpsAgent: this._httpsAgent
+            }
         );
         this._api.on('error', (...args) => {
             this.emit('error', ...args);

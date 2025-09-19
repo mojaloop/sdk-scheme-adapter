@@ -56,7 +56,8 @@ class BackendEventHandler {
         this._backendRequests = new BackendRequests({
             logger: this._logger,
             backendEndpoint: config.backendEndpoint,
-            dfspId: config.dfspId
+            dfspId: config.dfspId,
+            sharedAgents: config.sharedAgents
         });
     }
 
