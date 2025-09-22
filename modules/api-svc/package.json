@@ -68,7 +68,7 @@
     "@mojaloop/central-services-error-handling": "13.1.2",
     "@mojaloop/central-services-logger": "11.10.0",
     "@mojaloop/central-services-metrics": "12.7.1",
-    "@mojaloop/central-services-shared": "18.33.2",
+    "@mojaloop/central-services-shared": "18.33.3",
     "@mojaloop/event-sdk": "14.7.0",
     "@mojaloop/logging-bc-client-lib": "0.5.8",
     "@mojaloop/ml-schema-transformer-lib": "2.7.8",
