@@ -79,7 +79,7 @@ class Server extends EventEmitter {
         });
 
         // Create shared Mojaloop agents for switch communication (used by both servers)
-        this.mojaloopSharedAgents = this._createMojaloopSharedAgents();
+        this.mojaloopSharedAgents = this._createMojaloopSharedAgents(this.conf);
 
         this.wso2 = createAuthClient(conf, logger);
         this.wso2.auth.on('error', (msg) => {
@@ -294,6 +294,8 @@ class Server extends EventEmitter {
             // eslint-disable-next-line no-console
             console.time(stopStartLabel);
             await this.inboundServer.stop();
+
+            this.mojaloopSharedAgents = this._createMojaloopSharedAgents(newConf);
             this.inboundServer = new InboundServer(
                 newConf,
                 this.logger,
@@ -319,6 +321,8 @@ class Server extends EventEmitter {
             // eslint-disable-next-line no-console
             console.time(stopStartLabel);
             await this.outboundServer.stop();
+
+            this.mojaloopSharedAgents = this._createMojaloopSharedAgents(newConf);
             this.outboundServer = new OutboundServer(
                 newConf,
                 this.logger,
@@ -457,21 +461,21 @@ class Server extends EventEmitter {
         ]);
     }
 
-    _createMojaloopSharedAgents() {
+    _createMojaloopSharedAgents(conf) {
         const httpAgent = new http.Agent({
             keepAlive: true,
-            maxSockets: this.conf.outbound?.maxSockets || 256,
+            maxSockets: conf.outbound?.maxSockets || 256,
         });
 
         // Create HTTPS agent based on TLS configuration for Mojaloop switch communication
         const httpsAgentOptions = {
             keepAlive: true,
-            maxSockets: this.conf.outbound?.maxSockets || 256,
+            maxSockets: conf.outbound?.maxSockets || 256,
         };
 
         // Apply TLS configuration if mTLS is enabled for switch communication
-        if (this.conf.outbound?.tls?.mutualTLS?.enabled && this.conf.outbound?.tls?.creds) {
-            Object.assign(httpsAgentOptions, this.conf.outbound.tls.creds);
+        if (conf.outbound?.tls?.mutualTLS?.enabled && conf.outbound?.tls?.creds) {
+            Object.assign(httpsAgentOptions, conf.outbound.tls.creds);
         }
 
         const httpsAgent = new https.Agent(httpsAgentOptions);
