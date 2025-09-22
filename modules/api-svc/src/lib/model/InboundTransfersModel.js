@@ -57,7 +57,7 @@ class InboundTransfersModel {
         this._getTransferRequestRetry = config.getTransferRequestRetry;
         this._backendRequestRetry = config.backendRequestRetry;
 
-        this._mojaloopRequests = new MojaloopRequests({
+        const mojaloopRequestsConfig = {
             logger: this._logger,
             peerEndpoint: config.peerEndpoint,
             alsEndpoint: config.alsEndpoint,
@@ -78,13 +78,22 @@ class InboundTransfersModel {
             wso2: config.wso2,
             resourceVersions: config.resourceVersions,
             apiType: config.apiType,
-        });
+        };
+
+        // Add shared agents to prevent HTTPS agent recreation per request
+        if (config.mojaloopSharedAgents) {
+            mojaloopRequestsConfig.httpAgent = config.mojaloopSharedAgents.httpAgent;
+            mojaloopRequestsConfig.httpsAgent = config.mojaloopSharedAgents.httpsAgent;
+            this._logger.isDebugEnabled && this._logger.debug('Using shared HTTP/HTTPS agents for InboundTransfersModel MojaloopRequests');
+        }
+
+        this._mojaloopRequests = new MojaloopRequests(mojaloopRequestsConfig);
 
         this._backendRequests = new BackendRequests({
             logger: this._logger,
             backendEndpoint: config.backendEndpoint,
             dfspId: config.dfspId,
-            sharedAgents: config.sharedAgents
+            sharedAgents: config.backendSharedAgents
         });
 
         this._checkIlp = config.checkIlp;

@@ -27,6 +27,8 @@
 'use strict';
 
 const EventEmitter = require('node:events');
+const http = require('http');
+const https = require('https');
 const _ = require('lodash');
 const { name, version } = require('../../../package.json');
 
@@ -76,6 +78,9 @@ class Server extends EventEmitter {
             logger: this.logger
         });
 
+        // Create shared Mojaloop agents for switch communication (used by both servers)
+        this.mojaloopSharedAgents = this._createMojaloopSharedAgents();
+
         this.wso2 = createAuthClient(conf, logger);
         this.wso2.auth.on('error', (msg) => {
             this.emit('error', 'WSO2 auth error in InboundApi', msg);
@@ -86,6 +91,7 @@ class Server extends EventEmitter {
             this.logger,
             this.cache,
             this.wso2,
+            this.mojaloopSharedAgents,
         );
         this.inboundServer.on('error', (...args) => {
             this.logger.isErrorEnabled && this.logger.push({ args }).error('Unhandled error in Inbound Server');
@@ -98,6 +104,7 @@ class Server extends EventEmitter {
             this.cache,
             this.metricsClient,
             this.wso2,
+            this.mojaloopSharedAgents,
         );
         this.outboundServer.on('error', (...args) => {
             this.logger.isErrorEnabled && this.logger.push({ args }).error('Unhandled error in Outbound Server');
@@ -446,6 +453,33 @@ class Server extends EventEmitter {
             this.backendEventHandler?.stop(),
             this.fspiopEventHandler?.stop(),
         ]);
+    }
+
+    _createMojaloopSharedAgents() {
+        const httpAgent = new http.Agent({
+            keepAlive: true,
+            maxSockets: this.conf.outbound?.maxSockets || 256,
+        });
+
+        // Create HTTPS agent based on TLS configuration for Mojaloop switch communication
+        const httpsAgentOptions = {
+            keepAlive: true,
+            maxSockets: this.conf.outbound?.maxSockets || 256,
+        };
+
+        // Apply TLS configuration if mTLS is enabled for switch communication
+        if (this.conf.outbound?.tls?.mutualTLS?.enabled && this.conf.outbound?.tls?.creds) {
+            Object.assign(httpsAgentOptions, this.conf.outbound.tls.creds);
+        }
+
+        const httpsAgent = new https.Agent(httpsAgentOptions);
+
+        this.logger.isInfoEnabled && this.logger.info('Created shared HTTP and HTTPS agents for Mojaloop switch communication');
+
+        return {
+            httpAgent,
+            httpsAgent
+        };
     }
 }
 

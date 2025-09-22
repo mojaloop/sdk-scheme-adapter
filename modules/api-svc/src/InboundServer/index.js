@@ -48,15 +48,17 @@ const _validator = new Validate({ logExcludePaths });
 let _initialize;
 
 class InboundApi extends EventEmitter {
-    constructor(conf, logger, cache, validator, wso2) {
+    constructor(conf, logger, cache, validator, wso2, mojaloopSharedAgents) {
         super({ captureExceptions: true });
         this._conf = conf;
         this._cache = cache;
         this._logger = logger;
         _initialize ||= _validator.initialise(apiSpecs, conf);
 
-        // Create shared HTTP and HTTPS agents for backend requests
-        this.sharedAgents = this._createSharedAgents();
+        // Create shared HTTP and HTTPS agents for backend requests only
+        this.backendSharedAgents = this._createBackendSharedAgents();
+        // Use provided shared Mojaloop agents
+        this.mojaloopSharedAgents = mojaloopSharedAgents;
 
         if (conf.validateInboundJws) {
             // peerJWSKey is a special config option specifically for Payment Manager for Mojaloop
@@ -71,7 +73,8 @@ class InboundApi extends EventEmitter {
             cache,
             jwsVerificationKeys: this._jwsVerificationKeys,
             wso2,
-            sharedAgents: this.sharedAgents,
+            backendSharedAgents: this.backendSharedAgents,
+            mojaloopSharedAgents: this.mojaloopSharedAgents,
         });
     }
 
@@ -118,7 +121,7 @@ class InboundApi extends EventEmitter {
         }
     }
 
-    static _SetupApi({ conf, logger, validator, cache, jwsVerificationKeys, wso2, sharedAgents }) {
+    static _SetupApi({ conf, logger, validator, cache, jwsVerificationKeys, wso2, backendSharedAgents, mojaloopSharedAgents }) {
         const api = new Koa();
 
         api.use(middlewares.createErrorHandler(logger));
@@ -130,7 +133,7 @@ class InboundApi extends EventEmitter {
             api.use(middlewares.createJwsValidator(logger, jwsVerificationKeys, jwsExclusions));
         }
 
-        api.use(middlewares.applyState({ conf, cache, wso2, logExcludePaths, sharedAgents }));
+        api.use(middlewares.applyState({ conf, cache, wso2, logExcludePaths, backendSharedAgents, mojaloopSharedAgents }));
         api.use(middlewares.createPingMiddleware(conf, jwsVerificationKeys));
         api.use(middlewares.createRequestValidator(validator));
         api.use(middlewares.assignFspiopIdentifier());
@@ -160,36 +163,29 @@ class InboundApi extends EventEmitter {
         return keys;
     }
 
-    _createSharedAgents() {
+    _createBackendSharedAgents() {
         const httpAgent = new http.Agent({
             keepAlive: true,
             maxSockets: this._conf.outbound?.maxSockets || 256,
         });
 
-        // Create HTTPS agent based on TLS configuration
-        const httpsAgentOptions = {
+        const httpsAgent = new https.Agent({
             keepAlive: true,
             maxSockets: this._conf.outbound?.maxSockets || 256,
-        };
+        });
 
-        // Apply TLS configuration if mTLS is enabled
-        if (this._conf.outbound?.tls?.mutualTLS?.enabled && this._conf.outbound?.tls?.creds) {
-            Object.assign(httpsAgentOptions, this._conf.outbound.tls.creds);
-        }
-
-        const httpsAgent = new https.Agent(httpsAgentOptions);
-
-        this._logger.isInfoEnabled && this._logger.info('Created shared HTTP and HTTPS agents with keepAlive enabled for InboundServer');
+        this._logger.isInfoEnabled && this._logger.info('Created shared HTTP and HTTPS agents for backend requests');
 
         return {
             httpAgent,
             httpsAgent
         };
     }
+
 }
 
 class InboundServer extends EventEmitter {
-    constructor(conf, logger, cache, wso2) {
+    constructor(conf, logger, cache, wso2, mojaloopSharedAgents) {
         super({ captureExceptions: true });
         this._conf = conf;
         this._logger = logger.push({ app: this.constructor.name });
@@ -199,6 +195,7 @@ class InboundServer extends EventEmitter {
             cache,
             _validator,
             wso2,
+            mojaloopSharedAgents,
         );
         this._api.on('error', (...args) => {
             this.emit('error', ...args);

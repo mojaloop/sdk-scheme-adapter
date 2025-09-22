@@ -107,32 +107,39 @@ class OutboundApi extends EventEmitter {
 }
 
 class OutboundServer extends EventEmitter {
-    constructor(conf, logger, cache, metricsClient, wso2) {
+    constructor(conf, logger, cache, metricsClient, wso2, mojaloopSharedAgents) {
         super({ captureExceptions: true });
         this._conf = conf;
         this._logger = logger.push({ app: this.constructor.name });
         this._server = null;
 
-        // Create shared HTTP and HTTPS agents to prevent agent recreation per request
-        this._httpAgent = new http.Agent({
-            keepAlive: true,
-            maxSockets: conf.outbound.maxSockets || 256,
-        });
+        // Use provided shared Mojaloop agents or create fallback ones
+        if (mojaloopSharedAgents) {
+            this._httpAgent = mojaloopSharedAgents.httpAgent;
+            this._httpsAgent = mojaloopSharedAgents.httpsAgent;
+            this._logger.isInfoEnabled && this._logger.info('Using shared Mojaloop HTTP and HTTPS agents for OutboundServer');
+        } else {
+            // Fallback: Create shared HTTP and HTTPS agents to prevent agent recreation per request
+            this._httpAgent = new http.Agent({
+                keepAlive: true,
+                maxSockets: conf.outbound.maxSockets || 256,
+            });
 
-        // Create HTTPS agent based on TLS configuration
-        const httpsAgentOptions = {
-            keepAlive: true,
-            maxSockets: conf.outbound.maxSockets || 256,
-        };
+            // Create HTTPS agent based on TLS configuration
+            const httpsAgentOptions = {
+                keepAlive: true,
+                maxSockets: conf.outbound.maxSockets || 256,
+            };
 
-        // Apply TLS configuration if mTLS is enabled
-        if (conf.outbound.tls.mutualTLS.enabled && conf.outbound.tls.creds) {
-            Object.assign(httpsAgentOptions, conf.outbound.tls.creds);
+            // Apply TLS configuration if mTLS is enabled
+            if (conf.outbound.tls.mutualTLS.enabled && conf.outbound.tls.creds) {
+                Object.assign(httpsAgentOptions, conf.outbound.tls.creds);
+            }
+
+            this._httpsAgent = new https.Agent(httpsAgentOptions);
+
+            this._logger.isInfoEnabled && this._logger.info('Created fallback shared HTTP and HTTPS agents with keepAlive enabled');
         }
-
-        this._httpsAgent = new https.Agent(httpsAgentOptions);
-
-        this._logger.isInfoEnabled && this._logger.info('Created shared HTTP and HTTPS agents with keepAlive enabled');
         if (conf.backendEventHandler.enabled) {
             this._eventLogger = new DefaultLogger(BC_CONFIG.bcName, 'backend-api-handler', '0.0.1', conf.logLevel);
             this._eventProducer = new KafkaDomainEventProducer(conf.backendEventHandler.domainEventProducer, this._eventLogger);
