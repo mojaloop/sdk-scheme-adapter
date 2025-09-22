@@ -1,5 +1,7 @@
 const fs = require('fs');
 const path = require('path');
+const http = require('http');
+const https = require('https');
 const yaml = require('js-yaml');
 const supertest = require('supertest');
 const { WSO2Auth } = require('@mojaloop/sdk-standard-components');
@@ -15,6 +17,20 @@ const ServerType = {
     Inbound: 'Inbound',
     Outbound: 'Outbound',
 };
+
+/**
+ * Create mock shared agents for testing
+ */
+function createMockSharedAgents() {
+    const httpAgent = new http.Agent({ keepAlive: true });
+    const httpsAgent = new https.Agent({ keepAlive: true });
+
+    // Prevent logging of agent internals in tests
+    httpAgent.toJSON = () => ({ type: 'MockHttpAgent', keepAlive: true });
+    httpsAgent.toJSON = () => ({ type: 'MockHttpsAgent', keepAlive: true });
+
+    return { httpAgent, httpsAgent };
+}
 
 /**
  * Get OpenAPI spec and Validator for specified server
@@ -69,11 +85,13 @@ const createTestServers = async (config) => {
         }),
         retryWso2AuthFailureTimes: defConfig.wso2.requestAuthFailureRetryTimes,
     };
-    const serverOutbound = new OutboundServer(defConfig, logger, cache, metricsClient, wso2);
+    const mockSharedAgents = createMockSharedAgents();
+
+    const serverOutbound = new OutboundServer(defConfig, logger, cache, metricsClient, wso2, mockSharedAgents);
     await serverOutbound.start();
     const reqOutbound = supertest(serverOutbound._server);
 
-    const serverInbound = new InboundServer(defConfig, logger, cache, wso2);
+    const serverInbound = new InboundServer(defConfig, logger, cache, wso2, mockSharedAgents);
     await serverInbound.start();
     const reqInbound = supertest(serverInbound._server);
 
@@ -94,4 +112,5 @@ module.exports = {
     createValidators,
     createTestServers,
     destroyTestServers,
+    createMockSharedAgents,
 };

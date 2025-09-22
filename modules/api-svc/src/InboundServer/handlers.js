@@ -76,6 +76,8 @@ const createInboundTransfersModel = (ctx) => new InboundTransfersModel({
     logger: ctx.state.logger,
     wso2: ctx.state.wso2,
     resourceVersions: ctx.resourceVersions,
+    backendSharedAgents: ctx.state.backendSharedAgents,
+    mojaloopSharedAgents: ctx.state.mojaloopSharedAgents,
 });
 
 const prepareResponse = ctx => {

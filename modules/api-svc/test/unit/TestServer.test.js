@@ -43,6 +43,7 @@ const TestServer = require('~/TestServer');
 const Cache = require('~/lib/cache');
 const InboundServer = require('~/InboundServer');
 const { logger } = require('~/lib/logger');
+const { createMockSharedAgents } = require('./api/utils');
 
 const defaultConfig = require('./data/defaultConfig');
 const putPartiesBody = require('./data/putPartiesBody');
@@ -83,7 +84,7 @@ describe('Test Server', () => {
         expect(testServer._server.listening).toBe(true);
         testReq = supertest.agent(testServer._server);
 
-        inboundServer = new InboundServer(serverConfig, logger, cache);
+        inboundServer = new InboundServer(serverConfig, logger, cache, null, createMockSharedAgents());
         await inboundServer.start();
         inboundReq = supertest(inboundServer._server);
 

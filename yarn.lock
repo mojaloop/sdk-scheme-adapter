@@ -3086,9 +3086,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/central-services-logger@npm:11.10.0":
-  version: 11.10.0
-  resolution: "@mojaloop/central-services-logger@npm:11.10.0"
+"@mojaloop/central-services-logger@npm:11.10.1":
+  version: 11.10.1
+  resolution: "@mojaloop/central-services-logger@npm:11.10.1"
   dependencies:
     "@opentelemetry/api": "npm:1.9.0"
     parse-strings-in-object: "npm:2.0.0"
@@ -3096,7 +3096,7 @@ __metadata:
     safe-stable-stringify: "npm:^2.5.0"
     triple-beam: "npm:1.4.1"
     winston: "npm:3.17.0"
-  checksum: 10/f062b89e9e5d366a134afba6385241cc7aff16b0798f9f787a7b3ab2c2b161b8664dec6768d46dbc2f73e6ad97e56e17a3984adf132e8929fc1c48e4915e56b8
+  checksum: 10/41a65f2d5c8497489af4c7e8ef7d23844dfb14776cc53b6c9a37df2ecc3fe7b09c64dcf6977d31a28d402bba34e0031d078f5b564bfd0de0734e82c77e4b48de
   languageName: node
   linkType: hard
 
@@ -3203,9 +3203,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/central-services-shared@npm:18.33.2":
-  version: 18.33.2
-  resolution: "@mojaloop/central-services-shared@npm:18.33.2"
+"@mojaloop/central-services-shared@npm:18.33.3":
+  version: 18.33.3
+  resolution: "@mojaloop/central-services-shared@npm:18.33.3"
   dependencies:
     "@hapi/catbox": "npm:12.1.1"
     "@hapi/catbox-memory": "npm:5.0.1"
@@ -3263,7 +3263,7 @@ __metadata:
       optional: false
     mysql2:
       optional: false
-  checksum: 10/a80777e9e9c917d78fa73a9664df4c5736665b8c132ab3433687de24fbbbceb17f4f9f0094420943751d29f857c1c329e448668f5d333142e10d0834cde2e54d
+  checksum: 10/bed53621b8d40b00e48ed3de225952a31dc6bad0090b7cc7fcc8ac9e5a45ca88bbe390698b7a86e115d28d402300d45df1c9034e441b3f08ddff2d0dd136950d
   languageName: node
   linkType: hard
 
@@ -3402,9 +3402,9 @@ __metadata:
     "@koa/cors": "npm:5.0.0"
     "@mojaloop/api-snippets": "npm:18.1.1"
     "@mojaloop/central-services-error-handling": "npm:13.1.2"
-    "@mojaloop/central-services-logger": "npm:11.10.0"
+    "@mojaloop/central-services-logger": "npm:11.10.1"
     "@mojaloop/central-services-metrics": "npm:12.7.1"
-    "@mojaloop/central-services-shared": "npm:18.33.2"
+    "@mojaloop/central-services-shared": "npm:18.33.3"
     "@mojaloop/event-sdk": "npm:14.7.0"
     "@mojaloop/logging-bc-client-lib": "npm:0.5.8"
     "@mojaloop/ml-schema-transformer-lib": "npm:2.7.8"
@@ -3464,7 +3464,7 @@ __metadata:
   dependencies:
     "@eslint/compat": "npm:1.3.2"
     "@mojaloop/api-snippets": "npm:18.1.1"
-    "@mojaloop/central-services-shared": "npm:18.33.2"
+    "@mojaloop/central-services-shared": "npm:18.33.3"
     "@mojaloop/logging-bc-client-lib": "npm:0.5.8"
     "@mojaloop/logging-bc-public-types-lib": "npm:0.5.6"
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^"
@@ -3492,7 +3492,7 @@ __metadata:
     replace: "npm:1.2.2"
     standard-version: "npm:9.5.0"
     swagger-ui-express: "npm:5.0.1"
-    ts-jest: "npm:29.4.3"
+    ts-jest: "npm:29.4.4"
     ts-node: "npm:10.9.2"
     typescript: "npm:5.9.2"
     yamljs: "npm:0.3.0"
@@ -3530,7 +3530,7 @@ __metadata:
     replace: "npm:1.2.2"
     standard-version: "npm:9.5.0"
     swagger-ui-express: "npm:5.0.1"
-    ts-jest: "npm:29.4.3"
+    ts-jest: "npm:29.4.4"
     ts-node: "npm:10.9.2"
     typescript: "npm:5.9.2"
     yamljs: "npm:0.3.0"
@@ -3543,7 +3543,7 @@ __metadata:
   dependencies:
     "@eslint/compat": "npm:1.3.2"
     "@mojaloop/api-snippets": "npm:18.1.1"
-    "@mojaloop/central-services-shared": "npm:18.33.2"
+    "@mojaloop/central-services-shared": "npm:18.33.3"
     "@mojaloop/logging-bc-public-types-lib": "npm:0.5.6"
     "@mojaloop/platform-shared-lib-messaging-types-lib": "npm:0.7.3"
     "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib": "npm:0.5.18"
@@ -3558,7 +3558,7 @@ __metadata:
     redis: "npm:5.8.2"
     replace: "npm:1.2.2"
     standard-version: "npm:9.5.0"
-    ts-jest: "npm:29.4.3"
+    ts-jest: "npm:29.4.4"
     tslib: "npm:2.8.1"
     typescript: "npm:5.9.2"
     uuid: "npm:11.1.0"
@@ -3586,7 +3586,7 @@ __metadata:
     nx: "npm:16.5.0"
     replace: "npm:1.2.2"
     standard-version: "npm:9.5.0"
-    ts-jest: "npm:29.4.3"
+    ts-jest: "npm:29.4.4"
     ts-node: "npm:10.9.2"
     tslib: "npm:2.8.1"
     typescript: "npm:5.9.2"
@@ -16206,9 +16206,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-jest@npm:29.4.3":
-  version: 29.4.3
-  resolution: "ts-jest@npm:29.4.3"
+"ts-jest@npm:29.4.4":
+  version: 29.4.4
+  resolution: "ts-jest@npm:29.4.4"
   dependencies:
     bs-logger: "npm:^0.2.6"
     fast-json-stable-stringify: "npm:^2.1.0"
@@ -16242,7 +16242,7 @@ __metadata:
       optional: true
   bin:
     ts-jest: cli.js
-  checksum: 10/818bf5ffca88f5a61651a7da1f98442218183b93d0804479ef9c4609d5b54c001a9dcb1d964d70779fb974e75a7a22a5914d7af00a5f52d009d3e24bf8c2c10c
+  checksum: 10/759913fdb9795416abe918ba41c2ab3865f796f909d22bbf219a6a6c5e7daecad06ad85ecc905ea1af89fde2eb048c3b981493dfad6e3a21f7d5c602e630d34d
   languageName: node
   linkType: hard
 

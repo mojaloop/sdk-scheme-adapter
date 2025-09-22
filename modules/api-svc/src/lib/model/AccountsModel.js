@@ -48,8 +48,9 @@ class AccountsModel {
         this._logger = config.logger;
         this._requestProcessingTimeoutSeconds = config.requestProcessingTimeoutSeconds;
         this._dfspId = config.dfspId;
+        this._mojaloopSharedAgents = config.mojaloopSharedAgents;
 
-        this._requests = new MojaloopRequests({
+        const mojaloopRequestsConfig = {
             logger: this._logger,
             peerEndpoint: config.alsEndpoint,
             dfspId: config.dfspId,
@@ -62,7 +63,16 @@ class AccountsModel {
             wso2: config.wso2,
             resourceVersions: config.resourceVersions,
             apiType: config.apiType
-        });
+        };
+
+        // Add shared agents to prevent HTTPS agent recreation per request
+        if (this._mojaloopSharedAgents) {
+            mojaloopRequestsConfig.httpAgent = this._mojaloopSharedAgents.httpAgent;
+            mojaloopRequestsConfig.httpsAgent = this._mojaloopSharedAgents.httpsAgent;
+            this._logger.isDebugEnabled && this._logger.debug('Using shared HTTP/HTTPS agents for AccountsModel MojaloopRequests');
+        }
+
+        this._requests = new MojaloopRequests(mojaloopRequestsConfig);
     }
 
 

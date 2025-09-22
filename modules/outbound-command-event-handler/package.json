@@ -1,6 +1,6 @@
 {
   "name": "@mojaloop/sdk-scheme-adapter-outbound-command-event-handler",
-  "version": "0.3.0-snapshot.59",
+  "version": "0.3.0-snapshot.65",
   "description": "Mojaloop sdk scheme adapter command event handler",
   "license": "Apache-2.0",
   "homepage": "https://github.com/mojaloop/sdk-scheme-adapter/",
@@ -42,7 +42,7 @@
   },
   "dependencies": {
     "@mojaloop/api-snippets": "18.1.1",
-    "@mojaloop/central-services-shared": "18.33.2",
+    "@mojaloop/central-services-shared": "18.33.3",
     "@mojaloop/logging-bc-client-lib": "0.5.8",
     "@mojaloop/logging-bc-public-types-lib": "0.5.6",
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^",
@@ -74,7 +74,7 @@
     "npm-check-updates": "16.7.10",
     "replace": "1.2.2",
     "standard-version": "9.5.0",
-    "ts-jest": "29.4.3",
+    "ts-jest": "29.4.4",
     "ts-node": "10.9.2",
     "typescript": "5.9.2"
   },
