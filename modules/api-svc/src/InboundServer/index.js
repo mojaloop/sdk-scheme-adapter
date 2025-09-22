@@ -174,6 +174,10 @@ class InboundApi extends EventEmitter {
             maxSockets: this._conf.outbound?.maxSockets || 256,
         });
 
+        // Prevent accidental logging of agent internals
+        httpAgent.toJSON = () => ({ type: 'BackendHttpAgent', keepAlive: httpAgent.keepAlive });
+        httpsAgent.toJSON = () => ({ type: 'BackendHttpsAgent', keepAlive: httpsAgent.keepAlive });
+
         this._logger.isInfoEnabled && this._logger.info('Created shared HTTP and HTTPS agents for backend requests');
 
         return {

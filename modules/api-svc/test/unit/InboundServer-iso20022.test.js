@@ -40,6 +40,7 @@ const supertest = require('supertest');
 const InboundServer = require('../../src/InboundServer');
 const Cache = require('../../src/lib/cache');
 const config = require('../../src/config');
+const { createMockSharedAgents } = require('./api/utils');
 const helpers = require('../helpers');
 const { logger } = require('../../src/lib/logger');
 
@@ -56,7 +57,7 @@ describe('Inbound Server ISO-20022 Tests -->', () => {
     let server;
 
     beforeEach(async () => {
-        server = new InboundServer(config, logger, new Cache(config));
+        server = new InboundServer(config, logger, new Cache(config), null, createMockSharedAgents());
         await server?.start();
     });
 

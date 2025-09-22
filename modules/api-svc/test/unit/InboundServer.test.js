@@ -42,6 +42,7 @@ const postQuotesBody = require('./data/postQuotesBody');
 const putParticipantsBody = require('./data/putParticipantsBody');
 const commonHttpHeaders = require('./data/commonHttpHeaders');
 const isoBodies = require('./inboundApi/data/isoBodies.json');
+const { createMockSharedAgents } = require('./api/utils');
 
 jest.mock('@mojaloop/sdk-standard-components');
 jest.mock('~/lib/cache');
@@ -51,6 +52,9 @@ const { Jws } = require('@mojaloop/sdk-standard-components');
 const { logger } = require('~/lib/logger');
 const InboundServer = require('~/InboundServer');
 const Cache = require('~/lib/cache');
+
+// Create shared mock agents for all tests
+const mockSharedAgents = createMockSharedAgents();
 const path = require('path');
 const fs = require('fs');
 const os = require('os');
@@ -74,7 +78,7 @@ describe('Inbound Server', () => {
                 logger: logger.push({ component: 'cache' }),
                 unsubscribeTimeoutMs: serverConfig.unsubscribeTimeoutMs,
             });
-            const svr = new InboundServer(serverConfig, logger, cache);
+            const svr = new InboundServer(serverConfig, logger, cache, null, mockSharedAgents);
             await svr.start();
             await supertest(svr._server)
                 .put('/parties/MSISDN/123456789')
@@ -96,7 +100,7 @@ describe('Inbound Server', () => {
             const body = contentType.includes(ISO_20022_HEADER_PART)
                 ? isoBodies.putPartiesRequest
                 : putPartiesBody;
-            const svr = new InboundServer(serverConfig, logger, cache);
+            const svr = new InboundServer(serverConfig, logger, cache, null, mockSharedAgents);
             await svr.start();
             const result = await supertest(svr._server)
                 .put('/parties/MSISDN/123456789')
@@ -179,7 +183,7 @@ describe('Inbound Server', () => {
                 logger: logger.push({ component: 'cache' }),
                 unsubscribeTimeoutMs: serverConfig.unsubscribeTimeoutMs,
             });
-            const svr = new InboundServer(serverConfig, logger, cache);
+            const svr = new InboundServer(serverConfig, logger, cache, null, mockSharedAgents);
             await svr.start();
             await supertest(svr._server)
                 .post('/quotes')
@@ -199,7 +203,7 @@ describe('Inbound Server', () => {
                 logger: logger.push({ component: 'cache' }),
                 unsubscribeTimeoutMs: serverConfig.unsubscribeTimeoutMs,
             });
-            const svr = new InboundServer(serverConfig, logger, cache);
+            const svr = new InboundServer(serverConfig, logger, cache, null, mockSharedAgents);
             await svr.start();
             const result = await supertest(svr._server)
                 .post('/quotes')
@@ -276,7 +280,7 @@ describe('Inbound Server', () => {
                 logger: logger.push({ component: 'cache' }),
                 unsubscribeTimeoutMs: serverConfig.unsubscribeTimeoutMs,
             });
-            const svr = new InboundServer(serverConfig, logger, cache);
+            const svr = new InboundServer(serverConfig, logger, cache, null, mockSharedAgents);
             await svr.start();
             await supertest(svr._server)
                 .put('/participants/00000000-0000-1000-a000-000000000002')
@@ -296,7 +300,7 @@ describe('Inbound Server', () => {
                 logger: logger.push({ component: 'cache' }),
                 unsubscribeTimeoutMs: serverConfig.unsubscribeTimeoutMs,
             });
-            const svr = new InboundServer(serverConfig, logger, cache);
+            const svr = new InboundServer(serverConfig, logger, cache, null, mockSharedAgents);
             await svr.start();
             const result = await supertest(svr._server)
                 .put('/participants/00000000-0000-1000-a000-000000000002')
@@ -386,7 +390,7 @@ describe('Inbound Server', () => {
                 logger: logger.push({ component: 'cache' }),
                 unsubscribeTimeoutMs: defConfig.unsubscribeTimeoutMs,
             });
-            const server = new InboundServer(defConfig, logger, cache);
+            const server = new InboundServer(defConfig, logger, cache, null, mockSharedAgents);
             await server.start();
             if (enableTls) {
                 expect(httpsServerSpy).toHaveBeenCalled();
@@ -421,7 +425,7 @@ describe('Inbound Server', () => {
                 logger: logger.push({ component: 'cache' }),
                 unsubscribeTimeoutMs: serverConfig.unsubscribeTimeoutMs,
             });
-            svr = new InboundServer(serverConfig, logger, cache);
+            svr = new InboundServer(serverConfig, logger, cache, null, mockSharedAgents);
             await svr.start();
         });
 

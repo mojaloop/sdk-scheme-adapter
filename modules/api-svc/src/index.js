@@ -299,6 +299,7 @@ class Server extends EventEmitter {
                 this.logger,
                 this.cache,
                 this.wso2,
+                this.mojaloopSharedAgents,
             );
             this.inboundServer.on('error', (...args) => {
                 const errMessage = 'Unhandled error in Inbound Server';
@@ -324,6 +325,7 @@ class Server extends EventEmitter {
                 this.cache,
                 this.metricsClient,
                 this.wso2,
+                this.mojaloopSharedAgents,
             );
             this.outboundServer.on('error', (...args) => {
                 const errMessage = 'Unhandled error in Outbound Server';
@@ -473,6 +475,10 @@ class Server extends EventEmitter {
         }
 
         const httpsAgent = new https.Agent(httpsAgentOptions);
+
+        // Prevent accidental logging of agent internals
+        httpAgent.toJSON = () => ({ type: 'HttpAgent', keepAlive: httpAgent.keepAlive });
+        httpsAgent.toJSON = () => ({ type: 'HttpsAgent', keepAlive: httpsAgent.keepAlive });
 
         this.logger.isInfoEnabled && this.logger.info('Created shared HTTP and HTTPS agents for Mojaloop switch communication');
 
