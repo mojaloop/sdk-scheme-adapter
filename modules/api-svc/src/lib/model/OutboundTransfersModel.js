@@ -71,7 +71,7 @@ class OutboundTransfersModel {
         this._useQuoteSourceFSPAsTransferPayeeFSP = config.useQuoteSourceFSPAsTransferPayeeFSP;
         this._checkIlp = config.checkIlp;
         this._multiplePartiesResponse = config.multiplePartiesResponse;
-        this._sharedAgents = config.sharedAgents;
+        this._mojaloopSharedAgents = config.mojaloopSharedAgents;
         this._multiplePartiesResponseSeconds = config.multiplePartiesResponseSeconds;
         this._sendFinalNotificationIfRequested = config.sendFinalNotificationIfRequested;
         this._apiType = config.apiType;
@@ -106,10 +106,10 @@ class OutboundTransfersModel {
         };
 
         // Add shared agents to prevent HTTPS agent recreation per request
-        if (this._sharedAgents) {
-            mojaloopRequestsConfig.httpAgent = this._sharedAgents.httpAgent;
-            mojaloopRequestsConfig.httpsAgent = this._sharedAgents.httpsAgent;
-            this._logger.isDebugEnabled && this._logger.debug('Using shared HTTP/HTTPS agents for MojaloopRequests');
+        if (this._mojaloopSharedAgents) {
+            mojaloopRequestsConfig.httpAgent = this._mojaloopSharedAgents.httpAgent;
+            mojaloopRequestsConfig.httpsAgent = this._mojaloopSharedAgents.httpsAgent;
+            this._logger.isDebugEnabled && this._logger.debug('Using shared HTTP/HTTPS agents for OutboundTransfersModel MojaloopRequests');
         }
 
         this._requests = new MojaloopRequests(mojaloopRequestsConfig);

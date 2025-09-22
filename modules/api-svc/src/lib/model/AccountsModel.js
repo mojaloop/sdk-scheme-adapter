@@ -48,7 +48,7 @@ class AccountsModel {
         this._logger = config.logger;
         this._requestProcessingTimeoutSeconds = config.requestProcessingTimeoutSeconds;
         this._dfspId = config.dfspId;
-        this._sharedAgents = config.sharedAgents;
+        this._mojaloopSharedAgents = config.mojaloopSharedAgents;
 
         const mojaloopRequestsConfig = {
             logger: this._logger,
@@ -66,9 +66,9 @@ class AccountsModel {
         };
 
         // Add shared agents to prevent HTTPS agent recreation per request
-        if (this._sharedAgents) {
-            mojaloopRequestsConfig.httpAgent = this._sharedAgents.httpAgent;
-            mojaloopRequestsConfig.httpsAgent = this._sharedAgents.httpsAgent;
+        if (this._mojaloopSharedAgents) {
+            mojaloopRequestsConfig.httpAgent = this._mojaloopSharedAgents.httpAgent;
+            mojaloopRequestsConfig.httpsAgent = this._mojaloopSharedAgents.httpsAgent;
             this._logger.isDebugEnabled && this._logger.debug('Using shared HTTP/HTTPS agents for AccountsModel MojaloopRequests');
         }
 
