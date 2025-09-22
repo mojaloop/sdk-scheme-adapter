@@ -1,4 +1,16 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+## [24.12.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.11.0...v24.12.0) (2025-09-22)
+
+
+### Bug Fixes
+
+* http agent recreation ([#615](https://github.com/mojaloop/sdk-scheme-adapter/issues/615)) ([dc1b9d7](https://github.com/mojaloop/sdk-scheme-adapter/commit/dc1b9d7c0f67d6d42116c128822c65f96d9fef97))
+
+
+### Chore
+
+* **sbom:** update sbom [skip ci] ([35b52c9](https://github.com/mojaloop/sdk-scheme-adapter/commit/35b52c92872c4aee37dc274263ddb9a9e9486cac))
+
 ## [24.11.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.10.11...v24.11.0) (2025-09-18)
 
 
