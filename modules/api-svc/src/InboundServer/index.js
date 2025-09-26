@@ -48,7 +48,7 @@ const _validator = new Validate({ logExcludePaths });
 let _initialize;
 
 class InboundApi extends EventEmitter {
-    constructor(conf, logger, cache, validator, wso2, mojaloopSharedAgents) {
+    constructor(conf, logger, cache, validator, metricsClient, wso2, mojaloopSharedAgents) {
         super({ captureExceptions: true });
         this._conf = conf;
         this._cache = cache;
@@ -72,6 +72,7 @@ class InboundApi extends EventEmitter {
             validator,
             cache,
             jwsVerificationKeys: this._jwsVerificationKeys,
+            metricsClient,
             wso2,
             backendSharedAgents: this.backendSharedAgents,
             mojaloopSharedAgents: this.mojaloopSharedAgents,
@@ -121,7 +122,7 @@ class InboundApi extends EventEmitter {
         }
     }
 
-    static _SetupApi({ conf, logger, validator, cache, jwsVerificationKeys, wso2, backendSharedAgents, mojaloopSharedAgents }) {
+    static _SetupApi({ conf, logger, validator, cache, jwsVerificationKeys, metricsClient, wso2, backendSharedAgents, mojaloopSharedAgents }) {
         const api = new Koa();
 
         api.use(middlewares.createErrorHandler(logger));
@@ -132,8 +133,7 @@ class InboundApi extends EventEmitter {
             const jwsExclusions = conf.validateInboundPutPartiesJws ? [] : ['putParties'];
             api.use(middlewares.createJwsValidator(logger, jwsVerificationKeys, jwsExclusions));
         }
-
-        api.use(middlewares.applyState({ conf, cache, wso2, logExcludePaths, backendSharedAgents, mojaloopSharedAgents }));
+        api.use(middlewares.applyState({ conf, cache, metricsClient, wso2, logExcludePaths, backendSharedAgents, mojaloopSharedAgents }));
         api.use(middlewares.createPingMiddleware(conf, jwsVerificationKeys));
         api.use(middlewares.createRequestValidator(validator));
         api.use(middlewares.assignFspiopIdentifier());
@@ -189,7 +189,7 @@ class InboundApi extends EventEmitter {
 }
 
 class InboundServer extends EventEmitter {
-    constructor(conf, logger, cache, wso2, mojaloopSharedAgents) {
+    constructor(conf, logger, cache, metricsClient, wso2, mojaloopSharedAgents) {
         super({ captureExceptions: true });
         this._conf = conf;
         this._logger = logger.push({ app: this.constructor.name });
@@ -198,6 +198,7 @@ class InboundServer extends EventEmitter {
             this._logger,
             cache,
             _validator,
+            metricsClient,
             wso2,
             mojaloopSharedAgents,
         );

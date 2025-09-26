@@ -78,6 +78,7 @@ const createInboundTransfersModel = (ctx) => new InboundTransfersModel({
     resourceVersions: ctx.resourceVersions,
     backendSharedAgents: ctx.state.backendSharedAgents,
     mojaloopSharedAgents: ctx.state.mojaloopSharedAgents,
+    metricsClient: ctx.state.metricsClient,
 });
 
 const prepareResponse = ctx => {

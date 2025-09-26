@@ -41,6 +41,7 @@ jest.mock('~/lib/model/lib/requests',() => require('./mockedLibRequests'));
 
 const randomUUID = require('@mojaloop/central-services-shared').Util.id({type: 'ulid'});
 const { MojaloopRequests, Ilp } = require('@mojaloop/sdk-standard-components');
+const { MetricsClient } = require('~/lib/metrics');
 const { logger } = require('~/lib/logger');
 const { BackendRequests, HTTPResponseError } = require('~/lib/model/lib/requests');
 const Cache = require('~/lib/cache');
@@ -72,6 +73,7 @@ describe('inboundModel', () => {
     let config;
     let mockArgs;
     let mockTxnReqArgs;
+    let metricsClient;
 
     beforeEach(async () => {
         config = JSON.parse(JSON.stringify(defaultConfig));
@@ -79,6 +81,10 @@ describe('inboundModel', () => {
         mockArgs = JSON.parse(JSON.stringify(mockArguments));
         mockArgs.internalQuoteResponse.expiration = new Date(Date.now());
         mockTxnReqArgs = JSON.parse(JSON.stringify(mockTxnReqquestsArguments));
+    });
+
+    beforeAll(() => {
+        metricsClient = new MetricsClient();
     });
 
     describe('quoteRequest', () => {
@@ -107,6 +113,7 @@ describe('inboundModel', () => {
                 ...config,
                 cache,
                 logger,
+                metricsClient,
             });
         });
 
@@ -176,6 +183,7 @@ describe('inboundModel', () => {
                 ...config,
                 cache,
                 logger,
+                metricsClient,
             });
         });
 
@@ -233,6 +241,7 @@ describe('inboundModel', () => {
                 ...config,
                 cache,
                 logger,
+                metricsClient,
             });
         });
 
@@ -255,9 +264,9 @@ describe('inboundModel', () => {
     describe('authorizations', () => {
         let model;
         let cache;
-
+        MojaloopRequests.__putBulkTransfersError = jest.fn();
         beforeEach(async () => {
-            BackendRequests.__getOTP = jest.fn().mockReturnValue(Promise.resolve(mockArgs.internalGetOTPResponse));
+            BackendRequests.__getOTP = jest.fn().mockResolvedValue(mockArgs.internalGetOTPResponse);
 
             cache = new Cache({
                 cacheUrl: 'redis://dummy:1234',
@@ -270,6 +279,7 @@ describe('inboundModel', () => {
                 ...config,
                 cache,
                 logger,
+                metricsClient,
             });
         });
 
@@ -318,10 +328,11 @@ describe('inboundModel', () => {
         test('fail on quote `expiration` deadline.', async () => {
             const TRANSFER_ID = 'fake-transfer-id';
             const model = new Model({
-            ...config,
-            cache,
-            logger,
-            rejectTransfersOnExpiredQuotes: true,
+                ...config,
+                cache,
+                logger,
+                metricsClient,
+                rejectTransfersOnExpiredQuotes: true,
             });
             cache.set(`transferModel_in_${TRANSFER_ID}`, {
             transferId: TRANSFER_ID,
@@ -353,9 +364,10 @@ describe('inboundModel', () => {
             BackendRequests.__getTransfers = jest.fn().mockReturnValue(Promise.resolve(backendResponse));
 
             const model = new Model({
-            ...config,
-            cache,
-            logger,
+                ...config,
+                cache,
+                logger,
+                metricsClient,
             });
 
             await model.getTransfer(TRANSFER_ID, mockArgs.fspId);
@@ -375,9 +387,10 @@ describe('inboundModel', () => {
             BackendRequests.__getTransfers = jest.fn().mockReturnValue(Promise.resolve(backendResponse));
 
             const model = new Model({
-            ...config,
-            cache,
-            logger,
+                ...config,
+                cache,
+                logger,
+                metricsClient,
             });
 
             await model.getTransfer(TRANSFER_ID, mockArgs.fspId);
@@ -391,19 +404,15 @@ describe('inboundModel', () => {
         test('getTransfer should return not found error', async () => {
             const TRANSFER_ID = 'fake-transfer-id';
 
-            BackendRequests.__getTransfers = jest.fn().mockReturnValue(
-            Promise.reject(new HTTPResponseError({
-                res: {
-                data: {
-                    statusCode: '3208'
-                },
-                }
-            })));
+            BackendRequests.__getTransfers = jest.fn().mockRejectedValue(
+                new HTTPResponseError({ res: { data: { statusCode: '3208' } } })
+            );
 
             const model = new Model({
-            ...config,
-            cache,
-            logger,
+                ...config,
+                cache,
+                logger,
+                metricsClient,
             });
 
             await model.getTransfer(TRANSFER_ID, mockArgs.fspId);
@@ -429,10 +438,11 @@ describe('inboundModel', () => {
             };
 
             const model = new Model({
-            ...config,
-            cache,
-            logger,
-            allowTransferWithoutQuote: false,
+                ...config,
+                cache,
+                logger,
+                metricsClient,
+                allowTransferWithoutQuote: false,
             });
 
             await model.prepareTransfer(args, mockArgs.fspId);
@@ -467,11 +477,12 @@ describe('inboundModel', () => {
             };
 
             const model = new Model({
-            ...config,
-            cache,
-            logger,
-            checkIlp: false,
-            rejectTransfersOnExpiredQuotes: false
+                ...config,
+                cache,
+                logger,
+                metricsClient,
+                checkIlp: false,
+                rejectTransfersOnExpiredQuotes: false
             });
 
             cache.set(`transferModel_in_${TRANSFER_ID}`, {
@@ -516,10 +527,11 @@ describe('inboundModel', () => {
             };
 
             const model = new Model({
-            ...config,
-            cache,
-            logger,
-            allowTransferWithoutQuote: true,
+                ...config,
+                cache,
+                logger,
+                metricsClient,
+                allowTransferWithoutQuote: true,
             });
 
             await model.prepareTransfer(args, mockArgs.fspId);
@@ -560,11 +572,12 @@ describe('inboundModel', () => {
             };
 
             const model = new Model({
-            ...config,
-            cache,
-            logger,
-            allowDifferentTransferTransactionId: true,
-            checkIlp: false,
+                ...config,
+                cache,
+                logger,
+                metricsClient,
+                allowDifferentTransferTransactionId: true,
+                checkIlp: false,
             });
 
             await model.prepareTransfer(args, mockArgs.fspId);
@@ -621,6 +634,7 @@ describe('inboundModel', () => {
             ...config,
             cache,
             logger,
+            metricsClient,
             patchNotificationGraceTimeMs: PATCH_GRACE_MS,
             });
 
@@ -695,6 +709,7 @@ describe('inboundModel', () => {
             ...config,
             cache,
             logger,
+            metricsClient,
             patchNotificationGraceTimeMs: 0,
             });
 
@@ -769,6 +784,7 @@ describe('inboundModel', () => {
                 ...config,
                 cache,
                 logger,
+                metricsClient,
                 rejectTransfersOnExpiredQuotes: true,
             });
             cache.set(`bulkQuotes_${BULK_QUOTE_ID}`, {
@@ -801,6 +817,7 @@ describe('inboundModel', () => {
                 ...config,
                 cache,
                 logger,
+                metricsClient,
             });
 
             await model.getBulkTransfer(BULK_TRANSFER_ID, mockArgs.fspId);
@@ -823,6 +840,7 @@ describe('inboundModel', () => {
                 ...config,
                 cache,
                 logger,
+                metricsClient,
             });
 
             await model.getBulkTransfer(BULK_TRANSFER_ID, mockArgs.fspId);
@@ -838,19 +856,15 @@ describe('inboundModel', () => {
         test('getBulkTransfer should return not found error', async () => {
             const BULK_TRANSFER_ID = 'fake-bulk-transfer-id';
 
-            BackendRequests.__getBulkTransfers = jest.fn().mockReturnValue(
-                Promise.reject(new HTTPResponseError({
-                    res: {
-                        data: {
-                            statusCode: '3208'
-                        },
-                    }
-                })));
+            BackendRequests.__getBulkTransfers = jest.fn().mockRejectedValue(
+                new HTTPResponseError({ res: { data: { statusCode: '3208' } } })
+            );
 
             const model = new Model({
                 ...config,
                 cache,
                 logger,
+                metricsClient,
             });
 
             await model.getBulkTransfer(BULK_TRANSFER_ID, mockArgs.fspId);
@@ -881,6 +895,7 @@ describe('inboundModel', () => {
                 ...config,
                 cache,
                 logger,
+                metricsClient,
                 allowTransferWithoutQuote: false,
             });
 
@@ -913,6 +928,7 @@ describe('inboundModel', () => {
                 ...config,
                 cache,
                 logger,
+                metricsClient,
                 allowTransferWithoutQuote: true,
                 rejectTransfersOnExpiredQuotes: false,
             });
@@ -955,6 +971,7 @@ describe('inboundModel', () => {
                 ...config,
                 cache,
                 logger,
+                metricsClient,
             });
 
             await model.sendNotificationToPayee(notif.data, transferId);
@@ -977,6 +994,7 @@ describe('inboundModel', () => {
                 ...config,
                 cache,
                 logger,
+                metricsClient,
             });
 
             await model.sendNotificationToPayee(notif.data, transferId);
@@ -1000,6 +1018,7 @@ describe('inboundModel', () => {
                 ...config,
                 cache,
                 logger,
+                metricsClient,
             });
 
             await model.sendNotificationToPayee(notif.data, transferId);
@@ -1022,6 +1041,7 @@ describe('inboundModel', () => {
                 ...config,
                 cache,
                 logger,
+                metricsClient,
                 backendRequestRetry: {
                     enabled: true,
                     maxRetries: 3,
@@ -1044,6 +1064,7 @@ describe('inboundModel', () => {
                 ...config,
                 cache,
                 logger,
+                metricsClient,
                 backendRequestRetry: {
                     enabled: false
                 }
@@ -1080,6 +1101,7 @@ describe('inboundModel', () => {
                 ...config,
                 cache,
                 logger,
+                metricsClient,
             });
             model.saveFxState = jest.fn().mockReturnValue(Promise.resolve({}));
 
@@ -1098,6 +1120,7 @@ describe('inboundModel', () => {
                 ...config,
                 cache,
                 logger,
+                metricsClient,
             });
             model.saveFxState = jest.fn().mockReturnValue(Promise.resolve({}));
 
@@ -1116,6 +1139,7 @@ describe('inboundModel', () => {
                 ...config,
                 cache,
                 logger,
+                metricsClient,
             });
             model.saveFxState = jest.fn().mockReturnValue(Promise.resolve({}));
 
@@ -1139,6 +1163,7 @@ describe('inboundModel', () => {
             ...config,
             cache,
             logger,
+            metricsClient,
             backendRequestRetry: {
             enabled: true,
             maxRetries: 3,
@@ -1162,6 +1187,7 @@ describe('inboundModel', () => {
             ...config,
             cache,
             logger,
+            metricsClient,
             backendRequestRetry: {
             enabled: false
             }
@@ -1179,6 +1205,7 @@ describe('inboundModel', () => {
             ...config,
             cache,
             logger,
+            metricsClient,
             backendRequestRetry: {
             enabled: false
             }
@@ -1195,6 +1222,7 @@ describe('inboundModel', () => {
             ...config,
             cache,
             logger,
+            metricsClient,
             backendRequestRetry: {
             enabled: false
             }
@@ -1209,6 +1237,7 @@ describe('inboundModel', () => {
             ...config,
             cache,
             logger,
+            metricsClient,
             backendRequestRetry: {
                 enabled: false
             }
@@ -1235,6 +1264,7 @@ describe('inboundModel', () => {
                 ...config,
                 cache,
                 logger,
+                metricsClient,
             });
             const testErr = new HTTPResponseError({
                 msg: 'Request returned non-success status code 500',
@@ -1258,6 +1288,7 @@ describe('inboundModel', () => {
                 ...config,
                 cache,
                 logger,
+                metricsClient,
             });
             const customMessage = 'some custom message';
             const testErr = new HTTPResponseError({
@@ -1280,6 +1311,7 @@ describe('inboundModel', () => {
                 ...config,
                 cache,
                 logger,
+                metricsClient,
             });
             const customMessage = 'some custom message';
             const testErr = new HTTPResponseError({
@@ -1317,6 +1349,7 @@ describe('inboundModel', () => {
                 ...config,
                 cache,
                 logger,
+                metricsClient,
             });
         });
 
@@ -1384,6 +1417,7 @@ describe('inboundModel', () => {
                 ...config,
                 cache,
                 logger,
+                metricsClient,
             });
         });
 
