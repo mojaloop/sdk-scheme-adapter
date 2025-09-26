@@ -264,5 +264,21 @@ module.exports = {
 
     // Redis key ttl when stored in the cache, if value is used as zero it will
     // persist throughout the session , value used is in seconds
-    redisCacheTtl: env.get('REDIS_CACHE_TTL').default('0').asInt()
+    redisCacheTtl: env.get('REDIS_CACHE_TTL').default('0').asInt(),
+
+    backendRequestRetry: {
+        enabled: env.get('BACKEND_REQUEST_RETRY_ENABLED').default('true').asBool(),
+        maxRetries: env.get('BACKEND_REQUEST_RETRY_MAX_RETRIES').default('5').asIntPositive(),
+        retryDelayMs: env.get('BACKEND_REQUEST_RETRY_DELAY_MS').default('1000').asIntPositive(),
+        maxRetryDelayMs: env.get('BACKEND_REQUEST_RETRY_MAX_DELAY_MS').default('10000').asIntPositive(),
+        backoffFactor: env.get('BACKEND_REQUEST_RETRY_BACKOFF_FACTOR').default('2').asIntPositive(),
+    },
+    getTransferRequestRetry: {
+        enabled: env.get('GET_TRANSFER_REQUEST_RETRY_ENABLED').default('false').asBool(),
+        maxRetries: env.get('GET_TRANSFER_REQUEST_RETRY_MAX_RETRIES').default('3').asIntPositive(),
+        retryDelayMs: env.get('GET_TRANSFER_REQUEST_RETRY_DELAY_MS').default('1000').asIntPositive(),
+        maxRetryDelayMs: env.get('GET_TRANSFER_REQUEST_RETRY_MAX_DELAY_MS').default('10000').asIntPositive(),
+        backoffFactor: env.get('GET_TRANSFER_REQUEST_RETRY_BACKOFF_FACTOR').default('2').asIntPositive(),
+    },
+    patchNotificationGraceTimeMs: env.get('PATCH_NOTIFICATION_GRACE_TIME_MS').default('15000').asIntPositive(),
 };

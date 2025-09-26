@@ -48,12 +48,17 @@ const _validator = new Validate({ logExcludePaths });
 let _initialize;
 
 class InboundApi extends EventEmitter {
-    constructor(conf, logger, cache, validator, metricsClient, wso2) {
+    constructor(conf, logger, cache, validator, metricsClient, wso2, mojaloopSharedAgents) {
         super({ captureExceptions: true });
         this._conf = conf;
         this._cache = cache;
         this._logger = logger;
         _initialize ||= _validator.initialise(apiSpecs, conf);
+
+        // Create shared HTTP and HTTPS agents for backend requests only
+        this.backendSharedAgents = this._createBackendSharedAgents();
+        // Use provided shared Mojaloop agents
+        this.mojaloopSharedAgents = mojaloopSharedAgents;
 
         if (conf.validateInboundJws) {
             // peerJWSKey is a special config option specifically for Payment Manager for Mojaloop
@@ -69,6 +74,8 @@ class InboundApi extends EventEmitter {
             jwsVerificationKeys: this._jwsVerificationKeys,
             metricsClient,
             wso2,
+            backendSharedAgents: this.backendSharedAgents,
+            mojaloopSharedAgents: this.mojaloopSharedAgents,
         });
     }
 
@@ -115,7 +122,7 @@ class InboundApi extends EventEmitter {
         }
     }
 
-    static _SetupApi({ conf, logger, validator, cache, jwsVerificationKeys, metricsClient, wso2 }) {
+    static _SetupApi({ conf, logger, validator, cache, jwsVerificationKeys, metricsClient, wso2, backendSharedAgents, mojaloopSharedAgents }) {
         const api = new Koa();
 
         api.use(middlewares.createErrorHandler(logger));
@@ -126,7 +133,7 @@ class InboundApi extends EventEmitter {
             const jwsExclusions = conf.validateInboundPutPartiesJws ? [] : ['putParties'];
             api.use(middlewares.createJwsValidator(logger, jwsVerificationKeys, jwsExclusions));
         }
-        api.use(middlewares.applyState({ conf, cache, metricsClient, wso2, logExcludePaths }));
+        api.use(middlewares.applyState({ conf, cache, metricsClient, wso2, logExcludePaths, backendSharedAgents, mojaloopSharedAgents }));
         api.use(middlewares.createPingMiddleware(conf, jwsVerificationKeys));
         api.use(middlewares.createRequestValidator(validator));
         api.use(middlewares.assignFspiopIdentifier());
@@ -155,10 +162,34 @@ class InboundApi extends EventEmitter {
         }
         return keys;
     }
+
+    _createBackendSharedAgents() {
+        const httpAgent = new http.Agent({
+            keepAlive: true,
+            maxSockets: this._conf.outbound?.maxSockets || 256,
+        });
+
+        const httpsAgent = new https.Agent({
+            keepAlive: true,
+            maxSockets: this._conf.outbound?.maxSockets || 256,
+        });
+
+        // Prevent accidental logging of agent internals
+        httpAgent.toJSON = () => ({ type: 'BackendHttpAgent', keepAlive: httpAgent.keepAlive });
+        httpsAgent.toJSON = () => ({ type: 'BackendHttpsAgent', keepAlive: httpsAgent.keepAlive });
+
+        this._logger.isInfoEnabled && this._logger.info('Created shared HTTP and HTTPS agents for backend requests');
+
+        return {
+            httpAgent,
+            httpsAgent
+        };
+    }
+
 }
 
 class InboundServer extends EventEmitter {
-    constructor(conf, logger, cache, metricsClient, wso2) {
+    constructor(conf, logger, cache, metricsClient, wso2, mojaloopSharedAgents) {
         super({ captureExceptions: true });
         this._conf = conf;
         this._logger = logger.push({ app: this.constructor.name });
@@ -169,6 +200,7 @@ class InboundServer extends EventEmitter {
             _validator,
             metricsClient,
             wso2,
+            mojaloopSharedAgents,
         );
         this._api.on('error', (...args) => {
             this.emit('error', ...args);

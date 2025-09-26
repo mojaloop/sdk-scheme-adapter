@@ -1,4 +1,41 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+## [24.12.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.11.0...v24.12.0) (2025-09-22)
+
+
+### Bug Fixes
+
+* http agent recreation ([#615](https://github.com/mojaloop/sdk-scheme-adapter/issues/615)) ([dc1b9d7](https://github.com/mojaloop/sdk-scheme-adapter/commit/dc1b9d7c0f67d6d42116c128822c65f96d9fef97))
+
+
+### Chore
+
+* **sbom:** update sbom [skip ci] ([35b52c9](https://github.com/mojaloop/sdk-scheme-adapter/commit/35b52c92872c4aee37dc274263ddb9a9e9486cac))
+
+## [24.11.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.10.11...v24.11.0) (2025-09-18)
+
+
+### Features
+
+* **csi-1807:** improve transfer status delivery effort ([#614](https://github.com/mojaloop/sdk-scheme-adapter/issues/614)) ([65c9d1a](https://github.com/mojaloop/sdk-scheme-adapter/commit/65c9d1a5835af0e35b1c0bbe06990f7e26bc4b35))
+
+
+### Chore
+
+* **sbom:** update sbom [skip ci] ([bdb946f](https://github.com/mojaloop/sdk-scheme-adapter/commit/bdb946f94d330b8f1d0f7f2a13b8962c4b410b11))
+
+### [24.10.11](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.10.10...v24.10.11) (2025-09-15)
+
+
+### Bug Fixes
+
+* ilp decimal calculation ([#612](https://github.com/mojaloop/sdk-scheme-adapter/issues/612)) ([77cdd19](https://github.com/mojaloop/sdk-scheme-adapter/commit/77cdd19dc2543f9bd115da4da55e1d3266d21e67))
+
+
+### Chore
+
+* grype exception ([#613](https://github.com/mojaloop/sdk-scheme-adapter/issues/613)) ([464f4fd](https://github.com/mojaloop/sdk-scheme-adapter/commit/464f4fd95feec2953106839c134296d2f51f05b3))
+* **sbom:** update sbom [skip ci] ([051986c](https://github.com/mojaloop/sdk-scheme-adapter/commit/051986ccc8bb51b616200239cb1727598fd29f74))
+
 ### [24.10.10](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.10.9...v24.10.10) (2025-08-27)
 
 

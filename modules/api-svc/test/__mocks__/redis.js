@@ -56,8 +56,11 @@ class RedisClient extends redisMock.RedisClient {
         process.nextTick(() => this.events.emit(...args));
     }
 
-    set(...args) {
-        return promisify(super.set.bind(this))(...args);
+    /**
+     * Note: This Redis mock implementation does not support options like TTL (time-to-live).
+     */
+    set(key, value) {
+        return promisify(super.set.bind(this))(key, value);
     }
 
     get(...args) {

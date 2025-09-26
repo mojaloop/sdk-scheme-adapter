@@ -51,7 +51,7 @@ const _validator = new Validate({ logExcludePaths });
 let _initialize;
 
 class OutboundApi extends EventEmitter {
-    constructor(conf, logger, cache, validator, metricsClient, wso2, eventProducer, eventLogger) {
+    constructor(conf, logger, cache, validator, metricsClient, wso2, eventProducer, eventLogger, sharedAgents) {
         super({ captureExceptions: true });
         this._logger = logger.push({ component: this.constructor.name });
         this._api = new Koa();
@@ -72,7 +72,8 @@ class OutboundApi extends EventEmitter {
             metricsClient,
             logExcludePaths,
             eventProducer,
-            eventLogger
+            eventLogger,
+            sharedAgents
         }));
         this._api.use(middlewares.createLogger(this._logger));
 
@@ -105,11 +106,15 @@ class OutboundApi extends EventEmitter {
 }
 
 class OutboundServer extends EventEmitter {
-    constructor(conf, logger, cache, metricsClient, wso2) {
+    constructor(conf, logger, cache, metricsClient, wso2, mojaloopSharedAgents) {
         super({ captureExceptions: true });
         this._conf = conf;
         this._logger = logger.push({ app: this.constructor.name });
         this._server = null;
+
+        this._httpAgent = mojaloopSharedAgents.httpAgent;
+        this._httpsAgent = mojaloopSharedAgents.httpsAgent;
+        this._logger.isInfoEnabled && this._logger.info('Using shared Mojaloop HTTP and HTTPS agents for OutboundServer');
         if (conf.backendEventHandler.enabled) {
             this._eventLogger = new DefaultLogger(BC_CONFIG.bcName, 'backend-api-handler', '0.0.1', conf.logLevel);
             this._eventProducer = new KafkaDomainEventProducer(conf.backendEventHandler.domainEventProducer, this._eventLogger);
@@ -124,6 +129,10 @@ class OutboundServer extends EventEmitter {
             wso2,
             this._eventProducer,
             this._eventLogger,
+            {
+                httpAgent: this._httpAgent,
+                httpsAgent: this._httpsAgent
+            }
         );
         this._api.on('error', (...args) => {
             this.emit('error', ...args);
