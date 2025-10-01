@@ -82,10 +82,10 @@
   },
   "devDependencies": {
     "@types/jest": "30.0.0",
-    "@types/node": "24.5.2",
+    "@types/node": "24.6.1",
     "@types/node-cache": "4.2.5",
-    "@typescript-eslint/eslint-plugin": "8.44.0",
-    "@typescript-eslint/parser": "8.44.0",
+    "@typescript-eslint/eslint-plugin": "8.45.0",
+    "@typescript-eslint/parser": "8.45.0",
     "audit-ci": "7.1.0",
     "eslint": "9.15.0",
     "eslint-config-airbnb-typescript": "18.0.0",
@@ -99,7 +99,7 @@
     "standard-version": "9.5.0",
     "ts-jest": "29.4.4",
     "ts-node": "10.9.2",
-    "typescript": "5.9.2",
+    "typescript": "5.9.3",
     "yarn-audit-fix": "10.1.1"
   },
   "overrides": {
