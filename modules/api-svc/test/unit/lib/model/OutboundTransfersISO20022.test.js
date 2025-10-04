@@ -167,7 +167,7 @@ describe('API_TYPE="iso20022"', () => {
 
         metricsClient = new MetricsClient();
         metricsClient._prometheusRegister.clear();
-        config.wso2 = {
+        config.oidc = {
             auth: {
                 getToken: () => { return '1234'; }
             }

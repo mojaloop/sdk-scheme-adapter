@@ -51,7 +51,7 @@ const _validator = new Validate({ logExcludePaths });
 let _initialize;
 
 class OutboundApi extends EventEmitter {
-    constructor(conf, logger, cache, validator, metricsClient, wso2, eventProducer, eventLogger, sharedAgents) {
+    constructor(conf, logger, cache, validator, metricsClient, oidc, eventProducer, eventLogger, sharedAgents) {
         super({ captureExceptions: true });
         this._logger = logger.push({ component: this.constructor.name });
         this._api = new Koa();
@@ -67,7 +67,7 @@ class OutboundApi extends EventEmitter {
         })); // outbound always expects application/json
         this._api.use(middlewares.applyState({
             cache,
-            wso2,
+            oidc,
             conf,
             metricsClient,
             logExcludePaths,
@@ -86,7 +86,7 @@ class OutboundApi extends EventEmitter {
                 peerEndpoint: conf.peerEndpoint.replace(endpointRegex, ''),
                 proxyConfig: conf.proxyConfig,
                 logger: this._logger,
-                wso2: wso2,
+                oidc: oidc,
                 tls: conf.outbound.tls,
             }));
         }
@@ -106,7 +106,7 @@ class OutboundApi extends EventEmitter {
 }
 
 class OutboundServer extends EventEmitter {
-    constructor(conf, logger, cache, metricsClient, wso2, mojaloopSharedAgents) {
+    constructor(conf, logger, cache, metricsClient, oidc, mojaloopSharedAgents) {
         super({ captureExceptions: true });
         this._conf = conf;
         this._logger = logger.push({ app: this.constructor.name });
@@ -126,7 +126,7 @@ class OutboundServer extends EventEmitter {
             cache,
             _validator,
             metricsClient,
-            wso2,
+            oidc,
             this._eventProducer,
             this._eventLogger,
             {

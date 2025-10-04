@@ -541,7 +541,9 @@ const createPingMiddleware = (config, validationKeys) => async (ctx, next) => {
 
 const extractRequestBody = async (conf, ctx) => {
     try {
-        ctx.request.body = await coBody.json(ctx.req, { limit: conf.fspiopApiServerMaxRequestBytes });
+        const body =  await coBody.json(ctx.req, { limit: conf.fspiopApiServerMaxRequestBytes });
+        ctx.request.body = body;
+        ctx.state.logger.debug('incoming request body: ', { body });
         return true;
     } catch (err) {
         // error parsing body

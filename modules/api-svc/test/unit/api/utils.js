@@ -4,7 +4,7 @@ const http = require('http');
 const https = require('https');
 const yaml = require('js-yaml');
 const supertest = require('supertest');
-const { WSO2Auth } = require('@mojaloop/sdk-standard-components');
+const { OIDCAuth } = require('@mojaloop/sdk-standard-components');
 
 const { logger } = require('~/lib/logger');
 const { MetricsClient } = require('~/lib/metrics');
@@ -77,21 +77,21 @@ const createTestServers = async (config) => {
     defConfig.requestProcessingTimeoutSeconds = 2;
     const metricsClient = new MetricsClient();
     metricsClient._prometheusRegister.clear();
-    const wso2 = {
-        auth: new WSO2Auth({
-            ...defConfig.wso2.auth,
+    const oidc = {
+        auth: new OIDCAuth({
+            ...defConfig.oidc.auth,
             logger,
             tlsCreds: defConfig.outbound.tls.mutualTLS.enabled && defConfig.outbound.tls.creds,
         }),
-        retryWso2AuthFailureTimes: defConfig.wso2.requestAuthFailureRetryTimes,
+        retryOidcAuthFailureTimes: defConfig.oidc.requestAuthFailureRetryTimes,
     };
     const mockSharedAgents = createMockSharedAgents();
 
-    const serverOutbound = new OutboundServer(defConfig, logger, cache, metricsClient, wso2, mockSharedAgents);
+    const serverOutbound = new OutboundServer(defConfig, logger, cache, metricsClient, oidc, mockSharedAgents);
     await serverOutbound.start();
     const reqOutbound = supertest(serverOutbound._server);
 
-    const serverInbound = new InboundServer(defConfig, logger, cache, wso2, mockSharedAgents);
+    const serverInbound = new InboundServer(defConfig, logger, cache, oidc, mockSharedAgents);
     await serverInbound.start();
     const reqInbound = supertest(serverInbound._server);
 

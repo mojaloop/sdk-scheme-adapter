@@ -543,7 +543,7 @@ describe('Outbound API handlers:', () => {
                 response: {},
                 state: {
                     conf: {},
-                    wso2: 'mocked wso2',
+                    oidc: 'mocked oidc',
                     logger: mockLogger({ app: 'outbound-api-handlers-test'}),
                     cache: { the: 'mocked cache' },
                     path: {
@@ -577,7 +577,7 @@ describe('Outbound API handlers:', () => {
             const expectedConfig = {
                 cache: state.cache,
                 logger: state.logger,
-                wso2: state.wso2
+                oidc: state.oidc
             };
             expect(createSpy).toHaveBeenCalledWith({}, cacheKey, expectedConfig);
 
@@ -599,7 +599,7 @@ describe('Outbound API handlers:', () => {
                 response: {},
                 state: {
                     conf: {},
-                    wso2: 'mocked wso2',
+                    oidc: 'mocked oidc',
                     logger: mockLogger({ app: 'outbound-api-handlers-test'}),
                     cache: { the: 'mocked cache' },
                     path: {
@@ -633,7 +633,7 @@ describe('Outbound API handlers:', () => {
             const expectedConfig = {
                 cache: state.cache,
                 logger: state.logger,
-                wso2: state.wso2
+                oidc: state.oidc
             };
             expect(createSpy).toHaveBeenCalledWith({}, cacheKey, expectedConfig);
 
@@ -655,7 +655,7 @@ describe('Outbound API handlers:', () => {
             response: {},
             state: {
                 conf: {},
-                wso2: 'mocked wso2',
+                oidc: 'mocked oidc',
                 logger: mockLogger({ app: 'outbound-api-handlers-test'}),
                 cache: {
                     subscribe: jest.fn(() => Promise.resolve())
@@ -691,7 +691,7 @@ describe('Outbound API handlers:', () => {
             const expectedConfig = {
                 cache: state.cache,
                 logger: state.logger,
-                wso2: state.wso2
+                oidc: state.oidc
             };
             expect(createSpy).toHaveBeenCalledWith({}, cacheKey, expectedConfig);
 
@@ -725,7 +725,7 @@ describe('Outbound API handlers:', () => {
             const expectedConfig = {
                 cache: state.cache,
                 logger: state.logger,
-                wso2: state.wso2
+                oidc: state.oidc
             };
             expect(createSpy).toHaveBeenCalledWith({}, cacheKey, expectedConfig);
 
@@ -763,7 +763,7 @@ describe('Outbound API handlers:', () => {
             const expectedConfig = {
                 cache: state.cache,
                 logger: state.logger,
-                wso2: state.wso2
+                oidc: state.oidc
             };
             expect(createSpy).toHaveBeenCalledWith({}, cacheKey, expectedConfig);
 
@@ -804,7 +804,7 @@ describe('Outbound API handlers:', () => {
             const expectedConfig = {
                 cache: state.cache,
                 logger: state.logger,
-                wso2: state.wso2
+                oidc: state.oidc
             };
             expect(createSpy).toHaveBeenCalledWith({}, cacheKey, expectedConfig);
 
@@ -838,7 +838,7 @@ describe('Outbound API handlers:', () => {
             response: {},
             state: {
                 conf: {},
-                wso2: 'mocked wso2',
+                oidc: 'mocked oidc',
                 logger: mockLogger({ app: 'outbound-api-handlers-test' }),
                 cache: {
                     subscribe: jest.fn(() => Promise.resolve())
@@ -867,7 +867,7 @@ describe('Outbound API handlers:', () => {
             const expectedConfig = {
                 cache: state.cache,
                 logger: state.logger,
-                wso2: state.wso2
+                oidc: state.oidc
             };
             expect(createSpy).toHaveBeenCalledWith({}, cacheKey, expectedConfig);
 
@@ -904,7 +904,7 @@ describe('Outbound API handlers:', () => {
             const expectedConfig = {
                 cache: state.cache,
                 logger: state.logger,
-                wso2: state.wso2
+                oidc: state.oidc
             };
             expect(createSpy).toHaveBeenCalledWith({}, cacheKey, expectedConfig);
 
@@ -937,7 +937,7 @@ describe('Outbound API handlers:', () => {
             response: {},
             state: {
                 conf: {},
-                wso2: 'mocked wso2',
+                oidc: 'mocked oidc',
                 logger: mockLogger({ app: 'outbound-api-handlers-test' }),
                 cache: {
                     subscribe: jest.fn(() => Promise.resolve())
@@ -966,7 +966,7 @@ describe('Outbound API handlers:', () => {
             const expectedConfig = {
                 cache: state.cache,
                 logger: state.logger,
-                wso2: state.wso2
+                oidc: state.oidc
             };
             expect(createSpy).toHaveBeenCalledWith({}, cacheKey, expectedConfig);
 
@@ -1003,7 +1003,7 @@ describe('Outbound API handlers:', () => {
             const expectedConfig = {
                 cache: state.cache,
                 logger: state.logger,
-                wso2: state.wso2
+                oidc: state.oidc
             };
             expect(createSpy).toHaveBeenCalledWith({}, cacheKey, expectedConfig);
 

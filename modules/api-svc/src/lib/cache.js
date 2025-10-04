@@ -201,7 +201,7 @@ class Cache {
 
     /**
      * Subscribes to a channel and waits for a single message with timeout support.
-     * 
+     *
      * NOTE:
      * This implementation uses EventEmitter to handle Redis pub/sub concurrency issues
      * that occur when multiple subscribers listen to the same channel simultaneously.
@@ -267,7 +267,7 @@ class Cache {
                 isResolved = true;
 
                 this._logger.push({ channel, needParse }).debug('Received message on subscribed channel');
-                
+
                 cleanup();
 
                 try {
@@ -285,7 +285,7 @@ class Cache {
             // Subscribe to Redis channel
             this._subscriptionClient.subscribe(channel, (msg) => {
                 this._channelEmitter.emit(channel, msg);
-                
+
                 // Auto-unsubscribe if no more listeners
                 unsubscribeFromRedis('auto-cleanup').catch(err => {
                     this._logger.push({ channel }).warn('Auto-unsubscribe failed', err);
@@ -386,8 +386,9 @@ class Cache {
         } else {
             // we should not be asked to unsubscribe from a subscription we do not have. Raise this as a promise
             // rejection so it can be spotted. It may indicate a logic bug somewhere else
-            this._logger.isErrorEnabled && this._logger.error(`Cache not subscribed to channel ${channel} for callbackId ${callbackId}`);
-            throw new Error(`Channel ${channel} does not have a callback with id ${callbackId} subscribed`);
+            const errMessage = `Cache not subscribed to channel ${channel} for callbackId ${callbackId}`;
+            this._logger.error(errMessage);
+            throw new Error(errMessage);
         }
     }
 
@@ -395,7 +396,7 @@ class Cache {
         if (channelKey && typeof subId === 'number') {
             return this.unsubscribe(channelKey, subId)
                 .catch(err => {
-                    this._logger.push({ err }).warn(`Unsubscribing cache error [${channelKey} ${subId}]: ${err.stack}`);
+                    this._logger.warn(`Unsubscribing cache error [${channelKey} ${subId}]: `, err);
                 });
         }
     }
@@ -413,11 +414,11 @@ class Cache {
         const client = redis.createClient({ url: this._url });
 
         client.on('error', (err) => {
-            this._logger.isErrorEnabled && this._logger.push({ err }).error('Error from REDIS client getting subscriber');
+            this._logger.error('Error from REDIS client getting subscriber: ', err);
         });
 
-        client.on('reconnecting', (err) => {
-            this._logger.isDebugEnabled &&  this._logger.push({ err }).debug('REDIS client Reconnecting');
+        client.on('reconnecting', () => {
+            this._logger.verbose('REDIS client reconnecting...');
         });
 
         client.on('subscribe', (channel, count) => {
@@ -431,11 +432,11 @@ class Cache {
         });
 
         client.on('connect', () => {
-            this._logger.isDebugEnabled && this._logger.debug(`REDIS client connected at: ${this._url}`);
+            this._logger.verbose(`REDIS client connected at: ${this._url}`);
         });
 
         client.on('ready', () => {
-            this._logger.isDebugEnabled && this._logger.debug(`Connected to REDIS at: ${this._url}`);
+            this._logger.info('REDIS client is ready');
         });
         await client.connect();
 

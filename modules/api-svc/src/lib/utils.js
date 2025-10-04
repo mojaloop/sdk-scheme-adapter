@@ -26,20 +26,20 @@
  ******/
 
 const { randomBytes } = require('node:crypto');
-const { WSO2Auth } = require('@mojaloop/sdk-standard-components');
+const { OIDCAuth } = require('@mojaloop/sdk-standard-components');
 
 const createAuthClient = (conf, logger) => {
-    const { wso2, outbound } = conf;
+    const { oidc, outbound } = conf;
 
-    const auth = new WSO2Auth({
-        ...wso2.auth,
+    const auth = new OIDCAuth({
+        ...oidc.auth,
         logger,
-        tlsCreds: wso2.mTlsEnabled && outbound.tls.creds,
+        tlsCreds: oidc.mTlsEnabled && outbound.tls.creds,
     });
 
     return Object.freeze({
         auth,
-        retryWso2AuthFailureTimes: wso2.requestAuthFailureRetryTimes,
+        retryOidcAuthFailureTimes: oidc.requestAuthFailureRetryTimes,
     });
 };
 

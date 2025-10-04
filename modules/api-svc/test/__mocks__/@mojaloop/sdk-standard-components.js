@@ -31,7 +31,7 @@ const assert = require('assert').strict;
 const util = require('util');
 const {
     axios,
-    MojaloopRequests, Errors, WSO2Auth, Jws, Logger, common,
+    MojaloopRequests, Errors, OIDCAuth, Jws, Logger, common,
     httpRequester,
     requests: { PingRequests },
     Ilp: { ILP_VERSIONS }
@@ -208,7 +208,7 @@ module.exports = {
         signer: MockJwsSigner
     },
     Errors,
-    WSO2Auth,
+    OIDCAuth,
     Logger,
     common,
 };
