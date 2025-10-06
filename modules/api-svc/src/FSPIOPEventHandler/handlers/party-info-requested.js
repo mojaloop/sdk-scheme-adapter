@@ -46,7 +46,7 @@ module.exports.handlePartyInfoRequestedDmEvt = async (
             ...options.config,
             cache: options.cache,
             logger: logger,
-            wso2: options.wso2,
+            oidc: options.oidc,
         };
 
         const cacheKey = PartiesModel.generateKey(args);

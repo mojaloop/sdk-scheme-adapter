@@ -128,7 +128,7 @@ const createOutboundTransfersModel = (ctx) => new OutboundTransfersModel({
     ...(ctx.state.path?.params?.dfspId && { dfspId: ctx.state.path.params.dfspId }),
     cache: ctx.state.cache,
     logger: ctx.state.logger,
-    wso2: ctx.state.wso2,
+    oidc: ctx.state.oidc,
     metricsClient: ctx.state.metricsClient,
     mojaloopSharedAgents: ctx.state.sharedAgents,
 });
@@ -138,7 +138,7 @@ const createOutboundBulkTransfersModel = (ctx) => new OutboundBulkTransfersModel
     ...(ctx.state.path?.params?.dfspId && { dfspId: ctx.state.path.params.dfspId }),
     cache: ctx.state.cache,
     logger: ctx.state.logger,
-    wso2: ctx.state.wso2,
+    oidc: ctx.state.oidc,
 });
 
 /**
@@ -341,7 +341,7 @@ const postBulkQuotes = async (ctx) => {
             ...ctx.state.path?.params?.dfspId && {dfspId: ctx.state.path.params.dfspId},
             cache: ctx.state.cache,
             logger: ctx.state.logger,
-            wso2: ctx.state.wso2,
+            oidc: ctx.state.oidc,
         });
 
         await model.initialize(bulkQuoteRequest);
@@ -373,7 +373,7 @@ const getBulkQuoteById = async (ctx) => {
             ...ctx.state.path?.params?.dfspId && {dfspId: ctx.state.path.params.dfspId},
             cache: ctx.state.cache,
             logger: ctx.state.logger,
-            wso2: ctx.state.wso2,
+            oidc: ctx.state.oidc,
         });
 
         await model.initialize(bulkQuoteRequest);
@@ -404,7 +404,7 @@ const postRequestToPayTransfer = async (ctx) => {
             ...ctx.state.path?.params?.dfspId && {dfspId: ctx.state.path.params.dfspId},
             cache: ctx.state.cache,
             logger: ctx.state.logger,
-            wso2: ctx.state.wso2,
+            oidc: ctx.state.oidc,
         });
 
         // initialize the transfer model and start it running
@@ -432,7 +432,7 @@ const putRequestToPayTransfer = async (ctx) => {
             ...ctx.state.path?.params?.dfspId && {dfspId: ctx.state.path.params.dfspId},
             cache: ctx.state.cache,
             logger: ctx.state.logger,
-            wso2: ctx.state.wso2,
+            oidc: ctx.state.oidc,
         });
 
         // TODO: check the incoming body to reject party or quote when requested to do so
@@ -466,7 +466,7 @@ const postAccounts = async (ctx) => {
             ...ctx.state.path?.params?.dfspId && {dfspId: ctx.state.path.params.dfspId},
             cache: ctx.state.cache,
             logger: ctx.state.logger,
-            wso2: ctx.state.wso2,
+            oidc: ctx.state.oidc,
             mojaloopSharedAgents: ctx.state.sharedAgents,
         });
 
@@ -497,7 +497,7 @@ const deleteAccountByTypeAndId = async (ctx) => {
             ...ctx.state.path?.params?.dfspId && {dfspId: ctx.state.path.params.dfspId},
             cache: ctx.state.cache,
             logger: ctx.state.logger,
-            wso2: ctx.state.wso2,
+            oidc: ctx.state.oidc,
             mojaloopSharedAgents: ctx.state.sharedAgents,
         });
 
@@ -534,7 +534,7 @@ const postRequestToPay = async (ctx) => {
             ...ctx.state.path?.params?.dfspId && {dfspId: ctx.state.path.params.dfspId},
             cache: ctx.state.cache,
             logger: ctx.state.logger,
-            wso2: ctx.state.wso2,
+            oidc: ctx.state.oidc,
         });
 
         // initialize the transfer model and start it running
@@ -563,7 +563,7 @@ const putRequestToPay = async (ctx) => {
             ...ctx.state.path?.params?.dfspId && {dfspId: ctx.state.path.params.dfspId},
             cache: ctx.state.cache,
             logger: ctx.state.logger,
-            wso2: ctx.state.wso2,
+            oidc: ctx.state.oidc,
         });
 
         // TODO: check the incoming body to reject party or quote when requested to do so
@@ -605,7 +605,7 @@ const getPartiesByTypeAndId = async (ctx) => {
             ...ctx.state.path?.params?.dfspId && {dfspId: ctx.state.path.params.dfspId},
             cache: ctx.state.cache,
             logger: ctx.state.logger,
-            wso2: ctx.state.wso2,
+            oidc: ctx.state.oidc,
         };
 
         const cacheKey = PartiesModel.generateKey(args);
@@ -640,7 +640,7 @@ const postQuotes = async (ctx) => {
             ...ctx.state.path?.params?.dfspId && {dfspId: ctx.state.path.params.dfspId},
             cache: ctx.state.cache,
             logger: ctx.state.logger,
-            wso2: ctx.state.wso2,
+            oidc: ctx.state.oidc,
         };
 
         const cacheKey = QuotesModel.generateKey(args);
@@ -671,7 +671,7 @@ const postSimpleTransfers = async (ctx) => {
             ...ctx.state.path?.params?.dfspId && {dfspId: ctx.state.path.params.dfspId},
             cache: ctx.state.cache,
             logger: ctx.state.logger,
-            wso2: ctx.state.wso2,
+            oidc: ctx.state.oidc,
         };
 
         const cacheKey = TransfersModel.generateKey(args);

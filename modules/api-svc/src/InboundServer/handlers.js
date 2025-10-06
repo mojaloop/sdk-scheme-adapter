@@ -74,7 +74,7 @@ const createInboundTransfersModel = (ctx) => new InboundTransfersModel({
     },
     cache: ctx.state.cache,
     logger: ctx.state.logger,
-    wso2: ctx.state.wso2,
+    oidc: ctx.state.oidc,
     resourceVersions: ctx.resourceVersions,
     backendSharedAgents: ctx.state.backendSharedAgents,
     mojaloopSharedAgents: ctx.state.mojaloopSharedAgents,
@@ -1133,14 +1133,14 @@ const createPutFxTransfersHandler = (success) => async (ctx) => {
 };
 
 const handlePostPing = (ctx) => {
-    const { jwsPingValidationResult, conf, logger, wso2 } = ctx.state;
+    const { jwsPingValidationResult, conf, logger, oidc } = ctx.state;
     const { sourceFspId, body, headers } = extractBodyHeadersSourceFspId(ctx);
 
     const model = new InboundPingModel({
         ...conf,
         resourceVersions: ctx.resourceVersions,
         logger,
-        wso2,
+        oidc,
     });
     model.postPing({ jwsPingValidationResult, sourceFspId, body, headers })
         .catch(err => logger.error('error in handlePostPing:', err));

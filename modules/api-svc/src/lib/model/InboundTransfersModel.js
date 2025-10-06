@@ -75,7 +75,7 @@ class InboundTransfersModel {
             },
             jwsSign: config.jwsSign,
             jwsSigningKey: config.jwsSigningKey,
-            wso2: config.wso2,
+            oidc: config.oidc,
             resourceVersions: config.resourceVersions,
             apiType: config.apiType,
         };

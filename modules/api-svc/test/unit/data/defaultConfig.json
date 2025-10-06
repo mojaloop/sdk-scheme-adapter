@@ -56,7 +56,7 @@
     "enabled": false,
     "listenPort": 6000
   },
-  "wso2": {
+  "oidc": {
       "auth": {
           "refreshSeconds": 3600
       }

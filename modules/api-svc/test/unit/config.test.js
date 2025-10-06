@@ -38,7 +38,7 @@ jest.mock('dotenv', () => ({
 }));
 
 jest.mock('@mojaloop/sdk-standard-components', () => ({
-    WSO2Auth: jest.fn(),
+    OIDCAuth: jest.fn(),
     Logger: jest.requireActual('@mojaloop/sdk-standard-components').Logger,
 }));
 
@@ -150,11 +150,11 @@ describe('config', () => {
         });
     });
 
-    it('should pass outbound tlsCreds as false to WSO2Auth ctor, if OUT_USE_CERT_FILES_FOR_AUTH is false', () => {
+    it('should pass outbound tlsCreds as false to OIDCAuth ctor, if OUT_USE_CERT_FILES_FOR_AUTH is false', () => {
         process.env.OAUTH_MUTUAL_TLS_ENABLED = 'false';
         const config = require('~/config');
         createAuthClient(config, {});
-        const { tlsCreds } = sdkSC.WSO2Auth.mock.calls[0][0];
+        const { tlsCreds } = sdkSC.OIDCAuth.mock.calls[0][0];
         expect(tlsCreds).toBe(false);
     });
 

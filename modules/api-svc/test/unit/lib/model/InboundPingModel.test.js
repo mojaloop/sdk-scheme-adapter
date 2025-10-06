@@ -37,13 +37,13 @@ const createInboundPingModel = (conf = configDto()) => new InboundPingModel(conf
 const configDto = ({
     dfspId = 'mojaloop-sdk',
     jwsSign = false,
-    wso2 = { auth: null }
+    oidc = { auth: null }
 } = {}) => ({
     ...defaultConfig,
     logger,
     dfspId,
     jwsSign,
-    wso2
+    oidc
 });
 
 const postPingParamsDto = ({

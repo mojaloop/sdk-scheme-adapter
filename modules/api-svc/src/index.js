@@ -81,16 +81,16 @@ class Server extends EventEmitter {
         // Create shared Mojaloop agents for switch communication (used by both servers)
         this.mojaloopSharedAgents = this._createMojaloopSharedAgents(this.conf);
 
-        this.wso2 = createAuthClient(conf, logger);
-        this.wso2.auth.on('error', (msg) => {
-            this.emit('error', 'WSO2 auth error in InboundApi', msg);
+        this.oidc = createAuthClient(conf, logger);
+        this.oidc.auth.on('error', (msg) => {
+            this.emit('error', 'OIDC auth error in InboundApi', msg);
         });
 
         this.inboundServer = new InboundServer(
             this.conf,
             this.logger,
             this.cache,
-            this.wso2,
+            this.oidc,
             this.mojaloopSharedAgents,
         );
         this.inboundServer.on('error', (...args) => {
@@ -103,7 +103,7 @@ class Server extends EventEmitter {
             this.logger,
             this.cache,
             this.metricsClient,
-            this.wso2,
+            this.oidc,
             this.mojaloopSharedAgents,
         );
         this.outboundServer.on('error', (...args) => {
@@ -141,7 +141,7 @@ class Server extends EventEmitter {
                 config: this.conf,
                 logger: this.logger,
                 cache: this.cache,
-                wso2: this.wso2,
+                oidc: this.oidc,
             });
         }
     }
@@ -205,7 +205,7 @@ class Server extends EventEmitter {
 
     async start() {
         await this.cache.connect();
-        await this.wso2.auth.start();
+        await this.oidc.auth.start();
 
         // We only start the control client if we're running within Mojaloop Payment Manager.
         // The control server is the Payment Manager Management API Service.
@@ -275,16 +275,16 @@ class Server extends EventEmitter {
             restartActionsTaken.updateCache = true;
         }
 
-        const updateWSO2 = !_.isEqual(this.conf.wso2, newConf.wso2)
+        const updateOIDC = !_.isEqual(this.conf.oidc, newConf.oidc)
             || !_.isEqual(this.conf.outbound.tls, newConf.outbound.tls);
-        if (updateWSO2) {
-            this.wso2.auth.stop();
-            this.wso2 = createAuthClient(newConf, this.logger);
-            this.wso2.auth.on('error', (msg) => {
-                this.emit('error', 'WSO2 auth error in InboundApi', msg);
+        if (updateOIDC) {
+            this.oidc.auth.stop();
+            this.oidc = createAuthClient(newConf, this.logger);
+            this.oidc.auth.on('error', (msg) => {
+                this.emit('error', 'OIDC auth error in InboundApi', msg);
             });
-            await this.wso2.auth.start();
-            restartActionsTaken.updateWSO2 = true;
+            await this.oidc.auth.start();
+            restartActionsTaken.updateOIDC = true;
         }
 
         this.logger.isDebugEnabled && this.logger.push({ oldConf: this.conf.inbound, newConf: newConf.inbound }).debug('Inbound server configuration');
@@ -300,7 +300,7 @@ class Server extends EventEmitter {
                 newConf,
                 this.logger,
                 this.cache,
-                this.wso2,
+                this.oidc,
                 this.mojaloopSharedAgents,
             );
             this.inboundServer.on('error', (...args) => {
@@ -328,7 +328,7 @@ class Server extends EventEmitter {
                 this.logger,
                 this.cache,
                 this.metricsClient,
-                this.wso2,
+                this.oidc,
                 this.mojaloopSharedAgents,
             );
             this.outboundServer.on('error', (...args) => {
@@ -350,7 +350,7 @@ class Server extends EventEmitter {
                 config: newConf,
                 logger: this.logger,
                 cache: this.cache,
-                wso2: this.wso2,
+                oidc: this.oidc,
             });
             await this.fspiopEventHandler.start();
             restartActionsTaken.updateFspiopEventHandler = true;
@@ -445,7 +445,7 @@ class Server extends EventEmitter {
 
     stop() {
         clearTimeout(this.pingTimeout);
-        this.wso2.auth.stop();
+        this.oidc.auth.stop();
         this.controlClient?.removeAllListeners();
         this.inboundServer.removeAllListeners();
         return Promise.all([
