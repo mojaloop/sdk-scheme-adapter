@@ -1,5 +1,5 @@
 #!/bin/bash
-set -xe
+set -xeuo pipefail
 
 run_int_tests() {
   pushd modules/$1
@@ -10,7 +10,19 @@ run_int_tests() {
   popd
 }
 
-docker load -i /tmp/docker-image.tar
+LOCAL=false
+for a in "$@"; do
+  [[ "$a" == "--local" ]] && LOCAL=true
+done
+
+if [ "$LOCAL" = false ]; then
+  echo "Running in CI/CD, so loading docker image from /tmp/docker-image.tar..."
+  docker load -i /tmp/docker-image.tar
+else
+  echo "Running in local mode, so building docker image..."
+  docker compose build sdk-scheme-adapter-api-svc
+fi
+
 docker compose up -d
 docker compose ps
 
@@ -40,7 +52,8 @@ yarn run wait-4-docker
 pushd modules/api-svc
 yarn run test:integration-pm4ml || (popd && docker compose -f ./docker-compose.yml -f ./docker-compose.pm4ml.yml logs && false)
 popd
-kill "$log_pid"
+#kill "$log_pid"
+docker compose down -v --timeout 30
 
 echo "Validating OpenAPI specs"
 yarn run build:openapi && yarn run validate:api

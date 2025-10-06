@@ -203,7 +203,7 @@ module.exports = {
     },
     oidc: {
         auth: {
-            staticToken: env.get('WSO2_BEARER_TOKEN').asString(), // think if we need to rename env var and find all places where it's used
+            staticToken: env.get('OIDC_BEARER_TOKEN').asString() || env.get('WSO2_BEARER_TOKEN').asString(), // for backward compatibility
             tokenEndpoint: env.get('OAUTH_TOKEN_ENDPOINT').asString(), // Keycloak
             clientKey: env.get('OAUTH_CLIENT_KEY').asString(),
             clientSecret: env.get('OAUTH_CLIENT_SECRET').asString(),
@@ -211,7 +211,7 @@ module.exports = {
             refreshRetrySeconds: env.get('OAUTH_REFRESH_RETRY_SECONDS').default('10').asIntPositive(),
         },
         mTlsEnabled: env.get('OAUTH_MUTUAL_TLS_ENABLED').default('false').asBool(),
-        requestAuthFailureRetryTimes: env.get('WSO2_AUTH_FAILURE_REQUEST_RETRIES').default('0').asIntPositive(), // find all env vars usage
+        requestAuthFailureRetryTimes: env.get('OIDC_AUTH_FAILURE_REQUEST_RETRIES').default('0').asIntPositive(),
     },
     rejectExpiredQuoteResponses: env.get('REJECT_EXPIRED_QUOTE_RESPONSES').default('false').asBool(),
     rejectTransfersOnExpiredQuotes: env.get('REJECT_TRANSFERS_ON_EXPIRED_QUOTES').default('false').asBool(),

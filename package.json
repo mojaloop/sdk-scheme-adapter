@@ -64,6 +64,7 @@
     "test:coverage-check:affected": "nx affected --parallel --target=test:coverage-check",
     "test:functional": "./test/scripts/test-functional.sh",
     "test:integration": "./test/scripts/test-integration.sh",
+    "test:integration:local": "yarn run test:integration -- --local",
     "test:integration-dev": "nx run-many --parallel --all --target=test:integration",
     "test:integration:affected": "nx affected --parallel --target=test:integration",
     "audit:check": "yarn dlx audit-ci --config ./audit-ci.jsonc",
