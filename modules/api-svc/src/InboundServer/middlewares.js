@@ -46,7 +46,9 @@ const { transformHeadersIsoToFspiop } = require('../lib/utils');
 const { API_TYPES } = require('../constants');
 const Config = require('../config');
 
-const INTERNAL_ROUTES = env.LOG_INTERNAL_ROUTES ? env.LOG_INTERNAL_ROUTES.split(',') : ['/health', '/metrics', '/ready'];
+const INTERNAL_ROUTES = env.LOG_INTERNAL_ROUTES ? env.LOG_INTERNAL_ROUTES.split(',') : [
+    '/health', '/metrics', '/ready', '/ping'
+];
 const shouldLog = (path, log) => log.isInfoEnabled && !INTERNAL_ROUTES.includes(path);
 
 /**

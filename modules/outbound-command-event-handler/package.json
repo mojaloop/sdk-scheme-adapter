@@ -60,7 +60,7 @@
     "@types/convict": "6.1.6",
     "@types/express": "5.0.3",
     "@types/jest": "30.0.0",
-    "@types/node": "24.6.2",
+    "@types/node": "24.7.0",
     "@types/node-cache": "4.2.5",
     "@types/supertest": "6.0.3",
     "@types/swagger-ui-express": "4.1.8",
