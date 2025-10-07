@@ -47,6 +47,8 @@ const { generateSlug } = require('random-word-slugs');
 
 const FORCE_WS_CLOSE_TIMEOUT_MS = 5000;
 
+const cloneJson = (obj) => JSON.parse(safeStringify(obj));
+
 /**************************************************************************
  * The message protocol messages, verbs, and errors
  *************************************************************************/
@@ -233,7 +235,7 @@ class Client extends ws {
         try {
             msg = deserialise(data);
         } catch {
-            this._logger.isErrorEnabled && this._logger.push({ data }).console.error();('Couldn\'t parse received message');
+            this._logger.warn('failed to parse received message: ', { data });
             this.send(build.ERROR.NOTIFY.JSON_PARSE_ERROR());
         }
         this._logger.isDebugEnabled && this._logger.push({ msg }).debug('Handling received message');
@@ -241,14 +243,14 @@ class Client extends ws {
             case MESSAGE.CONFIGURATION:
                 switch (msg.verb) {
                     case VERB.NOTIFY: {
-                        const dup = JSON.parse(JSON.stringify(this._appConfig)); // fast-json-patch explicitly mutates
+                        const dup = cloneJson(this._appConfig); // fast-json-patch explicitly mutates
                         _.merge(dup, msg.data);
                         this._logger.isDebugEnabled && this._logger.push({ oldConf: this._appConfig, newConf: dup }).debug(`Emitting new agent configuration [${VERB.NOTIFY}]`);
                         this.emit(EVENT.RECONFIGURE, dup);
                         break;
                     }
                     case VERB.PATCH: {
-                        const dup = JSON.parse(JSON.stringify(this._appConfig)); // fast-json-patch explicitly mutates
+                        const dup = cloneJson(this._appConfig); // fast-json-patch explicitly mutates
                         jsonPatch.applyPatch(dup, msg.data);
                         this._logger.isDebugEnabled && this._logger.push({ oldConf: this._appConfig, newConf: dup }).debug(`Emitting new agent configuration [${VERB.PATCH}]`);
                         this.emit(EVENT.RECONFIGURE, dup);
@@ -276,7 +278,6 @@ class Client extends ws {
 
     }
 }
-
 
 
 module.exports = {
