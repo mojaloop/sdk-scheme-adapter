@@ -53,7 +53,7 @@ const { SDKStateEnum } = require('./lib/model/common');
 const { createAuthClient } = require('./lib/utils');
 const { logger } = require('./lib/logger');
 
-const PING_INTERVAL_MS = 30000;
+const PING_INTERVAL_MS = 30_000;
 
 const createCache = (config) => new Cache({
     logger,
@@ -61,15 +61,6 @@ const createCache = (config) => new Cache({
     enableTestFeatures: config.enableTestFeatures,
     subscribeTimeoutSeconds:  config.requestProcessingTimeoutSeconds,
 });
-
-const createConnectedControlAgentWs = async (conf, log) => {
-    return await ControlAgent.Client.Create({
-        address: conf.control.mgmtAPIWsUrl,
-        port: conf.control.mgmtAPIWsPort,
-        appConfig: conf,
-        logger: log,
-    });
-};
 
 /**
  * Class that creates and manages http servers that expose the scheme adapter APIs.
@@ -301,7 +292,7 @@ class Server extends EventEmitter {
         // management protocol messages e.g configuration changes, certificate updates etc.
         if (this.conf.pm4mlEnabled) {
             const RESTART_INTERVAL_MS = 10000;
-            this.controlClient = await createConnectedControlAgentWs(this.conf, this.logger);
+            this.controlClient = await ControlAgent.createConnectedControlAgentWs(this.conf, this.logger);
             this.controlClient.on(ControlAgent.EVENT.RECONFIGURE, this.restart.bind(this));
 
             const schedulePing = () => {
@@ -470,7 +461,7 @@ class Server extends EventEmitter {
 
                     schedulePing();
 
-                    this.controlClient = await createConnectedControlAgentWs(newConf, this.logger);
+                    this.controlClient = await ControlAgent.createConnectedControlAgentWs(newConf, this.logger);
                     this.controlClient.on(ControlAgent.EVENT.RECONFIGURE, this.restart.bind(this));
 
                     this.controlClient.on('ping', () => {
@@ -591,7 +582,7 @@ class Server extends EventEmitter {
 
 async function start(config) {
     if (config.pm4mlEnabled) {
-        const controlClient = await createConnectedControlAgentWs(config, logger);
+        const controlClient = await ControlAgent.createConnectedControlAgentWs(config, logger);
         const updatedConfigFromMgmtAPI = await controlClient.getUpdatedConfig();
         _.merge(config, updatedConfigFromMgmtAPI);
         controlClient.terminate();
@@ -601,7 +592,7 @@ async function start(config) {
 
     const svr = new Server(config, logger);
     svr.on('error', (err) => {
-        logger.push({ err }).error('Unhandled server error');
+        logger.error('Unhandled server error: ', err);
         process.exit(2);
     });
 
@@ -613,7 +604,7 @@ async function start(config) {
     });
 
     await svr.start().catch(err => {
-        logger.push({ err }).error('Error starting server');
+        logger.error('Error starting server: ', err);
         process.exit(1);
     });
 

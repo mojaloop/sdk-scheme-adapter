@@ -25,7 +25,7 @@
  --------------
  ******/
 
-process.env.PEER_ENDPOINT = 'localhost:4040'; // todo: clarify why test fails without this on CircleCI env
+jest.mock('~/config');
 jest.mock('~/lib/cache');
 jest.mock('~/ControlAgent');
 
@@ -70,7 +70,7 @@ describe('Config Polling Tests -->', () => {
             removeAllListeners: jest.fn(),
         };
 
-        ControlAgent.Client.Create = jest.fn().mockResolvedValue(mockControlAgent);
+        ControlAgent.createConnectedControlAgentWs = jest.fn().mockResolvedValue(mockControlAgent);
     });
 
     afterEach(async () => {

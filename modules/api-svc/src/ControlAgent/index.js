@@ -279,8 +279,18 @@ class Client extends ws {
     }
 }
 
+const createConnectedControlAgentWs = async (conf, log) => {
+    return await Client.Create({
+        address: conf.control.mgmtAPIWsUrl,
+        port: conf.control.mgmtAPIWsPort,
+        appConfig: conf,
+        logger: log,
+    });
+};
+
 
 module.exports = {
+    createConnectedControlAgentWs,
     Client,
     build,
     MESSAGE,
