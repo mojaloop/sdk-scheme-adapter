@@ -26,88 +26,6 @@ This service can be referenced as `Mojaloop Connector`, `ML Connector` or `Schem
 - **Event Handlers**: FSPIOP and Backend event handling for Mojaloop protocol compliance
 - **ControlAgent**: WebSocket client for PM4ML Management API with optional failsafe polling
 
-## Development Commands
-
-### Build & Setup
-```bash
-yarn install             # Install dependencies
-yarn build               # Build all modules
-yarn build:affected      # Build only changed modules
-yarn build:no-cache      # Build all without using cache
-nvm use                  # Use correct Node version (22.15.1)
-```
-
-### Running Services
-```bash
-yarn start                    # Start all modules in parallel
-yarn start:api-svc           # Start API service only
-yarn start:event-handler     # Start domain event handler
-yarn start:command-handler   # Start command event handler
-```
-
-### Individual Module Commands
-Run module-specific commands using workspace syntax:
-```bash
-yarn workspace @mojaloop/sdk-scheme-adapter-api-svc run <command>
-yarn workspace @mojaloop/sdk-scheme-adapter-outbound-command-event-handler run <command>
-yarn workspace @mojaloop/sdk-scheme-adapter-outbound-domain-event-handler run <command>
-```
-
-### Testing
-```bash
-yarn test                   # Run unit tests
-yarn test:unit              # Run unit tests for all modules
-yarn test:unit:no-cache     # Run unit tests without cache
-yarn test:unit:affected     # Run unit tests only for affected modules
-yarn test:integration       # Run integration tests (requires Docker)
-yarn test:functional        # Run functional tests
-yarn test:coverage          # Run tests with coverage
-```
-
-### Module-Specific Testing
-```bash
-# api-svc specific tests
-yarn workspace @mojaloop/sdk-scheme-adapter-api-svc run test:integration-pm4ml
-
-# Integration tests for individual modules
-yarn workspace @mojaloop/sdk-scheme-adapter-outbound-command-event-handler run test:integration
-
-# Run specific test file (from modules/api-svc directory)
-cd modules/api-svc && yarn jest --runInBand test/unit/index.configPolling.test.js --setupFilesAfterEnv=./test/unit/setup.js
-```
-
-### Linting
-```bash
-yarn lint                  # Lint all modules
-yarn lint:affected         # Lint only affected modules
-yarn lint:fix              # Fix linting issues
-yarn lint:fix:affected     # Fix linting issues in affected modules
-```
-
-### Docker Operations
-```bash
-yarn docker:build          # Build Docker image (uses .nvmrc for Node version)
-yarn docker:up            # Start with docker-compose
-yarn docker:stop          # Stop containers
-yarn docker:down          # Stop and remove containers
-yarn docker:clean         # Remove containers and local images
-```
-
-### OpenAPI Management and Validation
-```bash
-yarn build:openapi              # Build OpenAPI specs
-yarn build:openapi:inbound      # Build inbound API spec only
-yarn validate:api               # Validate OpenAPI specifications
-```
-
-### Dependency Management
-```bash
-yarn dep:check            # Check for dependency updates
-yarn dep:update           # Update dependencies
-yarn audit:check          # Run security audit
-yarn audit:fix            # Fix audit issues
-```
-
 ## Code Structure Patterns
 
 ### API Service (modules/api-svc)
@@ -139,6 +57,10 @@ yarn audit:fix            # Fix audit issues
 - **Setup**: Test setup files like `test/unit/setup.js`
 - **Configuration**: Jest config in individual `jest.config.js` files
 
+## Development Commands
+Check **[development-commands.md](./_cc/docs/development-commands.md)** file to get details about some useful commands to
+build and setup the project, start the services, run tests, linting, deps and audit checks, etc.
+
 ## Key Libraries & Dependencies
 
 - **@mojaloop/sdk-standard-components**: Core Mojaloop SDK components
@@ -148,18 +70,9 @@ yarn audit:fix            # Fix audit issues
 - **redis**: Distributed caching (v5.x)
 - **express/koa**: HTTP servers (Express for newer modules, Koa for some services)
 - **ajv**: JSON schema validation
-- **kafkajs**: Event streaming (via platform libs)
 - **convict**: Configuration management in TypeScript modules
 - **openapi-backend**: OpenAPI request validation and routing
-
-## Environment Setup
-
-- **Node.js**: Version 22.15.1 (specified in `.nvmrc`)
 - **Package Manager**: Yarn 4.10.2 (Berry)
-- **Workspaces**: Modules in `modules/*` directory
-- **Nx**: Monorepo task orchestration and caching
-- **TypeScript**: v5.9.3 for TypeScript modules
-- **ESLint**: v9.15.0 with module-specific configs
 
 ## Docker Environment
 
@@ -181,7 +94,6 @@ docker-compose --profile debug up    # Start with debug tools (Redis/Kafka UI)
 
 ### Module Architecture
 - **api-svc**: JavaScript-based, legacy module with core functionality
-- **New modules**: TypeScript with domain-driven design patterns
 - **Shared lib**: Private workspace package for cross-module code
 
 ### Event Sourcing
@@ -207,11 +119,6 @@ docker-compose --profile debug up    # Start with debug tools (Redis/Kafka UI)
 2. **Integration tests**: Require Docker services (Redis, Kafka)
 3. **Functional tests**: Full end-to-end scenarios with TTK
 4. Use `yarn wait-4-docker` to ensure services are ready
-
-### Nx Cache
-- Build and test operations are cached
-- Use `--skip-nx-cache` to bypass cache
-- Affected commands work from `master` branch baseline
 
 ## Common Development Tasks
 

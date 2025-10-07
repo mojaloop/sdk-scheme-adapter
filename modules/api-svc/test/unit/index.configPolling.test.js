@@ -25,7 +25,7 @@
  --------------
  ******/
 
-jest.mock('~/config');
+// jest.mock('~/config');
 jest.mock('~/lib/cache');
 jest.mock('~/ControlAgent');
 
@@ -43,6 +43,7 @@ describe('Config Polling Tests -->', () => {
     let mockControlAgent;
 
     beforeEach(() => {
+        require('dotenv').config({ path: '../../.env.example' });
         jest.clearAllMocks();
         jest.useFakeTimers();
         promClient.register.clear(); // to prevent "metric already been registered" error
