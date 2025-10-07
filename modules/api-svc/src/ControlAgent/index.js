@@ -40,9 +40,10 @@
 // the current configuration to
 
 const ws = require('ws');
-const jsonPatch = require('fast-json-patch');
-const { generateSlug } = require('random-word-slugs');
 const _ = require('lodash');
+const jsonPatch = require('fast-json-patch');
+const safeStringify = require('fast-safe-stringify');
+const { generateSlug } = require('random-word-slugs');
 
 const FORCE_WS_CLOSE_TIMEOUT_MS = 5000;
 
@@ -77,7 +78,7 @@ const EVENT = {
 /**************************************************************************
  * Private convenience functions
  *************************************************************************/
-const serialise = JSON.stringify;
+const serialise = safeStringify;
 const deserialise = (msg) => {
     //reviver function
     return JSON.parse(msg.toString(), (k, v) => {
@@ -144,9 +145,11 @@ class Client extends ws {
      * `Client` instances outside of this class should be created via the `Create(...args)` static method.
      */
     constructor({ address = 'localhost', port, logger, appConfig }) {
-        super(`ws://${address}:${port}`);
-        this._logger = logger.push({ component: 'ControlClient' });
+        const wsUrl = `ws://${address}:${port}`;
+        super(wsUrl);
+        this._logger = logger.push({ component: 'ControlClientWs' });
         this._appConfig = appConfig;
+        this._wsUrl = wsUrl;
     }
 
     // Really only exposed so that a user can import only the client for convenience
@@ -173,34 +176,53 @@ class Client extends ws {
     async receive() {
         return new Promise((resolve) => this.once('message', (data) => {
             const msg = deserialise(data);
-            this._logger.isDebugEnabled && this._logger.push({ msg }).debug('Received');
+            this._logger.push({ msg }).debug('Received and deserialized ws message:');
             resolve(msg);
         }));
     }
 
     // Close connection
     async stop() {
-        this._logger.isDebugEnabled && this._logger.debug('Control client shutting down...');
+        this._logger.verbose('Control client shutting down...');
         return new Promise((resolve) => {
             let timer = setTimeout(() => {
-                this._logger.isInfoEnabled && this._logger.info('Control client forced to close');
+                this._logger.warn(`Control client forced to close after ${FORCE_WS_CLOSE_TIMEOUT_MS}ms`);
+                this.terminate();
                 timer = null;
                 resolve(false);
             }, FORCE_WS_CLOSE_TIMEOUT_MS);
 
             this.once('close', () => {
-                this._logger.isInfoEnabled && this._logger.info('Control client is closed');
+                this._logger.info('Control client is closed');
                 if (timer) clearTimeout(timer);
+                this.removeAllListeners();
                 resolve(true);
             });
             this.once('error', (error) => {
-                this._logger.isWarnEnabled && this._logger.push({ error }).warn('Control client failed to close');
+                this._logger.warn('Control client failed to close:', error);
                 if (timer) clearTimeout(timer);
                 resolve(false);
             });
 
             this.close();
         });
+    }
+
+    /*
+     * Call the Connector Manager in Management API to get the updated config
+     */
+    async getUpdatedConfig() { // todo: clarify naming - why config is updated?
+        this._logger.info(`Getting updated config from Management API at ${this._wsUrl}...`);
+        const wsSendResponse = await this.send(build.CONFIGURATION.READ());
+        this._logger.debug('wsSendResponse: ', { wsSendResponse });
+
+        const wsReceivedData = (await this.receive())?.data;
+        this._logger.debug('wsReceivedData: ', { wsReceivedData });
+
+        if (!wsReceivedData) this._logger.warn('no updatedConfigFromMgmtAPI');
+        else this._logger.info('updatedConfigFromMgmtAPI keys:', { updatedConfigFromMgmtAPIKeys: Object.keys(wsReceivedData) });
+
+        return wsReceivedData;
     }
 
     // Handle incoming message from the server.

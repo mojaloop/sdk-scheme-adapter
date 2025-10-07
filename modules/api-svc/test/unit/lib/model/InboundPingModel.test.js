@@ -69,7 +69,7 @@ const pingHeadersDto = ({
     ...(signature && { [Headers.FSPIOP.SIGNATURE]: signature })
 });
 
-describe.skip('InboundPingModel Tests -->', () => {
+describe('InboundPingModel Tests -->', () => {
     beforeEach(() => {
         mockAxios.reset();
     });
@@ -86,7 +86,7 @@ describe.skip('InboundPingModel Tests -->', () => {
         const sourceFspId = 'fromDfsp';
         const dfspId = 'theSDK';
         mockAxios.onPut().reply((reqConfig) => {
-            expect(reqConfig.url).toBe(`/ping/${requestId}/`);
+            expect(reqConfig.url).toBe(`/ping/${requestId}`);
             expect(reqConfig.headers[Headers.FSPIOP.SOURCE]).toBe(dfspId);
             expect(reqConfig.headers[Headers.FSPIOP.DESTINATION]).toBe(sourceFspId);
             return [200];

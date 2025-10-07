@@ -62,6 +62,15 @@ const createCache = (config) => new Cache({
     subscribeTimeoutSeconds:  config.requestProcessingTimeoutSeconds,
 });
 
+const createConnectedControlAgentWs = async (conf, log) => {
+    return await ControlAgent.Client.Create({
+        address: conf.control.mgmtAPIWsUrl,
+        port: conf.control.mgmtAPIWsPort,
+        appConfig: conf,
+        logger: log,
+    });
+};
+
 /**
  * Class that creates and manages http servers that expose the scheme adapter APIs.
  */
@@ -213,12 +222,7 @@ class Server extends EventEmitter {
         // management protocol messages e.g configuration changes, certificate updates etc.
         if (this.conf.pm4mlEnabled) {
             const RESTART_INTERVAL_MS = 10000;
-            this.controlClient = await ControlAgent.Client.Create({
-                address: this.conf.control.mgmtAPIWsUrl,
-                port: this.conf.control.mgmtAPIWsPort,
-                logger: this.logger,
-                appConfig: this.conf,
-            });
+            this.controlClient = await createConnectedControlAgentWs(this.conf, this.logger);
             this.controlClient.on(ControlAgent.EVENT.RECONFIGURE, this.restart.bind(this));
 
             const schedulePing = () => {
@@ -374,12 +378,7 @@ class Server extends EventEmitter {
 
                 schedulePing();
 
-                this.controlClient = await ControlAgent.Client.Create({
-                    address: newConf.control.mgmtAPIWsUrl,
-                    port: newConf.control.mgmtAPIWsPort,
-                    logger: this.logger,
-                    appConfig: newConf,
-                });
+                this.controlClient = await createConnectedControlAgentWs(newConf, this.logger);
                 this.controlClient.on(ControlAgent.EVENT.RECONFIGURE, this.restart.bind(this));
 
 
@@ -452,10 +451,10 @@ class Server extends EventEmitter {
             this.cache.disconnect(),
             this.inboundServer.stop(),
             this.outboundServer.stop(),
+            this.metricsServer.stop(),
             this.oauthTestServer?.stop(),
             this.testServer?.stop(),
             this.controlClient?.stop(),
-            this.metricsServer.stop(),
             this.backendEventHandler?.stop(),
             this.fspiopEventHandler?.stop(),
         ]);
@@ -493,30 +492,14 @@ class Server extends EventEmitter {
     }
 }
 
-/*
-* Call the Connector Manager in Management API to get the updated config
-*/
-async function _GetUpdatedConfigFromMgmtAPI(conf, logger, client) {
-    logger.isInfoEnabled && logger.info(`Getting updated config from Management API at ${conf.control.mgmtAPIWsUrl}:${conf.control.mgmtAPIWsPort}...`);
-    const clientSendResponse = await client.send(ControlAgent.build.CONFIGURATION.READ());
-    logger.isDebugEnabled && logger.debug('client send returned:: ', clientSendResponse);
-    const responseRead = await client.receive();
-    logger.isDebugEnabled && logger.debug('client receive returned:: ', responseRead);
-    return responseRead.data;
-}
-
 async function start(config) {
     if (config.pm4mlEnabled) {
-        const controlClient = await ControlAgent.Client.Create({
-            appConfig: config,
-            address: config.control.mgmtAPIWsUrl,
-            port: config.control.mgmtAPIWsPort,
-            logger,
-        });
-        const updatedConfigFromMgmtAPI = await _GetUpdatedConfigFromMgmtAPI(config, logger, controlClient);
-        logger.isInfoEnabled && logger.push({ updatedConfigFromMgmtAPIKeys: Object.keys(updatedConfigFromMgmtAPI) }).info('updatedConfigFromMgmtAPI keys:');
+        const controlClient = await createConnectedControlAgentWs(config, logger);
+        const updatedConfigFromMgmtAPI = await controlClient.getUpdatedConfig();
         _.merge(config, updatedConfigFromMgmtAPI);
         controlClient.terminate();
+        // todo: - clarify, why do we need to terminate the client?
+        //       - is it better to use .stop() method?
     }
 
     const svr = new Server(config, logger);
