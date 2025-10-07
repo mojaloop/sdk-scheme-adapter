@@ -7,6 +7,25 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 This is the Mojaloop SDK Scheme Adapter - a monorepo that provides an adapter interface between Mojaloop API compliant switches and DFSP backend platforms.
 The project consists of multiple modules organized using Nx workspace.
 
+## Quick Reference (Start Here)
+
+| Task | Command | Prerequisites |
+|------|---------|---------------|
+| Run all tests | `yarn test` | - |
+| Run integration tests | `yarn test:integration` | Docker running, `yarn wait-4-docker` |
+| Run specific module test | `yarn workspace @mojaloop/sdk-scheme-adapter-api-svc run test:unit` | - |
+| Build everything | `yarn build` | Node 22.15.1 (`nvm use`) |
+| Start services | `yarn start` | Docker running, modules built |
+| Update OpenAPI | `yarn build:openapi && yarn validate:api` | - |
+| Debug main service | `yarn workspace @mojaloop/sdk-scheme-adapter-api-svc run start:debug` | Port 9229 available |
+
+
+**Critical File Locations:**
+- Models: `modules/api-svc/src/lib/model/`
+- Handlers: `modules/api-svc/src/{Inbound,Outbound}Server/handlers.js`
+- Config: `modules/*/src/config/default.json`
+- OpenAPI templates: `modules/*/src/*_template.yaml` (edit these, not `api.yaml`)
+
 ## Architecture
 This service can be referenced as `Mojaloop Connector`, `ML Connector` or `Scheme Adapter`.
 
@@ -76,19 +95,11 @@ build and setup the project, start the services, run tests, linting, deps and au
 
 ## Docker Environment
 
-The project includes Docker Compose setup with the following services:
-- **sdk-scheme-adapter-api-svc**: Main API service (ports 4000-4004, 9229 for debugging)
-- **redis**: Cache service (port 6379)
-- **kafka**: Event streaming (ports 9092, 29092)
-- **ml-testing-toolkit**: Mojaloop testing toolkit (ports 4040, 5050)
-- **mojaloop-testing-toolkit-ui**: UI for testing (port 6060)
-- **redisinsight**: Redis UI (port 9001) - debug profile
-- **kafka-debug-ui**: Kafka UI (port 9080) - debug profile
+See [development-commands.md](./_cc/docs/development-commands.md#docker-operations) for Docker commands.
 
-### Docker Profiles
-```bash
-docker-compose --profile debug up    # Start with debug tools (Redis/Kafka UI)
-```
+**Services:** redis (6379), kafka (9092), ml-testing-toolkit (4040/5050), mojaloop-testing-toolkit-ui (6060)
+**Debug profile adds:** redisinsight (9001), kafka-debug-ui (9080)
+**Main service ports:** 4000-4004, 9229 (debugger)
 
 ## Development Patterns & Notes
 
@@ -97,16 +108,12 @@ docker-compose --profile debug up    # Start with debug tools (Redis/Kafka UI)
 - **Shared lib**: Private workspace package for cross-module code
 
 ### Event Sourcing
-- Command events flow through `outbound-command-event-handler`
-- Domain events processed by `outbound-domain-event-handler`
-- Kafka topics: `topic-sdk-outbound-command-events`, `topic-sdk-outbound-domain-events`
+Commands → `outbound-command-event-handler` → Domain events → `outbound-domain-event-handler`
+**Kafka topics:** `topic-sdk-outbound-command-events`, `topic-sdk-outbound-domain-events`
 
 ### State Management
-- Redis used for:
-  - State machine persistence
-  - Distributed caching
-  - Cross-module communication
-  - Bulk transaction state tracking
+**Redis:** State machine persistence, distributed cache, cross-module communication, bulk transaction tracking
+**Pattern:** `PersistentStateMachine` class for complex state transitions
 
 ### OpenAPI Workflow
 1. Edit `*_template.yaml` files (not generated `api.yaml`)
@@ -122,48 +129,58 @@ docker-compose --profile debug up    # Start with debug tools (Redis/Kafka UI)
 
 ## Common Development Tasks
 
-### Running the Full Stack Locally
-```bash
-docker-compose up -d           # Start dependencies
-nvm use                        # Switch to correct Node version
-yarn install                   # Install dependencies
-yarn build                     # Build all modules
-export API_SERVER_ENABLED=true # Enable API server
-yarn start                     # Start all services
-```
+See [development-commands.md](./_cc/docs/development-commands.md) for all commands and [common-workflows.md](./_cc/docs/common-workflows.md) for step-by-step guides.
 
-### Debugging
-```bash
-yarn workspace @mojaloop/sdk-scheme-adapter-api-svc run start:debug
-# Connect debugger to port 9229
-```
+## For AI Assistants (Memory Management Hints)
 
-### Making API Changes
-1. Update `*_template.yaml` in module
-2. Run `yarn build:openapi`
-3. Run `yarn validate:api`
-4. Update handlers to match new spec
+**Always Re-read Before:**
+- Modifying OpenAPI specs → Review OpenAPI Workflow section first
+- Running integration tests → Verify Docker prerequisites and Testing Workflow
+- Making state machine changes → Review api-svc-06-state-management.md
+- Debugging test failures → Check development-commands.md for troubleshooting
 
-### Release Process
-```bash
-yarn release          # Create release (updates version, changelog)
-yarn snapshot         # Create snapshot release for testing
-```
+**Cache (Low Change Frequency):**
+- Architecture: 3 TypeScript modules (command-handler, domain-handler, shared-lib) + api-svc (JavaScript)
+- Event flow: Command events → outbound-command-event-handler → Domain events → outbound-domain-event-handler
+- Redis patterns: State machines, distributed cache, pub/sub, bulk transaction tracking
+- Kafka topics: `topic-sdk-outbound-command-events`, `topic-sdk-outbound-domain-events`
+- Package manager: Yarn 4.10.2 (Berry)
+- Node version: 22.15.1
+
+**Key Patterns to Remember:**
+- Edit `*_template.yaml` files, NEVER edit generated `api.yaml` files
+- State machines use `PersistentStateMachine` class backed by Redis
+- Integration tests require Docker services - use `yarn wait-4-docker`
+- Use workspace syntax: `yarn workspace @mojaloop/sdk-scheme-adapter-<module> run <command>`
+- Nx caching enabled for builds/tests - use `--skip-nx-cache` to bypass
+
+**When Uncertain:**
+- Ask user ANY clarifying questions
+- Check Quick Reference section at top of this file
+- Consult api-svc-01-overview.md for 30-minute onboarding
+- Use development-commands.md for command reference
+- See common-workflows.md for step-by-step task guides
 
 ## Documentation
 
 ### API-SVC Module Documentation
 
-Comprehensive documentation for the api-svc module (core service handling inbound/outbound APIs):
+Comprehensive documentation for the `api-svc` module (core service handling inbound/outbound APIs):
 
-1. **[api-svc-01-overview.md](_cc/docs/api-svc-01-overview.md)** - Overview & Quick Start guide with 30-minute onboarding
-2. **[api-svc-02-architecture.md](_cc/docs/api-svc-02-architecture.md)** - Architecture, components, configuration system, and startup sequence
-3. **[api-svc-03-inbound-server.md](_cc/docs/api-svc-03-inbound-server.md)** - Inbound server handling FSPIOP callbacks from Mojaloop switch
-4. **[api-svc-04-outbound-server.md](_cc/docs/api-svc-04-outbound-server.md)** - Outbound server providing DFSP backend API
-5. **[api-svc-05-models.md](_cc/docs/api-svc-05-models.md)** - Business logic models and transfer orchestration
-6. **[api-svc-06-state-management.md](_cc/docs/api-svc-06-state-management.md)** - Redis-backed state machines and pub/sub patterns
-7. **[api-svc-07-event-handlers.md](_cc/docs/api-svc-07-event-handlers.md)** - Kafka event handlers for domain/command events
-8. **[api-svc-08-control-agent.md](_cc/docs/api-svc-08-control-agent.md)** - WebSocket client for PM4ML Management API
-9. **[api-svc-09-error-handling.md](_cc/docs/api-svc-09-error-handling.md)** - Error taxonomy, handling patterns, and logging
-10. **[api-svc-10-testing.md](_cc/docs/api-svc-10-testing.md)** - Testing strategy (unit, integration, functional)
-11. **[api-svc-11-deployment.md](_cc/docs/api-svc-11-deployment.md)** - Kubernetes deployment with Helm charts, production configuration
+
+| Document | Description |
+|----------|-------------|
+| **[api-svc-01-overview.md](./_cc/docs/api-svc/api-svc-01-overview.md)** | Overview, quick start guide, 30-minute onboarding with core concepts and transfer flows |
+| **[api-svc-02-architecture.md](./_cc/docs/api-svc/api-svc-02-architecture.md)** | System architecture, component design, configuration system, startup sequence |
+| **[api-svc-03-inbound-server.md](./_cc/docs/api-svc/api-svc-03-inbound-server.md)** | Inbound server handling async FSPIOP callbacks from Mojaloop switch |
+| **[api-svc-04-outbound-server.md](./_cc/docs/api-svc/api-svc-04-outbound-server.md)** | Outbound server providing synchronous REST API for DFSP backends |
+| **[api-svc-05-models.md](./_cc/docs/api-svc/api-svc-05-models.md)** | Business logic models orchestrating party lookups, quotes, transfers, bulk operations |
+| **[api-svc-06-state-management.md](./_cc/docs/api-svc/api-svc-06-state-management.md)** | Redis-backed state machines, pub/sub patterns, key patterns, recovery behavior |
+| **[api-svc-07-control-agent.md](./_cc/docs/api-svc/api-svc-07-control-agent.md)** | WebSocket client for PM4ML Management API dynamic configuration |
+| **[api-svc-08-error-handling.md](./_cc/docs/api-svc/api-svc-08-error-handling.md)** | Error taxonomy, Mojaloop error codes, handling patterns, logging strategies |
+| **[api-svc-09-core-dependencies.md](./_cc/docs/api-svc/api-svc-09-core-dependencies.md)** | Core dependencies including @mojaloop/sdk-standard-components, JWS, ILP, OIDC |
+| **[api-svc-10-service-lifecycle.md](./_cc/docs/api-svc/api-svc-10-service-lifecycle.md)** | Service startup/shutdown sequences, component bootstrap order, configuration sources, hot reload |
+| **[api-svc-11-event-handlers.md](./_cc/docs/api-svc/api-svc-11-event-handlers.md)** | Kafka event handlers for domain/command events integration with TypeScript modules |
+| **[api-svc-12-testing.md](./_cc/docs/api-svc/api-svc-12-testing.md)** | Testing strategy covering unit, integration, and functional tests |
+| **[api-svc-13-deployment.md](./_cc/docs/api-svc/api-svc-13-deployment.md)** | Kubernetes deployment with Helm charts, production configuration, monitoring |
+| **[api-svc-14-examples.md](./_cc/docs/api-svc/api-svc-14-examples.md)** | Practical examples: outbound/inbound transfers, error handling, bulk operations, auto-accept |

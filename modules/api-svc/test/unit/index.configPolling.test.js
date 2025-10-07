@@ -25,7 +25,12 @@
  --------------
  ******/
 
-// jest.mock('~/config');
+process.env.PEER_ENDPOINT = 'localhost:4000';
+process.env.BACKEND_ENDPOINT = 'localhost:4000';
+process.env.CACHE_URL = 'redis://localhost:6379';
+process.env.MGMT_API_WS_URL = 'localhost';
+process.env.SUPPORTED_CURRENCIES = 'XXX';
+
 jest.mock('~/lib/cache');
 jest.mock('~/ControlAgent');
 
@@ -43,7 +48,6 @@ describe('Config Polling Tests -->', () => {
     let mockControlAgent;
 
     beforeEach(() => {
-        require('dotenv').config({ path: '../../.env.example' });
         jest.clearAllMocks();
         jest.useFakeTimers();
         promClient.register.clear(); // to prevent "metric already been registered" error
