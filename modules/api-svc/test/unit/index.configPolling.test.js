@@ -25,7 +25,7 @@
  --------------
  ******/
 
-require('dotenv').config({ path: '../../../.env.example' });
+process.env.PEER_ENDPOINT = 'localhost:4040'; // todo: clarify why test fails without this on CircleCI env
 jest.mock('~/lib/cache');
 jest.mock('~/ControlAgent');
 
