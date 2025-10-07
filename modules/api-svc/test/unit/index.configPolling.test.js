@@ -25,6 +25,7 @@
  --------------
  ******/
 
+require('dotenv').config({ path: '../../../.env.example' });
 jest.mock('~/lib/cache');
 jest.mock('~/ControlAgent');
 
