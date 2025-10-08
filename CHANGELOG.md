@@ -1,4 +1,16 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+## [24.14.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.13.0...v24.14.0) (2025-10-08)
+
+
+### Features
+
+* **csi-1864:** improve certificate syncing ([#617](https://github.com/mojaloop/sdk-scheme-adapter/issues/617)) ([58040c9](https://github.com/mojaloop/sdk-scheme-adapter/commit/58040c9a6166a3079782f5f02b0fa6869c4581cc)), closes [#618](https://github.com/mojaloop/sdk-scheme-adapter/issues/618)
+
+
+### Chore
+
+* **sbom:** update sbom [skip ci] ([baeee8d](https://github.com/mojaloop/sdk-scheme-adapter/commit/baeee8d44e5267381b79845adc5b15e74e7e2aba))
+
 ## [24.13.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.12.0...v24.13.0) (2025-10-06)
 
 
