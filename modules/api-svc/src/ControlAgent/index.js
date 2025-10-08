@@ -147,11 +147,9 @@ class Client extends ws {
      * `Client` instances outside of this class should be created via the `Create(...args)` static method.
      */
     constructor({ address = 'localhost', port, logger, appConfig }) {
-        const wsUrl = `ws://${address}:${port}`;
-        super(wsUrl);
+        super(`ws://${address}:${port}`);
         this._logger = logger.push({ component: 'ControlClientWs' });
         this._appConfig = appConfig;
-        this._wsUrl = wsUrl;
     }
 
     // Really only exposed so that a user can import only the client for convenience
@@ -214,7 +212,7 @@ class Client extends ws {
      * Call the Connector Manager in Management API to get the updated config
      */
     async getUpdatedConfig() { // clarify naming - why config is updated?
-        this._logger.info(`Getting updated config from Management API at ${this._wsUrl}...`);
+        this._logger.info(`Getting updated config from Management API at ${this.url}...`);
         const wsSendResponse = await this.send(build.CONFIGURATION.READ());
         this._logger.debug('wsSendResponse: ', { wsSendResponse });
 
