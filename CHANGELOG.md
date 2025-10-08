@@ -1,4 +1,12 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+### [24.15.1](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.15.0...v24.15.1) (2025-10-08)
+
+
+### Chore
+
+* created a separate file for SdkServer ([#619](https://github.com/mojaloop/sdk-scheme-adapter/issues/619)) ([063087e](https://github.com/mojaloop/sdk-scheme-adapter/commit/063087eefcf63dd293d29d6fb45020490f887daf))
+* **sbom:** update sbom [skip ci] ([b2cf810](https://github.com/mojaloop/sdk-scheme-adapter/commit/b2cf8101be59023e3be7a5da5510eff26c0b7648))
+
 ## [24.15.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.14.0...v24.15.0) (2025-10-08)
 
 
