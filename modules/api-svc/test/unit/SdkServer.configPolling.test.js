@@ -35,8 +35,8 @@ jest.mock('~/lib/cache');
 jest.mock('~/ControlAgent');
 
 const promClient = require('prom-client');
+const SdkServer = require('../../src/SdkServer');
 const ControlAgent = require('~/ControlAgent');
-const { Server } = require('~/index');
 const { logger } = require('~/lib/logger');
 const testConfig = require('./data/defaultConfig.json');
 
@@ -92,7 +92,7 @@ describe('Config Polling Tests -->', () => {
             }
         };
 
-        server = new Server(config, logger);
+        server = new SdkServer(config, logger);
         await server.start();
 
         await jest.advanceTimersByTimeAsync(POLL_INTERVAL_MS * 2);
@@ -105,7 +105,7 @@ describe('Config Polling Tests -->', () => {
             pm4mlEnabled: false,
         };
 
-        server = new Server(config, logger);
+        server = new SdkServer(config, logger);
         await server.start();
 
         await jest.advanceTimersByTimeAsync(POLL_INTERVAL_MS * 2);
@@ -113,7 +113,7 @@ describe('Config Polling Tests -->', () => {
     });
 
     it('should poll at configured interval', async () => {
-        server = new Server(mockConfig, logger);
+        server = new SdkServer(mockConfig, logger);
         await server.start();
         expect(mockControlAgent.getUpdatedConfig).toHaveBeenCalledTimes(0);
 
@@ -130,7 +130,7 @@ describe('Config Polling Tests -->', () => {
             jwsSigningKey: newJwsKey
         });
 
-        server = new Server(mockConfig, logger);
+        server = new SdkServer(mockConfig, logger);
         const restartSpy = jest.spyOn(server, 'restart');
 
         await server.start();
@@ -150,7 +150,7 @@ describe('Config Polling Tests -->', () => {
     it('should handle unchanged config efficiently (no-op)', async () => {
         mockControlAgent.getUpdatedConfig.mockResolvedValue({});
 
-        server = new Server(mockConfig, logger);
+        server = new SdkServer(mockConfig, logger);
         const restartSpy = jest.spyOn(server, 'restart');
         await server.start();
 
@@ -165,7 +165,7 @@ describe('Config Polling Tests -->', () => {
     it('should prevent race condition when update already in progress', async () => {
         mockControlAgent.getUpdatedConfig.mockResolvedValue({ jwsSigningKey: 'new-key' });
 
-        server = new Server(mockConfig, logger);
+        server = new SdkServer(mockConfig, logger);
         await server.start();
         // Simulate restart in progress
         server._configUpdateInProgress = true;
@@ -176,7 +176,7 @@ describe('Config Polling Tests -->', () => {
     });
 
     it('should skip polling when WebSocket not OPEN', async () => {
-        server = new Server(mockConfig, logger);
+        server = new SdkServer(mockConfig, logger);
         await server.start();
 
         mockControlAgent.getUpdatedConfig.mockClear();
@@ -190,7 +190,7 @@ describe('Config Polling Tests -->', () => {
         it('should handle network errors gracefully during polling', async () => {
             mockControlAgent.getUpdatedConfig.mockRejectedValue(new Error('Connection refused'));
 
-            server = new Server(mockConfig, logger);
+            server = new SdkServer(mockConfig, logger);
             await server.start();
             await jest.advanceTimersByTimeAsync(POLL_INTERVAL_MS);
 
@@ -204,7 +204,7 @@ describe('Config Polling Tests -->', () => {
         it('should handle missing config response', async () => {
             mockControlAgent.getUpdatedConfig.mockResolvedValue(null);
 
-            server = new Server(mockConfig, logger);
+            server = new SdkServer(mockConfig, logger);
             await server.start();
             await jest.advanceTimersByTimeAsync(POLL_INTERVAL_MS);
 
@@ -214,7 +214,7 @@ describe('Config Polling Tests -->', () => {
     });
 
     it('should stop polling when server stops', async () => {
-        server = new Server(mockConfig, logger);
+        server = new SdkServer(mockConfig, logger);
         await server.start();
 
         expect(server._configPollInterval).toBeDefined();
