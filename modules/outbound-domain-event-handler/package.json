@@ -1,6 +1,6 @@
 {
     "name": "@mojaloop/sdk-scheme-adapter-outbound-domain-event-handler",
-    "version": "0.3.0-snapshot.65",
+    "version": "0.3.0-snapshot.67",
     "description": "mojaloop sdk scheme adapter outbound domain event handler",
     "license": "Apache-2.0",
     "homepage": "https://github.com/mojaloop/sdk-scheme-adapter/",
@@ -62,8 +62,8 @@
         "@types/supertest": "6.0.3",
         "@types/swagger-ui-express": "4.1.8",
         "@types/yamljs": "0.2.34",
-        "@typescript-eslint/eslint-plugin": "8.45.0",
-        "@typescript-eslint/parser": "8.45.0",
+        "@typescript-eslint/eslint-plugin": "8.46.0",
+        "@typescript-eslint/parser": "8.46.0",
         "copyfiles": "2.4.1",
         "eslint": "9.15.0",
         "jest": "29.7.0",

@@ -25,15 +25,14 @@
  --------------
  ******/
 
-const { hostname } = require('node:os');
 const { loggerFactory, LOG_LEVELS } = require('@mojaloop/sdk-standard-components').Logger;
 
 const createLogger = (conf = {}) => {
     const {
         context = {
+            context: 'SDK',
             // If we're running from a Mojaloop helm chart deployment, we'll have a SIM_NAME
             simulator: process.env['SIM_NAME'],
-            hostname: hostname(),
         },
         isJsonOutput = false,
     } = conf;

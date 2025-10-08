@@ -98,7 +98,9 @@ class Cache {
                 break;
         }
         this._connectionState = CONN_ST.CONNECTING;
-        this._inProgressConnection = Promise.all([this._getClient(), this._getClient()]);
+        this._inProgressConnection = Promise.all([
+            this._getClient(), this._getClient()
+        ]);
         [this._client, this._subscriptionClient] = await this._inProgressConnection;
 
         if (this._config.enableTestFeatures) {

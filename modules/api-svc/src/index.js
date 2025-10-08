@@ -26,6 +26,7 @@
  ******/
 'use strict';
 
+const { hostname } = require('node:os');
 const EventEmitter = require('node:events');
 const http = require('http');
 const https = require('https');
@@ -53,7 +54,7 @@ const { SDKStateEnum } = require('./lib/model/common');
 const { createAuthClient } = require('./lib/utils');
 const { logger } = require('./lib/logger');
 
-const PING_INTERVAL_MS = 30000;
+const PING_INTERVAL_MS = 30_000;
 
 const createCache = (config) => new Cache({
     logger,
@@ -203,6 +204,71 @@ class Server extends EventEmitter {
         return isOutboundDifferent || isJwsSigningKeyDifferent;
     }
 
+    /**
+     * Starts periodic polling of Management API for configuration updates.
+     * Only runs if PM4ML enabled and a polling interval configured.
+     */
+    _startConfigPolling() {
+        if (!this.conf.pm4mlEnabled || !this.conf.control.mgmtAPIPollIntervalMs) {
+            this.logger.info('No failsafe config polling configured');
+            return;
+        }
+
+        this.logger.info('starting failsafe config polling from Management API...', { intervalMs: this.conf.control.mgmtAPIPollIntervalMs });
+
+        this._configPollInterval = setInterval(
+            () => this._pollConfigFromMgmtAPI(),
+            this.conf.control.mgmtAPIPollIntervalMs
+        );
+
+        // Unref so it doesn't prevent process exit
+        this._configPollInterval.unref();
+    }
+
+    /**
+     * Polls Management API for configuration updates.
+     * Reuses the existing persistent WebSocket client (this.controlClient).
+     * Skips polling if:
+     * - Another config update is in progress
+     * - WebSocket client is not connected
+     */
+    async _pollConfigFromMgmtAPI() {
+        // Race condition prevention: skip if restart in progress
+        if (this._configUpdateInProgress) {
+            this.logger.info('config updating already in progress, skipping poll');
+            return;
+        }
+
+        // WebSocket readyState: 0=CONNECTING, 1=OPEN, 2=CLOSING, 3=CLOSED
+        if (this.controlClient?.readyState !== 1) {
+            this.logger.warn('Control client not ready (not OPEN), skipping poll', { readyState: this.controlClient?.readyState });
+            return;
+        }
+
+        try {
+            const newConfig = await this.controlClient.getUpdatedConfig();
+            if (!newConfig) {
+                this.logger.warn('No config received from polling');
+                return;
+            }
+            this.logger.info('polling config from mgmt-api is done, checking if SDK server restart needed...');
+
+            const mergedConfig = _.merge({}, this.conf, newConfig);
+            await this.restart(mergedConfig, { source: 'polling' });
+        } catch (err) {
+            this.logger.error('error in polling config from Management API: ', err);
+        }
+    }
+
+    /** Stops the config polling interval. */
+    _stopConfigPolling() {
+        if (this._configPollInterval) {
+            this.logger.verbose('stopping config polling');
+            clearInterval(this._configPollInterval);
+            this._configPollInterval = null;
+        }
+    }
+
     async start() {
         await this.cache.connect();
         await this.oidc.auth.start();
@@ -213,12 +279,7 @@ class Server extends EventEmitter {
         // management protocol messages e.g configuration changes, certificate updates etc.
         if (this.conf.pm4mlEnabled) {
             const RESTART_INTERVAL_MS = 10000;
-            this.controlClient = await ControlAgent.Client.Create({
-                address: this.conf.control.mgmtAPIWsUrl,
-                port: this.conf.control.mgmtAPIWsPort,
-                logger: this.logger,
-                appConfig: this.conf,
-            });
+            this.controlClient = await ControlAgent.createConnectedControlAgentWs(this.conf, this.logger);
             this.controlClient.on(ControlAgent.EVENT.RECONFIGURE, this.restart.bind(this));
 
             const schedulePing = () => {
@@ -247,6 +308,7 @@ class Server extends EventEmitter {
             });
 
             schedulePing();
+            this._startConfigPolling();
         }
 
         await Promise.all([
@@ -260,190 +322,200 @@ class Server extends EventEmitter {
         ]);
     }
 
-    async restart(newConf) {
+    async restart(newConf, options = {}) {
+        const source = options.source || 'websocket'; // Track source of restart call - websocket or polling
+
+        // Race condition prevention
+        if (this._configUpdateInProgress) {
+            this.logger.info('restart already in progress, skipping', { source });
+            return;
+        }
+
         const restartActionsTaken = {};
-        this.logger.isDebugEnabled && this.logger.debug('Server is restarting...');
+        this.logger.debug('Server is restarting...', { source });
+        this._configUpdateInProgress = true;
 
-        let oldCache;
-        const updateCache = !_.isEqual(this.conf.cacheUrl, newConf.cacheUrl)
+        try {
+            let oldCache;
+            const updateCache = !_.isEqual(this.conf.cacheUrl, newConf.cacheUrl)
             || !_.isEqual(this.conf.enableTestFeatures, newConf.enableTestFeatures);
-        if (updateCache) {
-            oldCache = this.cache;
-            await this.cache.disconnect();
-            this.cache = createCache(newConf);
-            await this.cache.connect();
-            restartActionsTaken.updateCache = true;
-        }
+            if (updateCache) {
+                oldCache = this.cache;
+                await this.cache.disconnect();
+                this.cache = createCache(newConf);
+                await this.cache.connect();
+                restartActionsTaken.updateCache = true;
+            }
 
-        const updateOIDC = !_.isEqual(this.conf.oidc, newConf.oidc)
+            const updateOIDC = !_.isEqual(this.conf.oidc, newConf.oidc)
             || !_.isEqual(this.conf.outbound.tls, newConf.outbound.tls);
-        if (updateOIDC) {
-            this.oidc.auth.stop();
-            this.oidc = createAuthClient(newConf, this.logger);
-            this.oidc.auth.on('error', (msg) => {
-                this.emit('error', 'OIDC auth error in InboundApi', msg);
-            });
-            await this.oidc.auth.start();
-            restartActionsTaken.updateOIDC = true;
-        }
+            if (updateOIDC) {
+                this.oidc.auth.stop();
+                this.oidc = createAuthClient(newConf, this.logger);
+                this.oidc.auth.on('error', (msg) => {
+                    this.emit('error', 'OIDC auth error in InboundApi', msg);
+                });
+                await this.oidc.auth.start();
+                restartActionsTaken.updateOIDC = true;
+            }
 
-        this.logger.isDebugEnabled && this.logger.push({ oldConf: this.conf.inbound, newConf: newConf.inbound }).debug('Inbound server configuration');
-        const updateInboundServer = this._shouldUpdateInboundServer(newConf);
-        if (updateInboundServer) {
-            const stopStartLabel = 'InboundServer stop/start duration';
-            // eslint-disable-next-line no-console
-            console.time(stopStartLabel);
-            await this.inboundServer.stop();
+            this.logger.isDebugEnabled && this.logger.push({ oldConf: this.conf.inbound, newConf: newConf.inbound }).debug('Inbound server configuration');
+            const updateInboundServer = this._shouldUpdateInboundServer(newConf);
+            if (updateInboundServer) {
+                const stopStartLabel = 'InboundServer stop/start duration';
+                // eslint-disable-next-line no-console
+                console.time(stopStartLabel); // todo: remove console.time
+                await this.inboundServer.stop();
 
-            this.mojaloopSharedAgents = this._createMojaloopSharedAgents(newConf);
-            this.inboundServer = new InboundServer(
-                newConf,
-                this.logger,
-                this.cache,
-                this.oidc,
-                this.mojaloopSharedAgents,
-            );
-            this.inboundServer.on('error', (...args) => {
-                const errMessage = 'Unhandled error in Inbound Server';
-                this.logger.push({ args }).error(errMessage);
-                this.emit('error', errMessage);
-            });
-            await this.inboundServer.start();
-            // eslint-disable-next-line no-console
-            console.timeEnd(stopStartLabel);
-            restartActionsTaken.updateInboundServer = true;
-        }
+                this.mojaloopSharedAgents = this._createMojaloopSharedAgents(newConf);
+                this.inboundServer = new InboundServer(
+                    newConf,
+                    this.logger,
+                    this.cache,
+                    this.oidc,
+                    this.mojaloopSharedAgents,
+                );
+                this.inboundServer.on('error', (...args) => {
+                    const errMessage = 'Unhandled error in Inbound Server';
+                    this.logger.push({ args }).error(errMessage);
+                    this.emit('error', errMessage);
+                });
+                await this.inboundServer.start();
+                // eslint-disable-next-line no-console
+                console.timeEnd(stopStartLabel);
+                restartActionsTaken.updateInboundServer = true;
+            }
 
-        this.logger.isDebugEnabled && this.logger.push({ oldConf: this.conf.outbound, newConf: newConf.outbound }).debug('Outbound server configuration');
-        const updateOutboundServer = this._shouldUpdateOutboundServer(newConf);
-        if (updateOutboundServer) {
-            const stopStartLabel = 'OutboundServer stop/start duration';
-            // eslint-disable-next-line no-console
-            console.time(stopStartLabel);
-            await this.outboundServer.stop();
+            this.logger.isDebugEnabled && this.logger.push({ oldConf: this.conf.outbound, newConf: newConf.outbound }).debug('Outbound server configuration');
+            const updateOutboundServer = this._shouldUpdateOutboundServer(newConf);
+            if (updateOutboundServer) {
+                const stopStartLabel = 'OutboundServer stop/start duration';
+                // eslint-disable-next-line no-console
+                console.time(stopStartLabel);
+                await this.outboundServer.stop();
 
-            this.mojaloopSharedAgents = this._createMojaloopSharedAgents(newConf);
-            this.outboundServer = new OutboundServer(
-                newConf,
-                this.logger,
-                this.cache,
-                this.metricsClient,
-                this.oidc,
-                this.mojaloopSharedAgents,
-            );
-            this.outboundServer.on('error', (...args) => {
-                const errMessage = 'Unhandled error in Outbound Server';
-                this.logger.push({ args }).error(errMessage);
-                this.emit('error', errMessage);
-            });
-            await this.outboundServer.start();
-            // eslint-disable-next-line no-console
-            console.timeEnd(stopStartLabel);
-            restartActionsTaken.updateOutboundServer = true;
-        }
+                this.mojaloopSharedAgents = this._createMojaloopSharedAgents(newConf);
+                this.outboundServer = new OutboundServer(
+                    newConf,
+                    this.logger,
+                    this.cache,
+                    this.metricsClient,
+                    this.oidc,
+                    this.mojaloopSharedAgents,
+                );
+                this.outboundServer.on('error', (...args) => {
+                    const errMessage = 'Unhandled error in Outbound Server';
+                    this.logger.push({ args }).error(errMessage);
+                    this.emit('error', errMessage);
+                });
+                await this.outboundServer.start();
+                // eslint-disable-next-line no-console
+                console.timeEnd(stopStartLabel);
+                restartActionsTaken.updateOutboundServer = true;
+            }
 
-        const updateFspiopEventHandler = !_.isEqual(this.conf.outbound, newConf.outbound)
+            const updateFspiopEventHandler = !_.isEqual(this.conf.outbound, newConf.outbound)
             && this.conf.fspiopEventHandler.enabled;
-        if (updateFspiopEventHandler) {
-            await this.fspiopEventHandler.stop();
-            this.fspiopEventHandler = new FSPIOPEventHandler({
-                config: newConf,
-                logger: this.logger,
-                cache: this.cache,
-                oidc: this.oidc,
-            });
-            await this.fspiopEventHandler.start();
-            restartActionsTaken.updateFspiopEventHandler = true;
-        }
-
-        const updateControlClient = !_.isEqual(this.conf.control, newConf.control);
-        if (updateControlClient) {
-            await this.controlClient?.stop();
-            if (this.conf.pm4mlEnabled) {
-                const RESTART_INTERVAL_MS = 10000;
-
-                const schedulePing = () => {
-                    clearTimeout(this.pingTimeout);
-                    this.pingTimeout = setTimeout(() => {
-                        this.logger.error('Ping timeout, possible broken connection. Restarting server...');
-                        this.restart(_.merge({}, newConf, {
-                            control: { stopped: Date.now() }
-                        }));
-                    }, PING_INTERVAL_MS + this.conf.control.mgmtAPILatencyAssumption);
-                };
-
-                schedulePing();
-
-                this.controlClient = await ControlAgent.Client.Create({
-                    address: newConf.control.mgmtAPIWsUrl,
-                    port: newConf.control.mgmtAPIWsPort,
-                    logger: this.logger,
-                    appConfig: newConf,
-                });
-                this.controlClient.on(ControlAgent.EVENT.RECONFIGURE, this.restart.bind(this));
-
-
-
-                this.controlClient.on('ping', () => {
-                    this.logger.debug('Received ping from control server');
-                    schedulePing();
-                });
-
-                this.controlClient.on('close', () => {
-                    clearTimeout(this.pingTimeout);
-                    setTimeout(() => {
-                        this.logger.debug('Control client closed. Restarting server...');
-                        this.restart(_.merge({}, newConf, {
-                            control: { stopped: Date.now() }
-                        }));
-                    }, RESTART_INTERVAL_MS);
-                });
-
-                restartActionsTaken.updateControlClient = true;
-            }
-        }
-
-        const updateOAuthTestServer = !_.isEqual(newConf.oauthTestServer, this.conf.oauthTestServer);
-        if (updateOAuthTestServer) {
-            await this.oauthTestServer?.stop();
-            if (this.conf.oauthTestServer.enabled) {
-                this.oauthTestServer = new OAuthTestServer({
-                    clientKey: newConf.oauthTestServer.clientKey,
-                    clientSecret: newConf.oauthTestServer.clientSecret,
-                    port: newConf.oauthTestServer.listenPort,
-                    logger: this.logger,
-                });
-                await this.oauthTestServer.start();
-                restartActionsTaken.updateOAuthTestServer = true;
-            }
-        }
-
-        const updateTestServer = !_.isEqual(newConf.test.port, this.conf.test.port);
-        if (updateTestServer) {
-            await this.testServer?.stop();
-            if (this.conf.enableTestFeatures) {
-                this.testServer = new TestServer({
-                    port: newConf.test.port,
+            if (updateFspiopEventHandler) {
+                await this.fspiopEventHandler.stop();
+                this.fspiopEventHandler = new FSPIOPEventHandler({
+                    config: newConf,
                     logger: this.logger,
                     cache: this.cache,
+                    oidc: this.oidc,
                 });
-                await this.testServer.start();
-                restartActionsTaken.updateTestServer = true;
+                await this.fspiopEventHandler.start();
+                restartActionsTaken.updateFspiopEventHandler = true;
             }
-        }
 
-        this.conf = newConf;
+            const updateControlClient = !_.isEqual(this.conf.control, newConf.control);
+            if (updateControlClient) {
+                await this.controlClient?.stop();
+                if (this.conf.pm4mlEnabled) {
+                    const RESTART_INTERVAL_MS = 10000;
 
-        await oldCache?.disconnect();
+                    const schedulePing = () => {
+                        clearTimeout(this.pingTimeout);
+                        this.pingTimeout = setTimeout(() => {
+                            this.logger.error('Ping timeout, possible broken connection. Restarting server...');
+                            this.restart(_.merge({}, newConf, {
+                                control: { stopped: Date.now() }
+                            }));
+                        }, PING_INTERVAL_MS + this.conf.control.mgmtAPILatencyAssumption);
+                    };
 
-        if (Object.keys(restartActionsTaken).length > 0) {
-            this.logger.info('Server is restarted', { restartActionsTaken });
-        } else {
-            this.logger.verbose('Server not restarted, no config changes detected');
+                    schedulePing();
+
+                    this.controlClient = await ControlAgent.createConnectedControlAgentWs(newConf, this.logger);
+                    this.controlClient.on(ControlAgent.EVENT.RECONFIGURE, this.restart.bind(this));
+
+                    this.controlClient.on('ping', () => {
+                        this.logger.debug('Received ping from control server');
+                        schedulePing();
+                    });
+
+                    this.controlClient.on('close', () => {
+                        clearTimeout(this.pingTimeout);
+                        setTimeout(() => {
+                            this.logger.debug('Control client closed. Restarting server...');
+                            this.restart(_.merge({}, newConf, {
+                                control: { stopped: Date.now() }
+                            }));
+                        }, RESTART_INTERVAL_MS);
+                    });
+
+                    restartActionsTaken.updateControlClient = true;
+                }
+            }
+
+            const updateOAuthTestServer = !_.isEqual(newConf.oauthTestServer, this.conf.oauthTestServer);
+            if (updateOAuthTestServer) {
+                await this.oauthTestServer?.stop();
+                if (this.conf.oauthTestServer.enabled) {
+                    this.oauthTestServer = new OAuthTestServer({
+                        clientKey: newConf.oauthTestServer.clientKey,
+                        clientSecret: newConf.oauthTestServer.clientSecret,
+                        port: newConf.oauthTestServer.listenPort,
+                        logger: this.logger,
+                    });
+                    await this.oauthTestServer.start();
+                    restartActionsTaken.updateOAuthTestServer = true;
+                }
+            }
+
+            const updateTestServer = !_.isEqual(newConf.test.port, this.conf.test.port);
+            if (updateTestServer) {
+                await this.testServer?.stop();
+                if (this.conf.enableTestFeatures) {
+                    this.testServer = new TestServer({
+                        port: newConf.test.port,
+                        logger: this.logger,
+                        cache: this.cache,
+                    });
+                    await this.testServer.start();
+                    restartActionsTaken.updateTestServer = true;
+                }
+            }
+
+            this.conf = newConf;
+
+            await oldCache?.disconnect();
+
+            if (Object.keys(restartActionsTaken).length > 0) {
+                this.logger.info('Server is restarted', { restartActionsTaken, source });
+            } else {
+                this.logger.verbose('Server not restarted, no config changes detected', { source });
+            }
+        } catch (err) {
+            this.logger.error('error in Server restart: ', err);
+        } finally {
+            this._configUpdateInProgress = false;
         }
     }
 
     stop() {
+        this._stopConfigPolling();
+
         clearTimeout(this.pingTimeout);
         this.oidc.auth.stop();
         this.controlClient?.removeAllListeners();
@@ -452,10 +524,10 @@ class Server extends EventEmitter {
             this.cache.disconnect(),
             this.inboundServer.stop(),
             this.outboundServer.stop(),
+            this.metricsServer.stop(),
             this.oauthTestServer?.stop(),
             this.testServer?.stop(),
             this.controlClient?.stop(),
-            this.metricsServer.stop(),
             this.backendEventHandler?.stop(),
             this.fspiopEventHandler?.stop(),
         ]);
@@ -493,35 +565,19 @@ class Server extends EventEmitter {
     }
 }
 
-/*
-* Call the Connector Manager in Management API to get the updated config
-*/
-async function _GetUpdatedConfigFromMgmtAPI(conf, logger, client) {
-    logger.isInfoEnabled && logger.info(`Getting updated config from Management API at ${conf.control.mgmtAPIWsUrl}:${conf.control.mgmtAPIWsPort}...`);
-    const clientSendResponse = await client.send(ControlAgent.build.CONFIGURATION.READ());
-    logger.isDebugEnabled && logger.debug('client send returned:: ', clientSendResponse);
-    const responseRead = await client.receive();
-    logger.isDebugEnabled && logger.debug('client receive returned:: ', responseRead);
-    return responseRead.data;
-}
-
 async function start(config) {
     if (config.pm4mlEnabled) {
-        const controlClient = await ControlAgent.Client.Create({
-            appConfig: config,
-            address: config.control.mgmtAPIWsUrl,
-            port: config.control.mgmtAPIWsPort,
-            logger,
-        });
-        const updatedConfigFromMgmtAPI = await _GetUpdatedConfigFromMgmtAPI(config, logger, controlClient);
-        logger.isInfoEnabled && logger.push({ updatedConfigFromMgmtAPIKeys: Object.keys(updatedConfigFromMgmtAPI) }).info('updatedConfigFromMgmtAPI keys:');
+        const controlClient = await ControlAgent.createConnectedControlAgentWs(config, logger);
+        const updatedConfigFromMgmtAPI = await controlClient.getUpdatedConfig();
         _.merge(config, updatedConfigFromMgmtAPI);
         controlClient.terminate();
+        // todo: - clarify, why do we need to terminate the client? (use .stop() method?)
+        //       - can we use persistent ws controlClient from Server? (why do we need to establish a brand new ws connection here?)
     }
 
     const svr = new Server(config, logger);
     svr.on('error', (err) => {
-        logger.push({ err }).error('Unhandled server error');
+        logger.error('Unhandled server error: ', err);
         process.exit(2);
     });
 
@@ -533,11 +589,11 @@ async function start(config) {
     });
 
     await svr.start().catch(err => {
-        logger.push({ err }).error('Error starting server');
+        logger.error('Error starting server: ', err);
         process.exit(1);
     });
 
-    logger.info('SDK server is started!', { name, version });
+    logger.info('SDK server is started', { name, version, hostname: hostname() });
 }
 
 if (require.main === module) {

@@ -88,6 +88,7 @@ module.exports = {
         mgmtAPIWsUrl: env.get('MGMT_API_WS_URL').default('127.0.0.1').asString(),
         mgmtAPIWsPort: env.get('MGMT_API_WS_PORT').default('4005').asPortNumber(),
         mgmtAPILatencyAssumption: env.get('MGMT_API_LATENCY_ASSUMPTION').default('2000').asIntPositive(),
+        mgmtAPIPollIntervalMs: env.get('MANAGEMENT_API_POLL_INTERVAL_MS').asIntPositive(), // undefined if not set (feature disabled)
     },
     idGenerator: env.get('ID_GENERATOR').default('{"type":"ulid"}').asJsonObject(),
     logLevel: env.get('LOG_LEVEL').default('info').asEnum(LOG_LEVELS),
