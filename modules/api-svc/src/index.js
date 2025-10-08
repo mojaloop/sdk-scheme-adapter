@@ -205,9 +205,7 @@ class Server extends EventEmitter {
 
     /**
      * Starts periodic polling of Management API for configuration updates.
-     * Only runs if PM4ML enabled and polling interval configured.
-     * Uses the existing persistent WebSocket client (this.controlClient).
-     * @private
+     * Only runs if PM4ML enabled and a polling interval configured.
      */
     _startConfigPolling() {
         if (!this.conf.pm4mlEnabled || !this.conf.control.mgmtAPIPollIntervalMs) {
@@ -215,7 +213,6 @@ class Server extends EventEmitter {
             return;
         }
 
-        // Start polling
         this.logger.info('starting failsafe config polling from Management API...', { intervalMs: this.conf.control.mgmtAPIPollIntervalMs });
 
         this._configPollInterval = setInterval(
@@ -233,7 +230,6 @@ class Server extends EventEmitter {
      * Skips polling if:
      * - Another config update is in progress
      * - WebSocket client is not connected
-     * @private
      */
     async _pollConfigFromMgmtAPI() {
         // Race condition prevention: skip if restart in progress
@@ -242,18 +238,11 @@ class Server extends EventEmitter {
             return;
         }
 
-        // Connection validation: skip if client not ready
-        if (!this.controlClient) {
-            this.logger.warn('Control client not initialized, skipping poll');
-            return;
-        }
-
         // WebSocket readyState: 0=CONNECTING, 1=OPEN, 2=CLOSING, 3=CLOSED
-        if (this.controlClient.readyState !== 1) {
-            this.logger.warn('Control client not ready (not OPEN), skipping poll', { readyState: this.controlClient.readyState });
+        if (this.controlClient?.readyState !== 1) {
+            this.logger.warn('Control client not ready (not OPEN), skipping poll', { readyState: this.controlClient?.readyState });
             return;
         }
-        this.logger.debug('polling Management API for config updates...');
 
         try {
             const newConfig = await this.controlClient.getUpdatedConfig();
@@ -261,22 +250,19 @@ class Server extends EventEmitter {
                 this.logger.warn('No config received from polling');
                 return;
             }
+            this.logger.info('polling config from Management API is done, restarting server...');
 
             const mergedConfig = _.merge({}, this.conf, newConfig);
             await this.restart(mergedConfig, { source: 'polling' });
-
         } catch (err) {
             this.logger.error('error in polling config from Management API: ', err);
         }
     }
 
-    /**
-     * Stops the config polling interval.
-     * @private
-     */
+    /** Stops the config polling interval. */
     _stopConfigPolling() {
         if (this._configPollInterval) {
-            this.logger.verbose('Stopping config polling');
+            this.logger.verbose('stopping config polling');
             clearInterval(this._configPollInterval);
             this._configPollInterval = null;
         }
@@ -321,10 +307,8 @@ class Server extends EventEmitter {
             });
 
             schedulePing();
+            this._startConfigPolling();
         }
-
-        // Start failsafe config polling if enabled
-        this._startConfigPolling();
 
         await Promise.all([
             this.inboundServer.start(),
@@ -338,7 +322,7 @@ class Server extends EventEmitter {
     }
 
     async restart(newConf, options = {}) {
-        const source = options.source || 'websocket'; // Track source
+        const source = options.source || 'websocket'; // Track source of restart call - websocket or polling
 
         // Race condition prevention
         if (this._configUpdateInProgress) {
@@ -379,7 +363,7 @@ class Server extends EventEmitter {
             if (updateInboundServer) {
                 const stopStartLabel = 'InboundServer stop/start duration';
                 // eslint-disable-next-line no-console
-                console.time(stopStartLabel);
+                console.time(stopStartLabel); // todo: remove console.time
                 await this.inboundServer.stop();
 
                 this.mojaloopSharedAgents = this._createMojaloopSharedAgents(newConf);
@@ -586,8 +570,8 @@ async function start(config) {
         const updatedConfigFromMgmtAPI = await controlClient.getUpdatedConfig();
         _.merge(config, updatedConfigFromMgmtAPI);
         controlClient.terminate();
-        // todo: - clarify, why do we need to terminate the client?
-        //       - is it better to use .stop() method?
+        // todo: - clarify, why do we need to terminate the client? (use .stop() method?)
+        //       - can we use persistent ws controlClient from Server? (why do we need to establish a brand new ws connection here?)
     }
 
     const svr = new Server(config, logger);
@@ -608,7 +592,7 @@ async function start(config) {
         process.exit(1);
     });
 
-    logger.info('SDK server is started!', { name, version });
+    logger.info('SDK server is started', { name, version });
 }
 
 if (require.main === module) {

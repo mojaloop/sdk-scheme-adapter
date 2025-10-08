@@ -210,10 +210,10 @@ class Client extends ws {
         });
     }
 
-    /*
+    /**
      * Call the Connector Manager in Management API to get the updated config
      */
-    async getUpdatedConfig() { // todo: clarify naming - why config is updated?
+    async getUpdatedConfig() { // clarify naming - why config is updated?
         this._logger.info(`Getting updated config from Management API at ${this._wsUrl}...`);
         const wsSendResponse = await this.send(build.CONFIGURATION.READ());
         this._logger.debug('wsSendResponse: ', { wsSendResponse });
