@@ -251,7 +251,7 @@ class Server extends EventEmitter {
                 this.logger.warn('No config received from polling');
                 return;
             }
-            this.logger.info('polling config from Management API is done, restarting server...');
+            this.logger.info('polling config from mgmt-api is done, checking if SDK server restart needed...');
 
             const mergedConfig = _.merge({}, this.conf, newConfig);
             await this.restart(mergedConfig, { source: 'polling' });
@@ -327,7 +327,7 @@ class Server extends EventEmitter {
 
         // Race condition prevention
         if (this._configUpdateInProgress) {
-            this.logger.info('Restart already in progress, skipping', { source });
+            this.logger.info('restart already in progress, skipping', { source });
             return;
         }
 
