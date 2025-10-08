@@ -282,4 +282,8 @@ module.exports = {
         backoffFactor: env.get('GET_TRANSFER_REQUEST_RETRY_BACKOFF_FACTOR').default('2').asIntPositive(),
     },
     patchNotificationGraceTimeMs: env.get('PATCH_NOTIFICATION_GRACE_TIME_MS').default('15000').asIntPositive(),
+
+    // W3C Trace Context specification - trace flags for traceparent header
+    // Must be a two-character lowercase hex string (00-ff)
+    traceFlags: env.get('TRACE_FLAGS').default('01').asString(),
 };

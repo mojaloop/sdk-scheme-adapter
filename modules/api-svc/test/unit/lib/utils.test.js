@@ -24,7 +24,7 @@
 
  --------------
  ******/
-const { transformHeadersIsoToFspiop } = require('~/lib/utils');
+const { transformHeadersIsoToFspiop, generateTraceparent, isValidTraceFlags } = require('~/lib/utils');
 
 describe('utils', () => {
     describe('transformHeadersIsoToFspiop', () => {
@@ -41,5 +41,75 @@ describe('utils', () => {
             };
             expect(transformHeadersIsoToFspiop(isoHeaders)).toEqual(fspiopHeaders);
         });
+    });
+
+    describe('isValidTraceFlags', () => {
+        it('should validate correct hex strings', () => {
+            expect(isValidTraceFlags('00')).toBe(true);
+            expect(isValidTraceFlags('01')).toBe(true);
+        });
+
+        it('should reject invalid strings', () => {
+            expect(isValidTraceFlags('0')).toBe(false);      // Too short
+            expect(isValidTraceFlags('000')).toBe(false);    // Too long
+            expect(isValidTraceFlags('zz')).toBe(false);     // Invalid hex
+            expect(isValidTraceFlags('')).toBe(false);       // Empty string
+        });
+
+        it('should reject non-string inputs', () => {
+            expect(isValidTraceFlags(null)).toBe(false);
+            expect(isValidTraceFlags(undefined)).toBe(false);
+            expect(isValidTraceFlags(1)).toBe(false);
+            expect(isValidTraceFlags({})).toBe(false);
+        });
+    });
+
+    describe('generateTraceparent', () => {
+        describe('default behavior', () => {
+            it('should generate valid traceparent with default flags (01)', () => {
+                const traceparent = generateTraceparent();
+                const parts = traceparent.split('-');
+
+                expect(parts).toHaveLength(4);
+                expect(parts[0]).toBe('00');           // version
+                expect(parts[1]).toHaveLength(32);     // traceId (16 bytes = 32 hex chars)
+                expect(parts[2]).toHaveLength(16);     // spanId (8 bytes = 16 hex chars)
+                expect(parts[3]).toBe('01');           // default flags
+
+                // Validate hex format
+                expect(/^[0-9a-f]{32}$/.test(parts[1])).toBe(true);
+                expect(/^[0-9a-f]{16}$/.test(parts[2])).toBe(true);
+            });
+
+            it('should use provided traceId', () => {
+                const traceId = '1234567890abcdef1234567890abcdef';
+                const traceparent = generateTraceparent(traceId);
+                const parts = traceparent.split('-');
+
+                expect(parts[1]).toBe(traceId);
+            });
+        });
+
+        describe('custom trace flags', () => {
+            it('should use custom trace flags when provided', () => {
+                const traceparent = generateTraceparent(undefined, '00');
+                expect(traceparent.split('-')[3]).toBe('00');
+            });
+
+            it('should accept uppercase hex and convert to lowercase', () => {
+                const traceparent = generateTraceparent(undefined, 'FF');
+                expect(traceparent.split('-')[3]).toBe('ff');
+            });
+        });
+
+        describe('validation', () => {
+            it('should throw error for invalid trace flags', () => {
+                expect(() => generateTraceparent(undefined, '0')).toThrow();
+                expect(() => generateTraceparent(undefined, '000')).toThrow();
+                expect(() => generateTraceparent(undefined, 'zz')).toThrow();
+            });
+
+        });
+
     });
 });

@@ -76,6 +76,7 @@ class OutboundTransfersModel {
         this._sendFinalNotificationIfRequested = config.sendFinalNotificationIfRequested;
         this._apiType = config.apiType;
         this._supportedCurrencies = config.supportedCurrencies;
+        this._traceFlags = config.traceFlags;
 
         if (this._autoAcceptParty && this._multiplePartiesResponse) {
             throw new Error('Conflicting config options provided: autoAcceptParty and multiplePartiesResponse');
@@ -1512,7 +1513,7 @@ class OutboundTransfersModel {
 
     #createOtelHeaders() {
         return Object.freeze({
-            traceparent: generateTraceparent(this.data.traceId),
+            traceparent: generateTraceparent(this.data.traceId, this._traceFlags),
         });
     }
 }

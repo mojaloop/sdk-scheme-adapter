@@ -63,14 +63,38 @@ const transformHeadersIsoToFspiop = (isoHeaders) => {
     return fspiopHeaders;
 };
 
-const generateTraceparent = (traceId = randomBytes(16).toString('hex')) => {
+/**
+ * Validates trace flags according to W3C Trace Context specification
+ * @param {string} flags - The trace flags to validate
+ * @returns {boolean} - True if valid, false otherwise
+ */
+const isValidTraceFlags = (flags) => {
+    // Must be exactly 2 characters
+    if (typeof flags !== 'string' || flags.length !== 2) {
+        return false;
+    }
+    // Must be valid hex characters (0-9, a-f, A-F)
+    return /^[0-9a-fA-F]{2}$/.test(flags);
+};
+
+/**
+ * Generates a W3C Trace Context compliant traceparent header
+ * @param {string} [traceId] - Optional 32-character hex trace ID
+ * @param {string} [traceFlags='01'] - Optional 2-character hex trace flags (defaults to '01' - sampled)
+ * @returns {string} - The traceparent header value in format: version-traceId-spanId-flags
+ * @throws {Error} - If traceFlags is invalid according to W3C specification
+ */
+const generateTraceparent = (traceId = randomBytes(16).toString('hex'), traceFlags = '01') => {
+    if (!isValidTraceFlags(traceFlags)) {
+        throw new Error(`Invalid trace flags: '${traceFlags}'. Must be a two-character hex string (00-ff).`);
+    }
     const spanId = randomBytes(8).toString('hex');
-    const flags = '01';
-    return `00-${traceId}-${spanId}-${flags}`;
+    return `00-${traceId}-${spanId}-${traceFlags.toLowerCase()}`;
 };
 
 module.exports = {
     createAuthClient,
     generateTraceparent,
+    isValidTraceFlags,
     transformHeadersIsoToFspiop
 };
