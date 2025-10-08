@@ -1,4 +1,16 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+## [24.15.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.14.0...v24.15.0) (2025-10-08)
+
+
+### Features
+
+* added trace_flags param ([#620](https://github.com/mojaloop/sdk-scheme-adapter/issues/620)) ([f19d92f](https://github.com/mojaloop/sdk-scheme-adapter/commit/f19d92f9b56b7a0f90120c3dc519218927bec0e2))
+
+
+### Chore
+
+* **sbom:** update sbom [skip ci] ([7f5f7a5](https://github.com/mojaloop/sdk-scheme-adapter/commit/7f5f7a568085edcf04a5d9ca6103b1e949ba52cf))
+
 ## [24.14.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.13.0...v24.14.0) (2025-10-08)
 
 
