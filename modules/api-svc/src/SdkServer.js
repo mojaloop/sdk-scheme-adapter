@@ -482,6 +482,7 @@ class SdkServer extends EventEmitter {
                         port: newConf.test.port,
                         logger: this.logger,
                         cache: this.cache,
+                        config: newConf.test,
                     });
                     await this.testServer.start();
                     restartActionsTaken.updateTestServer = true;
