@@ -51,7 +51,7 @@ const extractBodyHeadersSourceFspId = ctx => ({
 });
 
 const extractTraceHeaders = ctx => {
-    const { traceparent = generateTraceparent(), tracestate } = ctx.request.headers;
+    const { traceparent = generateTraceparent(undefined, ctx.state.conf.traceFlags), tracestate } = ctx.request.headers;
 
     const traceHeaders = {
         traceparent,
