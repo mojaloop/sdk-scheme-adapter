@@ -21,6 +21,8 @@ The project consists of multiple modules organized using Nx workspace.
 
 
 **Critical File Locations:**
+- Main server class: `modules/api-svc/src/SdkServer.js`
+- Entry point: `modules/api-svc/src/index.js`
 - Models: `modules/api-svc/src/lib/model/`
 - Handlers: `modules/api-svc/src/{Inbound,Outbound}Server/handlers.js`
 - Config: `modules/*/src/config/default.json`

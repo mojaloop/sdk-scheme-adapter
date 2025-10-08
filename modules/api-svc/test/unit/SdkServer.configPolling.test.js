@@ -25,11 +25,11 @@
  --------------
  ******/
 
-// process.env.PEER_ENDPOINT = 'localhost:4000';
-// process.env.BACKEND_ENDPOINT = 'localhost:4000';
-// process.env.CACHE_URL = 'redis://localhost:6379';
-// process.env.MGMT_API_WS_URL = 'localhost';
-// process.env.SUPPORTED_CURRENCIES = 'XXX';
+process.env.PEER_ENDPOINT = 'localhost:4000';
+process.env.BACKEND_ENDPOINT = 'localhost:4000';
+process.env.CACHE_URL = 'redis://localhost:6379';
+process.env.MGMT_API_WS_URL = 'localhost';
+process.env.SUPPORTED_CURRENCIES = 'XXX';
 
 jest.mock('~/lib/cache');
 jest.mock('~/ControlAgent');
