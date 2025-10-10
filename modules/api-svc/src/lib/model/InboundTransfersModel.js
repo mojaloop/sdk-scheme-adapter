@@ -1075,6 +1075,22 @@ class InboundTransfersModel {
                             log.verbose(`putFxTransfersNotification attempt ${currentAttempt} succeeded for conversionId ${conversionId}`);
                             resolve();
                         } catch (err) {
+                            // Don't retry on 4xx errors
+                            let status = err?.response?.status || err?.statusCode;
+                            if (!status && err?.response?.statusCode) {
+                                status = err.response.statusCode;
+                            }
+                            if (!status && err?.status) {
+                                status = err.status;
+                            }
+                            if (!status && err?.output?.statusCode) {
+                                status = err.output.statusCode;
+                            }
+                            if (status && Number(status) >= 400 && Number(status) < 500) {
+                                log.warn(`putFxTransfersNotification attempt ${currentAttempt} got 4xx error (${status}), not retrying`, err);
+                                resolve();
+                                return;
+                            }
                             log.warn(`putFxTransfersNotification attempt ${currentAttempt} threw error, retrying...`, err);
                             if (!operation.retry(err)) {
                                 log.verbose(`putFxTransfersNotification giving up after ${currentAttempt} attempts`);
@@ -1159,6 +1175,22 @@ class InboundTransfersModel {
                             log.verbose(`putTransfersNotification attempt ${currentAttempt} succeeded for transferId ${transferId}`);
                             resolve();
                         } catch (err) {
+                            // Don't retry on 4xx errors
+                            let status = err?.response?.status || err?.statusCode;
+                            if (!status && err?.response?.statusCode) {
+                                status = err.response.statusCode;
+                            }
+                            if (!status && err?.status) {
+                                status = err.status;
+                            }
+                            if (!status && err?.output?.statusCode) {
+                                status = err.output.statusCode;
+                            }
+                            if (status && Number(status) >= 400 && Number(status) < 500) {
+                                log.warn(`putTransfersNotification attempt ${currentAttempt} got 4xx error (${status}), not retrying`, err);
+                                resolve();
+                                return;
+                            }
                             this._logger.warn(`putTransfersNotification attempt ${currentAttempt} threw error, retrying...`, err);
                             if (!operation.retry(err)) {
                                 log.verbose(`putTransfersNotification giving up after ${currentAttempt} attempts`);

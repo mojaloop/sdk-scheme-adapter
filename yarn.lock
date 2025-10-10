@@ -1435,7 +1435,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@dabh/diagnostics@npm:^2.0.2":
+"@dabh/diagnostics@npm:^2.0.2, @dabh/diagnostics@npm:^2.0.8":
   version: 2.0.8
   resolution: "@dabh/diagnostics@npm:2.0.8"
   dependencies:
@@ -2597,9 +2597,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/central-services-shared@npm:18.34.1":
-  version: 18.34.1
-  resolution: "@mojaloop/central-services-shared@npm:18.34.1"
+"@mojaloop/central-services-shared@npm:18.34.2":
+  version: 18.34.2
+  resolution: "@mojaloop/central-services-shared@npm:18.34.2"
   dependencies:
     "@hapi/catbox": "npm:12.1.1"
     "@hapi/catbox-memory": "npm:5.0.1"
@@ -2657,13 +2657,13 @@ __metadata:
       optional: false
     mysql2:
       optional: false
-  checksum: 10/f7ad2f939448876a4a79085665580d857e056f3ae8db9193a455809ede9bd57297c5793681ce30085789a423f0416a696063ebfdc1741e5fed09e509241d60bf
+  checksum: 10/3daa9af31e3b003b188537c6df0824a9fb725df57ce8edd49448554e4b07209767b0965364be439b3654849ef975eb1e2f61a7063c9ed071309b9e3805fb1fa6
   languageName: node
   linkType: hard
 
-"@mojaloop/event-sdk@npm:14.8.0":
-  version: 14.8.0
-  resolution: "@mojaloop/event-sdk@npm:14.8.0"
+"@mojaloop/event-sdk@npm:14.8.1":
+  version: 14.8.1
+  resolution: "@mojaloop/event-sdk@npm:14.8.1"
   dependencies:
     "@grpc/grpc-js": "npm:1.14.0"
     "@grpc/proto-loader": "npm:0.8.0"
@@ -2678,7 +2678,7 @@ __metadata:
     serialize-error: "npm:8.1.0"
     traceparent: "npm:1.0.0"
     tslib: "npm:2.8.1"
-    winston: "npm:3.17.0"
+    winston: "npm:3.18.3"
   peerDependencies:
     "@mojaloop/central-services-logger": ">=11.x.x"
     "@mojaloop/central-services-stream": ">=11.x.x"
@@ -2687,7 +2687,7 @@ __metadata:
       optional: false
     "@mojaloop/central-services-stream":
       optional: true
-  checksum: 10/bc2be19e1618b15dac4975962470a062cd61e2535039579cda2f0ed86294b7966ee0439bdbe6762e595c597dfc34b8340a3218454c4a7d2c6395c423eb93ecf7
+  checksum: 10/49fe01b89c5de9e5a2b9eeae2c6983d67e8b7e3bcebee8a3bdb59a497af5b199c56c20a6340790f53659b9f9346050b15858872c848d19316a994bad021fb577
   languageName: node
   linkType: hard
 
@@ -2815,8 +2815,8 @@ __metadata:
     "@mojaloop/central-services-error-handling": "npm:13.1.3"
     "@mojaloop/central-services-logger": "npm:11.10.1"
     "@mojaloop/central-services-metrics": "npm:12.8.0"
-    "@mojaloop/central-services-shared": "npm:18.34.1"
-    "@mojaloop/event-sdk": "npm:14.8.0"
+    "@mojaloop/central-services-shared": "npm:18.34.2"
+    "@mojaloop/event-sdk": "npm:14.8.1"
     "@mojaloop/logging-bc-client-lib": "npm:0.5.8"
     "@mojaloop/ml-schema-transformer-lib": "npm:2.7.8"
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^"
@@ -2875,14 +2875,14 @@ __metadata:
   dependencies:
     "@eslint/compat": "npm:1.4.0"
     "@mojaloop/api-snippets": "npm:18.2.0"
-    "@mojaloop/central-services-shared": "npm:18.34.1"
+    "@mojaloop/central-services-shared": "npm:18.34.2"
     "@mojaloop/logging-bc-client-lib": "npm:0.5.8"
     "@mojaloop/logging-bc-public-types-lib": "npm:0.5.6"
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^"
     "@types/convict": "npm:6.1.6"
     "@types/express": "npm:5.0.3"
     "@types/jest": "npm:30.0.0"
-    "@types/node": "npm:24.7.0"
+    "@types/node": "npm:24.7.1"
     "@types/node-cache": "npm:4.2.5"
     "@types/supertest": "npm:6.0.3"
     "@types/swagger-ui-express": "npm:4.1.8"
@@ -2903,7 +2903,7 @@ __metadata:
     replace: "npm:1.2.2"
     standard-version: "npm:9.5.0"
     swagger-ui-express: "npm:5.0.1"
-    ts-jest: "npm:29.4.4"
+    ts-jest: "npm:29.4.5"
     ts-node: "npm:10.9.2"
     typescript: "npm:5.9.3"
     yamljs: "npm:0.3.0"
@@ -2921,7 +2921,7 @@ __metadata:
     "@types/convict": "npm:6.1.6"
     "@types/express": "npm:5.0.3"
     "@types/jest": "npm:30.0.0"
-    "@types/node": "npm:24.7.0"
+    "@types/node": "npm:24.7.1"
     "@types/node-cache": "npm:4.2.5"
     "@types/supertest": "npm:6.0.3"
     "@types/swagger-ui-express": "npm:4.1.8"
@@ -2941,7 +2941,7 @@ __metadata:
     replace: "npm:1.2.2"
     standard-version: "npm:9.5.0"
     swagger-ui-express: "npm:5.0.1"
-    ts-jest: "npm:29.4.4"
+    ts-jest: "npm:29.4.5"
     ts-node: "npm:10.9.2"
     typescript: "npm:5.9.3"
     yamljs: "npm:0.3.0"
@@ -2954,11 +2954,11 @@ __metadata:
   dependencies:
     "@eslint/compat": "npm:1.4.0"
     "@mojaloop/api-snippets": "npm:18.2.0"
-    "@mojaloop/central-services-shared": "npm:18.34.1"
+    "@mojaloop/central-services-shared": "npm:18.34.2"
     "@mojaloop/logging-bc-public-types-lib": "npm:0.5.6"
     "@mojaloop/platform-shared-lib-messaging-types-lib": "npm:0.7.3"
     "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib": "npm:0.5.18"
-    "@types/node": "npm:24.7.0"
+    "@types/node": "npm:24.7.1"
     "@types/uuid": "npm:10.0.0"
     "@typescript-eslint/eslint-plugin": "npm:8.46.0"
     "@typescript-eslint/parser": "npm:8.46.0"
@@ -2969,7 +2969,7 @@ __metadata:
     redis: "npm:5.8.3"
     replace: "npm:1.2.2"
     standard-version: "npm:9.5.0"
-    ts-jest: "npm:29.4.4"
+    ts-jest: "npm:29.4.5"
     tslib: "npm:2.8.1"
     typescript: "npm:5.9.3"
     uuid: "npm:11.1.0"
@@ -2981,7 +2981,7 @@ __metadata:
   resolution: "@mojaloop/sdk-scheme-adapter@workspace:."
   dependencies:
     "@types/jest": "npm:30.0.0"
-    "@types/node": "npm:24.7.0"
+    "@types/node": "npm:24.7.1"
     "@types/node-cache": "npm:4.2.5"
     "@typescript-eslint/eslint-plugin": "npm:8.46.0"
     "@typescript-eslint/parser": "npm:8.46.0"
@@ -2997,7 +2997,7 @@ __metadata:
     nx: "npm:16.5.0"
     replace: "npm:1.2.2"
     standard-version: "npm:9.5.0"
-    ts-jest: "npm:29.4.4"
+    ts-jest: "npm:29.4.5"
     ts-node: "npm:10.9.2"
     tslib: "npm:2.8.1"
     typescript: "npm:5.9.3"
@@ -4054,12 +4054,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:24.7.0":
-  version: 24.7.0
-  resolution: "@types/node@npm:24.7.0"
+"@types/node@npm:24.7.1":
+  version: 24.7.1
+  resolution: "@types/node@npm:24.7.1"
   dependencies:
     undici-types: "npm:~7.14.0"
-  checksum: 10/db0b77e9b132906cdf0350661df660c970e924093ccaa781472d61bc5c448f3d15514b15f55b4df6827254a041aad2418339fe00d45ef10687557ffc0f026d47
+  checksum: 10/b1796fa90ab360d6ca5a85457a3b6a70ac53ba75e29e36f1bae1b22d4fd5883277a2ee08475d24c29061474207b132a82d7490180e2c508ee8b081179923dd55
   languageName: node
   linkType: hard
 
@@ -14169,12 +14169,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"semver@npm:^7.0.0, semver@npm:^7.1.1, semver@npm:^7.3.4, semver@npm:^7.3.5, semver@npm:^7.3.7, semver@npm:^7.3.8, semver@npm:^7.5.3, semver@npm:^7.5.4, semver@npm:^7.6.0, semver@npm:^7.6.3, semver@npm:^7.7.2":
+"semver@npm:^7.0.0, semver@npm:^7.1.1, semver@npm:^7.3.4, semver@npm:^7.3.5, semver@npm:^7.3.7, semver@npm:^7.3.8, semver@npm:^7.5.3, semver@npm:^7.5.4, semver@npm:^7.6.0, semver@npm:^7.6.3":
   version: 7.7.2
   resolution: "semver@npm:7.7.2"
   bin:
     semver: bin/semver.js
   checksum: 10/7a24cffcaa13f53c09ce55e05efe25cd41328730b2308678624f8b9f5fc3093fc4d189f47950f0b811ff8f3c3039c24a2c36717ba7961615c682045bf03e1dda
+  languageName: node
+  linkType: hard
+
+"semver@npm:^7.7.3":
+  version: 7.7.3
+  resolution: "semver@npm:7.7.3"
+  bin:
+    semver: bin/semver.js
+  checksum: 10/8dbc3168e057a38fc322af909c7f5617483c50caddba135439ff09a754b20bdd6482a5123ff543dad4affa488ecf46ec5fb56d61312ad20bb140199b88dfaea9
   languageName: node
   linkType: hard
 
@@ -15431,9 +15440,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-jest@npm:29.4.4":
-  version: 29.4.4
-  resolution: "ts-jest@npm:29.4.4"
+"ts-jest@npm:29.4.5":
+  version: 29.4.5
+  resolution: "ts-jest@npm:29.4.5"
   dependencies:
     bs-logger: "npm:^0.2.6"
     fast-json-stable-stringify: "npm:^2.1.0"
@@ -15441,7 +15450,7 @@ __metadata:
     json5: "npm:^2.2.3"
     lodash.memoize: "npm:^4.1.2"
     make-error: "npm:^1.3.6"
-    semver: "npm:^7.7.2"
+    semver: "npm:^7.7.3"
     type-fest: "npm:^4.41.0"
     yargs-parser: "npm:^21.1.1"
   peerDependencies:
@@ -15467,7 +15476,7 @@ __metadata:
       optional: true
   bin:
     ts-jest: cli.js
-  checksum: 10/759913fdb9795416abe918ba41c2ab3865f796f909d22bbf219a6a6c5e7daecad06ad85ecc905ea1af89fde2eb048c3b981493dfad6e3a21f7d5c602e630d34d
+  checksum: 10/48d867e0707474241b6339336cbe57d85122d6018fef957c8c095ff365e5d9428f112fe2cb11a8301343bbd32cec3ff639523d9bf9eea3a371734aa9a100f8a2
   languageName: node
   linkType: hard
 
@@ -16339,6 +16348,25 @@ __metadata:
     triple-beam: "npm:^1.3.0"
     winston-transport: "npm:^4.9.0"
   checksum: 10/220309a0ead36c1171158ab28cb9133f8597fba19c8c1c190df9329555530565b58f3af0037c1b80e0c49f7f9b6b3b01791d0c56536eb0be38678d36e316c2a3
+  languageName: node
+  linkType: hard
+
+"winston@npm:3.18.3":
+  version: 3.18.3
+  resolution: "winston@npm:3.18.3"
+  dependencies:
+    "@colors/colors": "npm:^1.6.0"
+    "@dabh/diagnostics": "npm:^2.0.8"
+    async: "npm:^3.2.3"
+    is-stream: "npm:^2.0.0"
+    logform: "npm:^2.7.0"
+    one-time: "npm:^1.0.0"
+    readable-stream: "npm:^3.4.0"
+    safe-stable-stringify: "npm:^2.3.1"
+    stack-trace: "npm:0.0.x"
+    triple-beam: "npm:^1.3.0"
+    winston-transport: "npm:^4.9.0"
+  checksum: 10/0d94690e051c625ff5a2731b3057ddaa709445cc791c707c56f99ad7b5bf3eebe634656f707c01c9409dc21dbc118903464f80e29c0cb438b1cc2739c0135e51
   languageName: node
   linkType: hard
 

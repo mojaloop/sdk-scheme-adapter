@@ -41,6 +41,7 @@ jest.mock('~/lib/model/lib/requests',() => require('./mockedLibRequests'));
 
 const randomUUID = require('@mojaloop/central-services-shared').Util.id({type: 'ulid'});
 const { MojaloopRequests, Ilp } = require('@mojaloop/sdk-standard-components');
+const axios = require('axios');
 const { logger } = require('~/lib/logger');
 const { BackendRequests, HTTPResponseError } = require('~/lib/model/lib/requests');
 const Cache = require('~/lib/cache');
@@ -1425,5 +1426,219 @@ describe('inboundModel', () => {
             expect(putArgs[2]).toBe(initiatingFsp);
         });
         // todo: add error case tests
+    });
+    describe('sendNotificationToPayee: retry logic for 4xx errors', () => {
+        const transferId = '1234';
+        let cache;
+
+        beforeEach(async () => {
+            cache = new Cache({
+                cacheUrl: 'redis://dummy:1234',
+                logger,
+                unsubscribeTimeoutMs: 5000
+            });
+            await cache.connect();
+        });
+
+        afterEach(async () => {
+            await cache.disconnect();
+        });
+
+        test('does not retry notification to fsp backend on 4xx error', async () => {
+            const error = new axios.AxiosError(
+                'Bad Request',
+                'ERR_BAD_REQUEST',
+                {
+                    method: 'put',
+                    url: '/transfersNotification',
+                    headers: {},
+                    data: {},
+                },
+                {},
+                {
+                    status: 400,
+                    statusText: 'Bad Request',
+                    headers: {},
+                    config: {},
+                    data: {
+                        statusCode: '400',
+                        message: 'Bad Request'
+                    }
+                }
+            );
+            const mockFn = jest.fn().mockRejectedValue(error);
+            BackendRequests.__putTransfersNotification = mockFn;
+
+            const notif = JSON.parse(JSON.stringify(notificationToPayee));
+            const model = new Model({
+                ...config,
+                cache,
+                logger,
+                backendRequestRetry: {
+                    enabled: true,
+                    maxRetries: 3,
+                    retryDelayMs: 10,
+                    maxRetryDelayMs: 20,
+                    backoffFactor: 1
+                }
+            });
+
+            await model.sendNotificationToPayee(notif.data, transferId);
+            // Should only be called once, no retry
+            expect(BackendRequests.__putTransfersNotification).toHaveBeenCalledTimes(1);
+        });
+
+        test('does not retry notification to fsp backend on 404 error', async () => {
+
+            const error = new axios.AxiosError(
+                'Not Found',
+                'ERR_BAD_REQUEST',
+                {
+                    method: 'put',
+                    url: '/transfersNotification',
+                    headers: {},
+                    data: {},
+                },
+                {},
+                {
+                    status: 404,
+                    statusText: 'Not Found',
+                    headers: {},
+                    config: {},
+                    data: {
+                        statusCode: '404',
+                        message: 'Not Found'
+                    }
+                }
+            );
+            const mockFn = jest.fn().mockRejectedValue(error);
+            BackendRequests.__putTransfersNotification = mockFn;
+
+            const notif = JSON.parse(JSON.stringify(notificationToPayee));
+            const model = new Model({
+                ...config,
+                cache,
+                logger,
+                backendRequestRetry: {
+                    enabled: true,
+                    maxRetries: 3,
+                    retryDelayMs: 10,
+                    maxRetryDelayMs: 20,
+                    backoffFactor: 1
+                }
+            });
+
+            await model.sendNotificationToPayee(notif.data, transferId);
+            // Should only be called once, no retry
+            expect(BackendRequests.__putTransfersNotification).toHaveBeenCalledTimes(1);
+        });
+    });
+
+    describe('sendFxPutNotificationToBackend: retry logic for 4xx errors', () => {
+        const conversionId = '1234';
+        let cache;
+
+        beforeEach(async () => {
+            cache = new Cache({
+                cacheUrl: 'redis://dummy:1234',
+                logger,
+                unsubscribeTimeoutMs: 5000
+            });
+            await cache.connect();
+        });
+
+        afterEach(async () => {
+            await cache.disconnect();
+        });
+
+        test('does not retry notification to backend on 4xx error', async () => {
+            const error = new axios.AxiosError(
+                'Bad Request',
+                'ERR_BAD_REQUEST',
+                {
+                    method: 'put',
+                    url: '/fxTransfersNotification',
+                    headers: {},
+                    data: {},
+                },
+                {},
+                {
+                    status: 400,
+                    statusText: 'Bad Request',
+                    headers: {},
+                    config: {},
+                    data: {
+                        statusCode: '400',
+                        message: 'Bad Request'
+                    }
+                }
+            );
+            const mockFn = jest.fn().mockRejectedValue(error);
+            BackendRequests.__putFxTransfersNotification = mockFn;
+
+            const notif = JSON.parse(JSON.stringify(fxNotificationToBackend));
+            const model = new Model({
+                ...config,
+                cache,
+                logger,
+                backendRequestRetry: {
+                    enabled: true,
+                    maxRetries: 3,
+                    retryDelayMs: 10,
+                    maxRetryDelayMs: 20,
+                    backoffFactor: 1
+                }
+            });
+            model.saveFxState = jest.fn().mockReturnValue(Promise.resolve({}));
+
+            await model.sendFxPutNotificationToBackend(notif.data, conversionId);
+            // Should only be called once, no retry
+            expect(BackendRequests.__putFxTransfersNotification).toHaveBeenCalledTimes(1);
+        });
+
+        test('does not retry notification to backend on 404 error', async () => {
+            const error = new axios.AxiosError(
+                'Not Found',
+                'ERR_BAD_REQUEST',
+                {
+                    method: 'put',
+                    url: '/fxTransfersNotification',
+                    headers: {},
+                    data: {},
+                },
+                {},
+                {
+                    status: 404,
+                    statusText: 'Not Found',
+                    headers: {},
+                    config: {},
+                    data: {
+                        statusCode: '404',
+                        message: 'Not Found'
+                    }
+                }
+            );
+            const mockFn = jest.fn().mockRejectedValue(error);
+            BackendRequests.__putFxTransfersNotification = mockFn;
+
+            const notif = JSON.parse(JSON.stringify(fxNotificationToBackend));
+            const model = new Model({
+                ...config,
+                cache,
+                logger,
+                backendRequestRetry: {
+                    enabled: true,
+                    maxRetries: 3,
+                    retryDelayMs: 10,
+                    maxRetryDelayMs: 20,
+                    backoffFactor: 1
+                }
+            });
+            model.saveFxState = jest.fn().mockReturnValue(Promise.resolve({}));
+
+            await model.sendFxPutNotificationToBackend(notif.data, conversionId);
+            // Should only be called once, no retry
+            expect(BackendRequests.__putFxTransfersNotification).toHaveBeenCalledTimes(1);
+        });
     });
 });
