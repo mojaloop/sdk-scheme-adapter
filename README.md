@@ -43,7 +43,7 @@ It is recommend that you set the `NODE_VERSION` argument against the version set
 This can be done using the following command:
 
 ```bash
-export NODE_VERSION="$(cat .nvmrc)-alpine3.19"
+export NODE_VERSION="$(cat .nvmrc)-alpine3.22"
 
 docker build \
    --build-arg NODE_VERSION=$NODE_VERSION \
