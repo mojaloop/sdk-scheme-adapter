@@ -36,7 +36,7 @@
     "build:no-cache": "nx run-many --all --target=build --skip-nx-cache",
     "build:openapi": "yarn workspace @mojaloop/sdk-scheme-adapter-api-svc run build:openapi",
     "build:openapi:inbound": "yarn workspace @mojaloop/sdk-scheme-adapter-api-svc run build:openapi:inbound",
-    "docker:build": "docker build --build-arg NODE_VERSION=\"$(cat .nvmrc)-alpine\" -t mojaloop/sdk-scheme-adapter:local -f ./Dockerfile .",
+    "docker:build": "docker build --build-arg NODE_VERSION=\"$(cat .nvmrc)-alpine3.22\" -t mojaloop/sdk-scheme-adapter:local -f ./Dockerfile .",
     "docker:up": "docker-compose up",
     "docker:stop": "docker-compose stop",
     "docker:rm": "docker-compose rm -f -v",
@@ -104,6 +104,7 @@
     "yarn-audit-fix": "10.1.1"
   },
   "overrides": {
+    "@eslint/plugin-kit": "0.3.4",
     "body-parser": "1.20.3",
     "shins": {
       "path-to-regexp": "0.1.12",
