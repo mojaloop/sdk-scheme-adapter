@@ -1,8 +1,11 @@
 ignore:
   - vulnerability: CVE-2025-46394
+    reason: "No fixes to busybox apk available as of 2025-10-16 on Dockerfile base image 22.20.0-alpine3.22"
   - vulnerability: CVE-2024-58251
+    reason: "No fixes to busybox apk available as of 2025-10-16 on Dockerfile base image 22.20.0-alpine3.22"
   - vulnerability: CVE-2025-56200
     include-aliases: true
+    reason: "No fixes available as of 2025-10-16 on validator npm package"
 
 
 # Set output format defaults
