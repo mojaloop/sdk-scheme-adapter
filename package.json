@@ -83,7 +83,7 @@
   },
   "devDependencies": {
     "@types/jest": "30.0.0",
-    "@types/node": "24.7.2",
+    "@types/node": "24.8.0",
     "@types/node-cache": "4.2.5",
     "@typescript-eslint/eslint-plugin": "8.46.1",
     "@typescript-eslint/parser": "8.46.1",
