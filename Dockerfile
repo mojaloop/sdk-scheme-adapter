@@ -46,7 +46,7 @@ FROM node:${NODE_VERSION}
 WORKDIR /opt/app
 
 ## Install general dependencies
-RUN apk add --no-cache bash yarn
+RUN apk add --no-cache bash
 
 ## Install & Setup LibrdKafka Lib for Runtime
 RUN apk add --no-cache librdkafka
