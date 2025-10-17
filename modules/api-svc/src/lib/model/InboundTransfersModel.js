@@ -36,6 +36,7 @@ const dto = require('../dto');
 const shared = require('./lib/shared');
 const { BackendRequests, HTTPResponseError } = require('./lib/requests');
 const { SDKStateEnum, CacheKeyPrefixes } = require('./common');
+const { extractStatusCodeFromError } = require('../utils');
 
 const TRACESTATE_KEY_CALLBACK_START_TS = 'tx_callback_start_ts';
 
@@ -1076,16 +1077,7 @@ class InboundTransfersModel {
                             resolve();
                         } catch (err) {
                             // Don't retry on 4xx errors
-                            let status = err?.response?.status || err?.statusCode;
-                            if (!status && err?.response?.statusCode) {
-                                status = err.response.statusCode;
-                            }
-                            if (!status && err?.status) {
-                                status = err.status;
-                            }
-                            if (!status && err?.output?.statusCode) {
-                                status = err.output.statusCode;
-                            }
+                            let status = extractStatusCodeFromError(err);
                             if (status && Number(status) >= 400 && Number(status) < 500) {
                                 log.warn(`putFxTransfersNotification attempt ${currentAttempt} got 4xx error (${status}), not retrying`, err);
                                 resolve();
@@ -1176,16 +1168,7 @@ class InboundTransfersModel {
                             resolve();
                         } catch (err) {
                             // Don't retry on 4xx errors
-                            let status = err?.response?.status || err?.statusCode;
-                            if (!status && err?.response?.statusCode) {
-                                status = err.response.statusCode;
-                            }
-                            if (!status && err?.status) {
-                                status = err.status;
-                            }
-                            if (!status && err?.output?.statusCode) {
-                                status = err.output.statusCode;
-                            }
+                            let status = extractStatusCodeFromError(err);
                             if (status && Number(status) >= 400 && Number(status) < 500) {
                                 log.warn(`putTransfersNotification attempt ${currentAttempt} got 4xx error (${status}), not retrying`, err);
                                 resolve();
