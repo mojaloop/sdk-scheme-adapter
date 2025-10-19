@@ -227,31 +227,22 @@ class Client extends ws {
 
     // Handle incoming message from the server.
     _handle(data) {
-        // TODO: json-schema validation of received message- should be pretty straight-forward
-        // and will allow better documentation of the API
-        let msg;
-        try {
-            msg = deserialise(data);
-        } catch {
-            this._logger.warn('failed to parse received message: ', { data });
-            this.send(build.ERROR.NOTIFY.JSON_PARSE_ERROR());
-        }
-        this._logger.isDebugEnabled && this._logger.push({ msg }).debug('Handling received message');
+        const msg = this._deserialiseMessage(data);
+
+        // think how to simplify big switch
         switch (msg.msg) {
             case MESSAGE.CONFIGURATION:
                 switch (msg.verb) {
                     case VERB.NOTIFY: {
                         const dup = cloneJson(this._appConfig); // fast-json-patch explicitly mutates
                         _.merge(dup, msg.data);
-                        this._logger.isDebugEnabled && this._logger.push({ oldConf: this._appConfig, newConf: dup }).debug(`Emitting new agent configuration [${VERB.NOTIFY}]`);
-                        this.emit(EVENT.RECONFIGURE, dup);
+                        this._reconfigure(dup, VERB.NOTIFY);
                         break;
                     }
                     case VERB.PATCH: {
                         const dup = cloneJson(this._appConfig); // fast-json-patch explicitly mutates
                         jsonPatch.applyPatch(dup, msg.data);
-                        this._logger.isDebugEnabled && this._logger.push({ oldConf: this._appConfig, newConf: dup }).debug(`Emitting new agent configuration [${VERB.PATCH}]`);
-                        this.emit(EVENT.RECONFIGURE, dup);
+                        this._reconfigure(dup, VERB.PATCH);
                         break;
                     }
                     default:
@@ -274,6 +265,28 @@ class Client extends ws {
                 break;
         }
 
+    }
+
+    _deserialiseMessage (data) {
+        // TODO: json-schema validation of received message- should be pretty straight-forward
+        // and will allow better documentation of the API
+        let msg;
+        try {
+            msg = deserialise(data);
+        } catch {
+            this._logger.warn('failed to parse received message: ', { data });
+            this.send(build.ERROR.NOTIFY.JSON_PARSE_ERROR());
+        }
+        this._logger.isDebugEnabled && this._logger.push({ msg }).debug('Handling received message');
+
+        return msg;
+    }
+
+    _reconfigure(newConf, verb) {
+        this._logger.info(`Emitting new agent configuration [${verb}]`);
+        this._logger.debug('oldConf and newConf: ', { oldConf: this._appConfig, newConf });
+        this.emit(EVENT.RECONFIGURE, newConf);
+        this._appConfig = newConf; // !!!
     }
 }
 
