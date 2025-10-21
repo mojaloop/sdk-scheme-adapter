@@ -92,9 +92,28 @@ const generateTraceparent = (traceId = randomBytes(16).toString('hex'), traceFla
     return `00-${traceId}-${spanId}-${traceFlags.toLowerCase()}`;
 };
 
+/** Extracts the HTTP status code from various error object structures
+ * @param {object} err - The error object to extract the status code from
+ * @returns {number|undefined} - The extracted status code, or undefined if not found
+ */
+const extractStatusCodeFromError = (err) => {
+    let status = err?.response?.status || err?.statusCode;
+    if (!status && err?.response?.statusCode) {
+        status = err.response.statusCode;
+    }
+    if (!status && err?.status) {
+        status = err.status;
+    }
+    if (!status && err?.output?.statusCode) {
+        status = err.output.statusCode;
+    }
+    return status;
+};
+
 module.exports = {
     createAuthClient,
     generateTraceparent,
     isValidTraceFlags,
-    transformHeadersIsoToFspiop
+    transformHeadersIsoToFspiop,
+    extractStatusCodeFromError
 };

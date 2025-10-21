@@ -36,6 +36,7 @@ const dto = require('../dto');
 const shared = require('./lib/shared');
 const { BackendRequests, HTTPResponseError } = require('./lib/requests');
 const { SDKStateEnum, CacheKeyPrefixes } = require('./common');
+const { extractStatusCodeFromError } = require('../utils');
 
 const TRACESTATE_KEY_CALLBACK_START_TS = 'tx_callback_start_ts';
 
@@ -1075,6 +1076,13 @@ class InboundTransfersModel {
                             log.verbose(`putFxTransfersNotification attempt ${currentAttempt} succeeded for conversionId ${conversionId}`);
                             resolve();
                         } catch (err) {
+                            // Don't retry on 4xx errors
+                            let status = extractStatusCodeFromError(err);
+                            if (status && Number(status) >= 400 && Number(status) < 500) {
+                                log.warn(`putFxTransfersNotification attempt ${currentAttempt} got 4xx error (${status}), not retrying`, err);
+                                resolve();
+                                return;
+                            }
                             log.warn(`putFxTransfersNotification attempt ${currentAttempt} threw error, retrying...`, err);
                             if (!operation.retry(err)) {
                                 log.verbose(`putFxTransfersNotification giving up after ${currentAttempt} attempts`);
@@ -1159,6 +1167,13 @@ class InboundTransfersModel {
                             log.verbose(`putTransfersNotification attempt ${currentAttempt} succeeded for transferId ${transferId}`);
                             resolve();
                         } catch (err) {
+                            // Don't retry on 4xx errors
+                            let status = extractStatusCodeFromError(err);
+                            if (status && Number(status) >= 400 && Number(status) < 500) {
+                                log.warn(`putTransfersNotification attempt ${currentAttempt} got 4xx error (${status}), not retrying`, err);
+                                resolve();
+                                return;
+                            }
                             this._logger.warn(`putTransfersNotification attempt ${currentAttempt} threw error, retrying...`, err);
                             if (!operation.retry(err)) {
                                 log.verbose(`putTransfersNotification giving up after ${currentAttempt} attempts`);

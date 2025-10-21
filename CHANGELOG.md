@@ -1,4 +1,12 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+### [24.15.2](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.15.1...v24.15.2) (2025-10-17)
+
+
+### Chore
+
+* adjust retry logic ([#621](https://github.com/mojaloop/sdk-scheme-adapter/issues/621)) ([ce2b72d](https://github.com/mojaloop/sdk-scheme-adapter/commit/ce2b72d33fff72e3b3566390c150fdfbe3b8d24b))
+* **sbom:** update sbom [skip ci] ([e50b0d1](https://github.com/mojaloop/sdk-scheme-adapter/commit/e50b0d1c16a7e84e36691ad2fe3949e555fb2f14))
+
 ### [24.15.1](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.15.0...v24.15.1) (2025-10-08)
 
 

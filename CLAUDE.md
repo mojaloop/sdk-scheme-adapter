@@ -4,185 +4,227 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is the Mojaloop SDK Scheme Adapter - a monorepo that provides an adapter interface between Mojaloop API compliant switches and DFSP backend platforms.
-The project consists of multiple modules organized using Nx workspace.
+The Mojaloop SDK Scheme Adapter is a monorepo that provides an adapter interface between Mojaloop API compliant switches and DFSP backend platforms. It consists of multiple modules organized as a Yarn workspace using Nx for build orchestration.
 
-## Quick Reference (Start Here)
+## Quick Reference
+
+### Essential Commands
 
 | Task | Command | Prerequisites |
 |------|---------|---------------|
-| Run all tests | `yarn test` | - |
-| Run integration tests | `yarn test:integration` | Docker running, `yarn wait-4-docker` |
-| Run specific module test | `yarn workspace @mojaloop/sdk-scheme-adapter-api-svc run test:unit` | - |
-| Build everything | `yarn build` | Node 22.15.1 (`nvm use`) |
-| Start services | `yarn start` | Docker running, modules built |
-| Update OpenAPI | `yarn build:openapi && yarn validate:api` | - |
-| Debug main service | `yarn workspace @mojaloop/sdk-scheme-adapter-api-svc run start:debug` | Port 9229 available |
+| **Install dependencies** | `yarn install` | Node 22.15.1 (`nvm use`) |
+| **Build all modules** | `yarn build` | Dependencies installed |
+| **Run all tests** | `yarn test:unit` | Built modules |
+| **Run integration tests** | `yarn test:integration` | Docker running, `yarn wait-4-docker` |
+| **Start all services** | `yarn start` | Docker running, built modules |
+| **Start specific service** | `yarn start:api-svc` | Built modules |
+| **Run single test** | `yarn workspace @mojaloop/<module> run test:unit -- <test-path>` | - |
+| **Update OpenAPI specs** | `yarn build:openapi && yarn validate:api` | - |
+| **Check dependencies** | `yarn dep:check` | - |
+| **Fix vulnerabilities** | `yarn audit:fix` | - |
+| **Lint code** | `yarn lint` | - |
+| **Lint and fix** | `yarn lint:fix` | - |
 
+### Module-Specific Commands
 
-**Critical File Locations:**
-- Main server class: `modules/api-svc/src/SdkServer.js`
-- Entry point: `modules/api-svc/src/index.js`
-- Models: `modules/api-svc/src/lib/model/`
-- Handlers: `modules/api-svc/src/{Inbound,Outbound}Server/handlers.js`
-- Config: `modules/*/src/config/default.json`
-- OpenAPI templates: `modules/*/src/*_template.yaml` (edit these, not `api.yaml`)
+For running commands in specific modules, use the workspace syntax:
+```bash
+yarn workspace @mojaloop/sdk-scheme-adapter-<module-name> run <command>
+```
+
+Examples:
+- `yarn workspace @mojaloop/sdk-scheme-adapter-api-svc run test:unit`
+- `yarn workspace @mojaloop/sdk-scheme-adapter-api-svc run start:debug`
+- `yarn workspace @mojaloop/sdk-scheme-adapter-outbound-command-event-handler run build`
 
 ## Architecture
-This service can be referenced as `Mojaloop Connector`, `ML Connector` or `Scheme Adapter`.
 
 ### Core Modules
 
-- **api-svc**: Main service module (JavaScript/Node.js) handling inbound/outbound HTTP APIs and core business logic
-- **outbound-command-event-handler**: TypeScript module handling outbound command events using domain-driven design
-- **outbound-domain-event-handler**: TypeScript module processing domain events for outbound operations
-- **private-shared-lib**: Shared TypeScript library containing domain entities, events, and infrastructure code
+1. **api-svc** (JavaScript/Node.js)
+   - Main service handling inbound/outbound HTTP APIs
+   - Implements FSPIOP protocol compliance
+   - State machine-based transfer processing
+   - Entry point: `modules/api-svc/src/index.js`
 
-### Key Components
+2. **outbound-command-event-handler** (TypeScript)
+   - Processes outbound command events
+   - Domain-driven design implementation
+   - Kafka consumer/producer for command events
 
-- **Event-Driven Architecture**: Uses Kafka for event streaming between modules
-- **State Machines**: JavaScript State Machine library for managing transfer states
-- **Cache Layer**: Redis for distributed caching and session management
-- **Models**: Domain models for transfers, quotes, parties, bulk operations
-- **Event Handlers**: FSPIOP and Backend event handling for Mojaloop protocol compliance
-- **ControlAgent**: WebSocket client for PM4ML Management API with optional failsafe polling
+3. **outbound-domain-event-handler** (TypeScript)
+   - Handles domain events for outbound operations
+   - Event sourcing pattern implementation
+   - Processes events from command handler
 
-## Code Structure Patterns
+4. **private-shared-lib** (TypeScript)
+   - Shared domain entities and value objects
+   - Infrastructure code (Kafka, Redis clients)
+   - Common utilities and types
 
-### API Service (modules/api-svc)
-- **Handlers**: Route handlers in `src/InboundServer/handlers.js` and `src/OutboundServer/handlers.js`
-- **Models**: Business logic in `src/lib/model/` with models like:
-  - `TransfersModel.js` - Transfer operations
-  - `QuotesModel.js` - Quote handling
-  - `AccountsModel.js` - Account management
-  - `InboundTransfersModel.js` - Inbound transfer processing
-  - `OutboundTransfersModel.js` - Outbound transfer processing
-  - `OutboundBulkQuotesModel.js` - Bulk quote operations
-  - `OutboundBulkTransfersModel.js` - Bulk transfer operations
-- **State Machines**: Use `PersistentStateMachine` for managing complex state transitions
-- **Middleware**: Validation and error handling middleware in `middlewares.js`
-- **OpenAPI Templates**: API definitions in `api_template.yaml` files, compiled to `api.yaml`
+### Key Technical Components
 
-### Event Handlers (TypeScript modules)
-- **Domain Layer**: Aggregates and entities in `src/domain/`
-- **Application Layer**: Event handlers in `src/application/handlers/`
-- **Infrastructure**: Kafka producers/consumers in shared lib
-- **API Server**: Express-based APIs with OpenAPI specs
-- **Build Process**: TypeScript compilation + file copying (YAML files)
+- **Event Streaming**: Kafka for inter-module communication
+- **State Management**: Redis for distributed cache and state persistence
+- **API Validation**: OpenAPI 3.0 specs with schema validation
+- **Configuration**: Convict (TypeScript modules), env-var (api-svc)
+- **Testing**: Jest for all modules
+- **Build System**: Nx for monorepo orchestration
 
-### Testing Patterns
-- **Unit tests**: `test/unit/` directories using Jest
-- **Integration tests**: `test/integration/` requiring Docker services
-- **Functional tests**: Separate test suites in `test/func_bulk/` and `test/func_iso20022/`
-- **Mocks**: Test mocks in `test/__mocks__/`
-- **Setup**: Test setup files like `test/unit/setup.js`
-- **Configuration**: Jest config in individual `jest.config.js` files
+## Development Workflow
 
-## Development Commands
-Check **[development-commands.md](./_cc/docs/development-commands.md)** file to get details about some useful commands to
-build and setup the project, start the services, run tests, linting, deps and audit checks, etc.
+### Initial Setup
+```bash
+nvm use                    # Switch to correct Node version
+yarn install               # Install all dependencies
+yarn build                 # Build all modules
+docker-compose up -d       # Start infrastructure services
+yarn wait-4-docker         # Wait for services to be ready
+```
 
-## Key Libraries & Dependencies
+### Running Services
 
-- **@mojaloop/sdk-standard-components**: Core Mojaloop SDK components
-- **@mojaloop/central-services-***: Mojaloop platform services
-- **@mojaloop/api-snippets**: API specification components
-- **javascript-state-machine**: State management for transfers
-- **redis**: Distributed caching (v5.x)
-- **express/koa**: HTTP servers (Express for newer modules, Koa for some services)
-- **ajv**: JSON schema validation
-- **convict**: Configuration management in TypeScript modules
-- **openapi-backend**: OpenAPI request validation and routing
-- **Package Manager**: Yarn 4.10.2 (Berry)
+Start all services:
+```bash
+yarn start                 # Runs all services in parallel
+```
+
+Start individual services:
+```bash
+yarn start:api-svc         # API service only
+yarn start:event-handler   # Domain event handler
+yarn start:command-handler # Command event handler
+```
+
+Debug mode (port 9229):
+```bash
+yarn workspace @mojaloop/sdk-scheme-adapter-api-svc run start:debug
+```
+
+### Testing Strategy
+
+**Unit Tests** (no external dependencies):
+```bash
+yarn test:unit             # All modules
+yarn test:unit:no-cache    # Skip Nx cache
+yarn test:unit:affected    # Only changed modules
+```
+
+**Integration Tests** (requires Docker):
+```bash
+docker-compose up -d       # Start dependencies
+yarn wait-4-docker         # Ensure services ready
+yarn test:integration      # Run integration tests
+```
+
+**Coverage Reports**:
+```bash
+yarn test:coverage         # Generate coverage
+yarn test:coverage-check   # Verify thresholds
+```
+
+### OpenAPI Development
+
+**IMPORTANT**: Never edit generated `api.yaml` files directly!
+
+1. Edit template files: `modules/*/src/*_template.yaml`
+2. Build OpenAPI specs: `yarn build:openapi`
+3. Validate specs: `yarn validate:api`
+
+The build process uses `@redocly/openapi-cli` to bundle templates with `@mojaloop/api-snippets`.
+
+## Code Patterns
+
+### API Service (JavaScript)
+- **Handlers**: `src/{Inbound,Outbound}Server/handlers.js`
+- **Models**: `src/lib/model/*.js` - Business logic
+- **State Machines**: `PersistentStateMachine` class with Redis backing
+- **Middleware**: `src/InboundServer/middlewares.js`
+
+### TypeScript Modules
+- **Domain Layer**: `src/domain/` - Aggregates, entities, value objects
+- **Application Layer**: `src/application/handlers/` - Event handlers
+- **Infrastructure**: `src/infrastructure/` - External service clients
+
+### State Management
+Redis is used for:
+- State machine persistence (keys: `transferState_*`, `quoteState_*`)
+- Distributed cache
+- Pub/sub messaging between modules
+- Bulk transaction tracking
+
+### Event Flow
+```
+Command → outbound-command-event-handler → Domain Events → outbound-domain-event-handler
+```
+Topics: `topic-sdk-outbound-command-events`, `topic-sdk-outbound-domain-events`
 
 ## Docker Environment
 
-See [development-commands.md](./_cc/docs/development-commands.md#docker-operations) for Docker commands.
+**Core Services**:
+- Redis (6379) - State & cache
+- Kafka (9092) - Event streaming
+- ML Testing Toolkit (4040/5050) - Testing
+- TTK UI (6060) - Test interface
 
-**Services:** redis (6379), kafka (9092), ml-testing-toolkit (4040/5050), mojaloop-testing-toolkit-ui (6060)
-**Debug profile adds:** redisinsight (9001), kafka-debug-ui (9080)
-**Main service ports:** 4000-4004, 9229 (debugger)
+**Debug Profile** (`docker-compose.debug.yml`):
+- RedisInsight (9001) - Redis GUI
+- Kafka UI (9080) - Kafka management
 
-## Development Patterns & Notes
+**Application Ports**:
+- 4000: Outbound API
+- 4001: Inbound API
+- 9229: Node.js debugger
 
-### Module Architecture
-- **api-svc**: JavaScript-based, legacy module with core functionality
-- **Shared lib**: Private workspace package for cross-module code
+## Common Troubleshooting
 
-### Event Sourcing
-Commands → `outbound-command-event-handler` → Domain events → `outbound-domain-event-handler`
-**Kafka topics:** `topic-sdk-outbound-command-events`, `topic-sdk-outbound-domain-events`
+### Build Issues
+- Clear Nx cache: `yarn build:no-cache`
+- Clean dist folders: `yarn clean:dist`
+- Reinstall deps: `rm -rf node_modules && yarn install`
 
-### State Management
-**Redis:** State machine persistence, distributed cache, cross-module communication, bulk transaction tracking
-**Pattern:** `PersistentStateMachine` class for complex state transitions
+### Test Failures
+- Ensure Docker running: `docker ps`
+- Wait for services: `yarn wait-4-docker`
+- Check Redis: `docker exec -it redis redis-cli ping`
+- Check Kafka: `docker exec -it kafka kafka-topics --list --bootstrap-server localhost:9092`
 
-### OpenAPI Workflow
-1. Edit `*_template.yaml` files (not generated `api.yaml`)
-2. Run `yarn build:openapi` to compile templates
-3. Validate with `yarn validate:api`
-4. Uses `@redocly/openapi-cli` for bundling
+### Module Not Found
+- Build first: `yarn build`
+- Check workspace name in package.json
+- Verify module in `yarn workspaces list`
 
-### Testing Workflow
-1. **Unit tests**: Run locally without dependencies
-2. **Integration tests**: Require Docker services (Redis, Kafka)
-3. **Functional tests**: Full end-to-end scenarios with TTK
-4. Use `yarn wait-4-docker` to ensure services are ready
+## Configuration
 
-## Common Development Tasks
+### Environment Variables
+- `PEER_ENDPOINT`: Mojaloop switch URL
+- `BACKEND_ENDPOINT`: DFSP backend URL
+- `CACHE_HOST`/`CACHE_PORT`: Redis connection
+- `KAFKA_HOST`/`KAFKA_PORT`: Kafka connection
+- `LOG_LEVEL`: Logging verbosity
 
-See [development-commands.md](./_cc/docs/development-commands.md) for all commands and [common-workflows.md](./_cc/docs/common-workflows.md) for step-by-step guides.
+### Configuration Files
+- `modules/*/src/config.js` or `default.json`
+- Docker env: `docker-compose.env`
+- Override with environment variables
 
-## For AI Assistants (Memory Management Hints)
+## Key Dependencies
 
-**Always Re-read Before:**
-- Modifying OpenAPI specs → Review OpenAPI Workflow section first
-- Running integration tests → Verify Docker prerequisites and Testing Workflow
-- Making state machine changes → Review api-svc-06-state-management.md
-- Debugging test failures → Check development-commands.md for troubleshooting
+- **@mojaloop/sdk-standard-components**: Core SDK functionality
+- **@mojaloop/central-services-***: Platform utilities
+- **javascript-state-machine**: Transfer state management
+- **redis**: v5.x for caching
+- **express/koa**: HTTP servers
+- **convict**: Configuration (TypeScript)
+- **ajv**: JSON schema validation
+- **openapi-backend**: Request validation
 
-**Cache (Low Change Frequency):**
-- Architecture: 3 TypeScript modules (command-handler, domain-handler, shared-lib) + api-svc (JavaScript)
-- Event flow: Command events → outbound-command-event-handler → Domain events → outbound-domain-event-handler
-- Redis patterns: State machines, distributed cache, pub/sub, bulk transaction tracking
-- Kafka topics: `topic-sdk-outbound-command-events`, `topic-sdk-outbound-domain-events`
-- Package manager: Yarn 4.10.2 (Berry)
-- Node version: 22.15.1
+## Release Process
 
-**Key Patterns to Remember:**
-- Edit `*_template.yaml` files, NEVER edit generated `api.yaml` files
-- State machines use `PersistentStateMachine` class backed by Redis
-- Integration tests require Docker services - use `yarn wait-4-docker`
-- Use workspace syntax: `yarn workspace @mojaloop/sdk-scheme-adapter-<module> run <command>`
-- Nx caching enabled for builds/tests - use `--skip-nx-cache` to bypass
+This project uses standard-version for versioning:
+```bash
+yarn release              # Create release
+yarn snapshot             # Create snapshot version
+```
 
-**When Uncertain:**
-- Ask user ANY clarifying questions
-- Check Quick Reference section at top of this file
-- Consult api-svc-01-overview.md for 30-minute onboarding
-- Use development-commands.md for command reference
-- See common-workflows.md for step-by-step task guides
-
-## Documentation
-
-### API-SVC Module Documentation
-
-Comprehensive documentation for the `api-svc` module (core service handling inbound/outbound APIs):
-
-
-| Document | Description |
-|----------|-------------|
-| **[api-svc-01-overview.md](./_cc/docs/api-svc/api-svc-01-overview.md)** | Overview, quick start guide, 30-minute onboarding with core concepts and transfer flows |
-| **[api-svc-02-architecture.md](./_cc/docs/api-svc/api-svc-02-architecture.md)** | System architecture, component design, configuration system, startup sequence |
-| **[api-svc-03-inbound-server.md](./_cc/docs/api-svc/api-svc-03-inbound-server.md)** | Inbound server handling async FSPIOP callbacks from Mojaloop switch |
-| **[api-svc-04-outbound-server.md](./_cc/docs/api-svc/api-svc-04-outbound-server.md)** | Outbound server providing synchronous REST API for DFSP backends |
-| **[api-svc-05-models.md](./_cc/docs/api-svc/api-svc-05-models.md)** | Business logic models orchestrating party lookups, quotes, transfers, bulk operations |
-| **[api-svc-06-state-management.md](./_cc/docs/api-svc/api-svc-06-state-management.md)** | Redis-backed state machines, pub/sub patterns, key patterns, recovery behavior |
-| **[api-svc-07-control-agent.md](./_cc/docs/api-svc/api-svc-07-control-agent.md)** | WebSocket client for PM4ML Management API dynamic configuration |
-| **[api-svc-08-error-handling.md](./_cc/docs/api-svc/api-svc-08-error-handling.md)** | Error taxonomy, Mojaloop error codes, handling patterns, logging strategies |
-| **[api-svc-09-core-dependencies.md](./_cc/docs/api-svc/api-svc-09-core-dependencies.md)** | Core dependencies including @mojaloop/sdk-standard-components, JWS, ILP, OIDC |
-| **[api-svc-10-service-lifecycle.md](./_cc/docs/api-svc/api-svc-10-service-lifecycle.md)** | Service startup/shutdown sequences, component bootstrap order, configuration sources, hot reload |
-| **[api-svc-11-event-handlers.md](./_cc/docs/api-svc/api-svc-11-event-handlers.md)** | Kafka event handlers for domain/command events integration with TypeScript modules |
-| **[api-svc-12-testing.md](./_cc/docs/api-svc/api-svc-12-testing.md)** | Testing strategy covering unit, integration, and functional tests |
-| **[api-svc-13-deployment.md](./_cc/docs/api-svc/api-svc-13-deployment.md)** | Kubernetes deployment with Helm charts, production configuration, monitoring |
-| **[api-svc-14-examples.md](./_cc/docs/api-svc/api-svc-14-examples.md)** | Practical examples: outbound/inbound transfers, error handling, bulk operations, auto-accept |
+CircleCI handles automated releases on merge to master.
