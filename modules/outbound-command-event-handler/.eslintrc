@@ -1,6 +1,6 @@
 {
     "plugins": ["@typescript-eslint", "import"],
-    "extends": ["airbnb-typescript", "plugin:@typescript-eslint/recommended"],
+    "extends": ["plugin:@typescript-eslint/recommended"],
     "parser": "@typescript-eslint/parser",
     "ignorePatterns": ["src/test"],
     "parserOptions": {
@@ -52,11 +52,6 @@
           "ignoreRestArgs": true
         }
       ],
-      "@typescript-eslint/indent": [
-        "error",
-        4,
-        { "SwitchCase": 1 }
-      ],
       "react/jsx-filename-extension": [0, { "extensions": [".js", ".jsx"] }],
       "max-len": [
         "warn",
@@ -86,11 +81,6 @@
       ],
       "import/prefer-default-export": "off",
       "spaced-comment": ["error", "always", { "exceptions": ["*"] }],
-      "@typescript-eslint/keyword-spacing": ["error", { "overrides": {
-        "if": { "after": false },
-        "for": { "after": false },
-        "while": { "after": false }
-      } }],
       "arrow-parens": ["error", "as-needed"],
       "import/extensions": [
         "error", 
