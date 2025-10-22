@@ -11,6 +11,10 @@ reject: [
   "nx",
   ## esLint 9.15.0 caused the error: TypeError: Error while loading rule '@typescript-eslint/no-unused-expressions': Cannot read properties of undefined (reading 'allowShortCircuit')
   "eslint",
+  ## @typescript-eslint packages v8.x are incompatible with eslint-config-airbnb-typescript@18.0.0 which requires ^7.0.0
+  ## Wait for eslint-config-airbnb-typescript to support @typescript-eslint v8 or migrate away from airbnb config
+  "@typescript-eslint/eslint-plugin",
+  "@typescript-eslint/parser",
   ## express >5 introduces breaking changes that are not compatible with the current codebase.
   "express",
   ## jest 30 is released but libraries that work with jest have not been updated to support it yet.
