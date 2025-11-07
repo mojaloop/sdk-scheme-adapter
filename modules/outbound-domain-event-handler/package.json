@@ -34,7 +34,7 @@
         "test:xunit": "JEST_JUNIT_OUTPUT_DIR=../test/reports/ JEST_JUNIT_OUTPUT_NAME=xunit-event.xml yarn run test:unit -- --reporters=jest-junit",
         "test:integration": "jest --runInBand --passWithNoTests --testMatch '**/test/integration/**/*.test.ts'",
         "test:coverage": "jest --passWithNoTests --coverage --testMatch '**/test/unit/**/*.test.ts'",
-        "test:coverage-check:skip": "jest --coverage --testMatch '**/test/unit/**/*.test.ts'",
+        "test:coverage-check": "jest --coverage --testMatch '**/test/unit/**/*.test.ts'",
         "dep:check": "ncu -e 2",
         "dep:update": "ncu -u",
         "release": "standard-version --skip.changelog --releaseCommitMessageFormat 'chore(release): {{currentTag}} [skip ci]'",
