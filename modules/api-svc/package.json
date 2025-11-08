@@ -28,6 +28,8 @@
     "test": "yarn run test:unit",
     "test:unit": "jest --runInBand --ci --reporters=default --reporters=jest-junit --env=node test/unit/ --setupFilesAfterEnv=./test/unit/setup.js",
     "test:xunit": "JEST_JUNIT_OUTPUT_DIR=../test/reports/ JEST_JUNIT_OUTPUT_NAME=xunit-api-svc.xml yarn run test:unit -- --reporters=jest-junit",
+    "test:coverage": "jest --runInBand --ci --coverage --env=node test/unit/ --setupFilesAfterEnv=./test/unit/setup.js",
+    "test:coverage-check": "jest --runInBand --ci --coverage --env=node test/unit/ --setupFilesAfterEnv=./test/unit/setup.js",
     "test:integration": "jest --ci --reporters=default --reporters=jest-junit --env=node test/integration/",
     "test:integration-pm4ml": "jest --ci --reporters=default --reporters=jest-junit --env=node test/integration-pm4ml/",
     "test:pm4ml-run-mock-servers": "node test/integration-pm4ml/mockServers/index.js",
