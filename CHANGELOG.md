@@ -1,4 +1,16 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+### [24.15.3](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.15.2...v24.15.3) (2025-11-11)
+
+
+### Chore
+
+* **sbom:** update sbom [skip ci] ([b87dfbd](https://github.com/mojaloop/sdk-scheme-adapter/commit/b87dfbd1098208de521e4dc522bb5105387b2a88))
+
+
+### Tests
+
+* re-enable code coverage pi29 ([#627](https://github.com/mojaloop/sdk-scheme-adapter/issues/627)) ([5c69d9a](https://github.com/mojaloop/sdk-scheme-adapter/commit/5c69d9a08dc5d2e2bd30a458de4a98dbcef8886f))
+
 ### [24.15.2](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.15.1...v24.15.2) (2025-10-17)
 
 
