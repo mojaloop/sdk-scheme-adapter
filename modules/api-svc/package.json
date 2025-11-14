@@ -86,7 +86,7 @@
     "fast-json-patch": "3.1.1",
     "fast-safe-stringify": "2.1.1",
     "javascript-state-machine": "3.1.0",
-    "js-yaml": "4.1.0",
+    "js-yaml": "4.1.1",
     "json-schema-ref-parser": "9.0.9",
     "knex": "3.1.0",
     "koa": "3.1.1",
