@@ -1,6 +1,6 @@
 {
   "name": "@mojaloop/sdk-scheme-adapter",
-  "version": "24.15.2",
+  "version": "24.15.3",
   "description": "mojaloop sdk-scheme-adapter",
   "license": "Apache-2.0",
   "homepage": "https://github.com/mojaloop/sdk-scheme-adapter",
@@ -18,7 +18,7 @@
     "Yevhen Kyriukha <yevhen.kyriukha@modusbox.com>",
     "Vijay Kumar Guthi <vijaya.guthi@modusbox.com>"
   ],
-  "packageManager": "yarn@4.10.3",
+  "packageManager": "yarn@4.11.0",
   "engines": {
     "yarn": "3.2.0"
   },
@@ -60,7 +60,7 @@
     "test:coverage": "nx run-many --parallel --all --target=test:coverage",
     "test:coverage:affected": "nx affected --parallel --target=test:coverage",
     "test:coverage-check": "yarn install --immutable && yarn run build && yarn run test:coverage-check-dev",
-    "test:coverage-check-dev": "nx run-many --parallel --all --target=test:coverage-check -- --detectOpenHandles",
+    "test:coverage-check-dev": "nx run-many --all --target=test:coverage-check -- --detectOpenHandles",
     "test:coverage-check:affected": "nx affected --parallel --target=test:coverage-check",
     "test:functional": "./test/scripts/test-functional.sh",
     "test:integration": "./test/scripts/test-integration.sh",
@@ -125,6 +125,7 @@
     "express": "4.21.2",
     "form-data": "4.0.4",
     "formidable": "3.5.4",
+    "koa": "3.0.3",
     "on-headers": "1.1.0",
     "path-to-regexp": "0.1.12",
     "serve-static": "1.16.2",
@@ -138,6 +139,8 @@
     "swagger-ui-express/express": "4.19.2",
     "shins/express": "4.19.2",
     "serve-static/send": "0.19.0",
+    "tar": "7.5.2",
+    "validator": "13.15.20",
     "widdershins/yargs-parser": "13.1.2",
     "widdershins/markdown-it": "12.3.2",
     "widdershins/swagger2openapi": "7.0.8",
