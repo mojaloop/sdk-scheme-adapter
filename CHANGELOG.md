@@ -1,4 +1,16 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+## [24.16.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.15.3...v24.16.0) (2025-12-02)
+
+
+### Features
+
+* add metrics for fx steps in model ([#635](https://github.com/mojaloop/sdk-scheme-adapter/issues/635)) ([f4e4082](https://github.com/mojaloop/sdk-scheme-adapter/commit/f4e40824f40b652ff16786c8c5c522d2107cdcb3))
+
+
+### Chore
+
+* **sbom:** update sbom [skip ci] ([426600b](https://github.com/mojaloop/sdk-scheme-adapter/commit/426600bdf4a557ca034ec2f3492a4e00704b5605))
+
 ### [24.15.3](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.15.2...v24.15.3) (2025-11-11)
 
 
