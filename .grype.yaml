@@ -6,7 +6,8 @@ ignore:
   - vulnerability: CVE-2025-9231
   - vulnerability: CVE-2025-9232
   - vulnerability: GHSA-9965-vmph-33xx # validator 13.15.15
-
+  - vulnerability: GHSA-5j98-mcp5-4vw2 # glob 10.4.5
+  - vulnerability: GHSA-mh29-5h37-fv8m # js-yaml 3.14.1, 4.1.0
 
 # Set output format defaults
 output:

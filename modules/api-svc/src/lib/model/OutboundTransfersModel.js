@@ -135,12 +135,24 @@ class OutboundTransfersModel {
             quoteResponses: config.metricsClient.getCounter(
                 'mojaloop_connector_outbound_quote_response_count',
                 'Count of responses received to outbound quote requests'),
+            fxQuoteRequests: config.metricsClient.getCounter(
+                'mojaloop_connector_outbound_fx_quote_request_count',
+                'Count of outbound FX quote requests sent'),
+            fxQuoteResponses: config.metricsClient.getCounter(
+                'mojaloop_connector_outbound_fx_quote_response_count',
+                'Count of responses received to outbound FX quote requests'),
             transferPrepares: config.metricsClient.getCounter(
                 'mojaloop_connector_outbound_transfer_prepare_count',
                 'Count of outbound transfer prepare requests sent'),
             transferFulfils: config.metricsClient.getCounter(
                 'mojaloop_connector_outbound_transfer_fulfil_response_count',
                 'Count of responses received to outbound transfer prepares'),
+            fxTransferPrepares: config.metricsClient.getCounter(
+                'mojaloop_connector_outbound_fx_transfer_prepare_count',
+                'Count of outbound FX transfer prepare requests sent'),
+            fxTransferFulfils: config.metricsClient.getCounter(
+                'mojaloop_connector_outbound_fx_transfer_fulfil_response_count',
+                'Count of responses received to outbound FX transfer prepares'),
             partyLookupLatency: config.metricsClient.getHistogram(
                 'mojaloop_connector_outbound_party_lookup_latency',
                 'Time taken for a response to a party lookup request to be received'),
@@ -149,7 +161,13 @@ class OutboundTransfersModel {
                 'Time taken for a response to a quote request to be received'),
             transferLatency: config.metricsClient.getHistogram(
                 'mojaloop_connector_outbound_transfer_latency',
-                'Time taken for a response to a transfer prepare to be received')
+                'Time taken for a response to a transfer prepare to be received'),
+            fxQuoteLatency: config.metricsClient.getHistogram(
+                'mojaloop_connector_outbound_fx_quote_latency',
+                'Time taken for a response to an FX quote request to be received'),
+            fxTransferLatency: config.metricsClient.getHistogram(
+                'mojaloop_connector_outbound_fx_transfer_latency',
+                'Time taken for a response to an FX transfer to be received')
         };
 
         this.getServicesFxpResponse = config.getServicesFxpResponse;
@@ -570,11 +588,13 @@ class OutboundTransfersModel {
     }
 
     async _requestFxQuote() {
+        let latencyTimerDone;
         try {
             this.data.fxQuoteExpiration = this._getExpirationTimestamp();
             const payload = dto.outboundPostFxQuotePayloadDto(this.data);
             const channel = `${CacheKeyPrefixes.FX_QUOTE_CALLBACK_CHANNEL}_${payload.conversionRequestId}`;
 
+            latencyTimerDone = this.metrics.fxQuoteLatency.startTimer();
             const subscribing = this._cache.subscribeToOneMessageWithTimer(channel);
 
             const resp = await this._requests.postFxQuotes(
@@ -590,9 +610,15 @@ class OutboundTransfersModel {
                 body: payload,
                 headers: originalRequest.headers
             };
+            this.metrics.fxQuoteRequests.inc();
             this._logger.isVerboseEnabled && this._logger.push({ fxQuotePayload: payload }).verbose('fxQuote request is sent to hub');
 
             const message = await subscribing;
+
+            if (latencyTimerDone) {
+                latencyTimerDone();
+            }
+            this.metrics.fxQuoteResponses.inc();
 
             if (message instanceof Error) throw message;
             const { body, headers } = message.data;
@@ -622,6 +648,9 @@ class OutboundTransfersModel {
 
             return payload; // think, if we need to return something at this point
         } catch (err) {
+            if (latencyTimerDone) {
+                latencyTimerDone();
+            }
             this._logger.push({ err }).error(`error in _requestFxQuote: ${err.message}`);
             throw err;
         }
@@ -812,20 +841,26 @@ class OutboundTransfersModel {
 
 
     async _executeFxTransfer() {
+        let latencyTimerDone;
         try {
-
             this.data.fxTransferExpiration = this._getExpirationTimestamp();
             const payload = dto.outboundPostFxTransferPayloadDto(this.data);
             const channel = `${CacheKeyPrefixes.FX_TRANSFER_CALLBACK_CHANNEL}_${payload.commitRequestId}`;
 
+            latencyTimerDone = this.metrics.fxTransferLatency.startTimer();
             const subscribing = this._cache.subscribeToOneMessageWithTimer(channel);
 
             const { originalRequest } = await this._requests.postFxTransfers(payload, payload.counterPartyFsp, this.#createOtelHeaders());
             this.data.fxTransferRequest = { body: payload , headers: originalRequest.headers };
+            this.metrics.fxTransferPrepares.inc();
             this._logger.push({ originalRequest }).verbose('fxTransfers request is sent to hub');
 
             const message = await subscribing;
 
+            if (latencyTimerDone) {
+                latencyTimerDone();
+            }
+            this.metrics.fxTransferFulfils.inc();
             if (message instanceof Error) throw message;
 
             const { body, headers } = message.data;
@@ -856,6 +891,9 @@ class OutboundTransfersModel {
 
             return payload; // think, if we need to return something at this point
         } catch (err) {
+            if (latencyTimerDone) {
+                latencyTimerDone();
+            }
             this._logger.push({ err }).error(`error in _executeFxTransfer: ${err.message}`);
             throw err;
         }
