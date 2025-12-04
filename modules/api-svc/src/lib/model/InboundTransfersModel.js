@@ -169,7 +169,6 @@ class InboundTransfersModel {
             this._logger.isErrorEnabled && this._logger.push({ err, transactionRequestId }).error('Error in getOTP');
             const mojaloopError = await this._handleError(err);
             this._logger.isInfoEnabled && this._logger.push({ mojaloopError }).info(`Sending error response to ${sourceFspId}`);
-            // this.metrics.authorizationGetResponseErrors.inc();
             return this._mojaloopRequests.putAuthorizationsError(transactionRequestId, mojaloopError, sourceFspId);
         }
     }
