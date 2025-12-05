@@ -27,8 +27,8 @@
 'use strict';
 
 const EventEmitter = require('node:events');
-const http = require('http');
-const https = require('https');
+const http = require('node:http');
+const https = require('node:https');
 const _ = require('lodash');
 const { name, version } = require('../../../package.json');
 
