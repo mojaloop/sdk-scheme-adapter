@@ -265,28 +265,8 @@ class Server extends EventEmitter {
         const restartActionsTaken = {};
         this.logger.isDebugEnabled && this.logger.debug('Server is restarting...');
 
-        let oldCache;
-        const updateCache = !_.isEqual(this.conf.cacheUrl, newConf.cacheUrl)
-            || !_.isEqual(this.conf.enableTestFeatures, newConf.enableTestFeatures);
-        if (updateCache) {
-            oldCache = this.cache;
-            await this.cache.disconnect();
-            this.cache = createCache(newConf);
-            await this.cache.connect();
-            restartActionsTaken.updateCache = true;
-        }
-
-        const updateWSO2 = !_.isEqual(this.conf.wso2, newConf.wso2)
-            || !_.isEqual(this.conf.outbound.tls, newConf.outbound.tls);
-        if (updateWSO2) {
-            this.wso2.auth.stop();
-            this.wso2 = createAuthClient(newConf, this.logger);
-            this.wso2.auth.on('error', (msg) => {
-                this.emit('error', 'WSO2 auth error in InboundApi', msg);
-            });
-            await this.wso2.auth.start();
-            restartActionsTaken.updateWSO2 = true;
-        }
+        const oldCache = await this._updateCacheIfNeeded(newConf, restartActionsTaken);
+        await this._updateWSO2IfNeeded(newConf, restartActionsTaken);
 
         this.logger.isDebugEnabled && this.logger.push({ oldConf: this.conf.inbound, newConf: newConf.inbound }).debug('Inbound server configuration');
         const updateInboundServer = this._shouldUpdateInboundServer(newConf);
@@ -344,95 +324,10 @@ class Server extends EventEmitter {
             restartActionsTaken.updateOutboundServer = true;
         }
 
-        const updateFspiopEventHandler = !_.isEqual(this.conf.outbound, newConf.outbound)
-            && this.conf.fspiopEventHandler.enabled;
-        if (updateFspiopEventHandler) {
-            await this.fspiopEventHandler.stop();
-            this.fspiopEventHandler = new FSPIOPEventHandler({
-                config: newConf,
-                logger: this.logger,
-                cache: this.cache,
-                wso2: this.wso2,
-            });
-            await this.fspiopEventHandler.start();
-            restartActionsTaken.updateFspiopEventHandler = true;
-        }
-
-        const updateControlClient = !_.isEqual(this.conf.control, newConf.control);
-        if (updateControlClient) {
-            await this.controlClient?.stop();
-            if (this.conf.pm4mlEnabled) {
-                const RESTART_INTERVAL_MS = 10000;
-
-                const schedulePing = () => {
-                    clearTimeout(this.pingTimeout);
-                    this.pingTimeout = setTimeout(() => {
-                        this.logger.error('Ping timeout, possible broken connection. Restarting server...');
-                        this.restart(_.merge({}, newConf, {
-                            control: { stopped: Date.now() }
-                        }));
-                    }, PING_INTERVAL_MS + this.conf.control.mgmtAPILatencyAssumption);
-                };
-
-                schedulePing();
-
-                this.controlClient = await ControlAgent.Client.Create({
-                    address: newConf.control.mgmtAPIWsUrl,
-                    port: newConf.control.mgmtAPIWsPort,
-                    logger: this.logger,
-                    appConfig: newConf,
-                });
-                this.controlClient.on(ControlAgent.EVENT.RECONFIGURE, this.restart.bind(this));
-
-
-
-                this.controlClient.on('ping', () => {
-                    this.logger.debug('Received ping from control server');
-                    schedulePing();
-                });
-
-                this.controlClient.on('close', () => {
-                    clearTimeout(this.pingTimeout);
-                    setTimeout(() => {
-                        this.logger.debug('Control client closed. Restarting server...');
-                        this.restart(_.merge({}, newConf, {
-                            control: { stopped: Date.now() }
-                        }));
-                    }, RESTART_INTERVAL_MS);
-                });
-
-                restartActionsTaken.updateControlClient = true;
-            }
-        }
-
-        const updateOAuthTestServer = !_.isEqual(newConf.oauthTestServer, this.conf.oauthTestServer);
-        if (updateOAuthTestServer) {
-            await this.oauthTestServer?.stop();
-            if (this.conf.oauthTestServer.enabled) {
-                this.oauthTestServer = new OAuthTestServer({
-                    clientKey: newConf.oauthTestServer.clientKey,
-                    clientSecret: newConf.oauthTestServer.clientSecret,
-                    port: newConf.oauthTestServer.listenPort,
-                    logger: this.logger,
-                });
-                await this.oauthTestServer.start();
-                restartActionsTaken.updateOAuthTestServer = true;
-            }
-        }
-
-        const updateTestServer = !_.isEqual(newConf.test.port, this.conf.test.port);
-        if (updateTestServer) {
-            await this.testServer?.stop();
-            if (this.conf.enableTestFeatures) {
-                this.testServer = new TestServer({
-                    port: newConf.test.port,
-                    logger: this.logger,
-                    cache: this.cache,
-                });
-                await this.testServer.start();
-                restartActionsTaken.updateTestServer = true;
-            }
-        }
+        await this._updateFspiopEventHandlerIfNeeded(newConf, restartActionsTaken);
+        await this._updateControlClientIfNeeded(newConf, restartActionsTaken);
+        await this._updateOAuthTestServerIfNeeded(newConf, restartActionsTaken);
+        await this._updateTestServerIfNeeded(newConf, restartActionsTaken);
 
         this.conf = newConf;
 
@@ -492,6 +387,128 @@ class Server extends EventEmitter {
             httpAgent,
             httpsAgent
         };
+    }
+
+    async _updateCacheIfNeeded(newConf, restartActionsTaken) {
+        const updateCache = !_.isEqual(this.conf.cacheUrl, newConf.cacheUrl)
+            || !_.isEqual(this.conf.enableTestFeatures, newConf.enableTestFeatures);
+        if (!updateCache) return null;
+
+        const oldCache = this.cache;
+        await this.cache.disconnect();
+        this.cache = createCache(newConf);
+        await this.cache.connect();
+        restartActionsTaken.updateCache = true;
+        return oldCache;
+    }
+
+    async _updateWSO2IfNeeded(newConf, restartActionsTaken) {
+        const updateWSO2 = !_.isEqual(this.conf.wso2, newConf.wso2)
+            || !_.isEqual(this.conf.outbound.tls, newConf.outbound.tls);
+        if (!updateWSO2) return;
+
+        this.wso2.auth.stop();
+        this.wso2 = createAuthClient(newConf, this.logger);
+        this.wso2.auth.on('error', (msg) => {
+            this.emit('error', 'WSO2 auth error in InboundApi', msg);
+        });
+        await this.wso2.auth.start();
+        restartActionsTaken.updateWSO2 = true;
+    }
+
+    async _updateFspiopEventHandlerIfNeeded(newConf, restartActionsTaken) {
+        const updateFspiopEventHandler = !_.isEqual(this.conf.outbound, newConf.outbound)
+            && this.conf.fspiopEventHandler.enabled;
+        if (!updateFspiopEventHandler) return;
+
+        await this.fspiopEventHandler.stop();
+        this.fspiopEventHandler = new FSPIOPEventHandler({
+            config: newConf,
+            logger: this.logger,
+            cache: this.cache,
+            wso2: this.wso2,
+        });
+        await this.fspiopEventHandler.start();
+        restartActionsTaken.updateFspiopEventHandler = true;
+    }
+
+    async _updateControlClientIfNeeded(newConf, restartActionsTaken) {
+        const updateControlClient = !_.isEqual(this.conf.control, newConf.control);
+        if (!updateControlClient) return;
+
+        await this.controlClient?.stop();
+        if (!this.conf.pm4mlEnabled) return;
+
+        const RESTART_INTERVAL_MS = 10000;
+        const schedulePing = () => {
+            clearTimeout(this.pingTimeout);
+            this.pingTimeout = setTimeout(() => {
+                this.logger.error('Ping timeout, possible broken connection. Restarting server...');
+                this.restart(_.merge({}, newConf, {
+                    control: { stopped: Date.now() }
+                }));
+            }, PING_INTERVAL_MS + this.conf.control.mgmtAPILatencyAssumption);
+        };
+
+        schedulePing();
+
+        this.controlClient = await ControlAgent.Client.Create({
+            address: newConf.control.mgmtAPIWsUrl,
+            port: newConf.control.mgmtAPIWsPort,
+            logger: this.logger,
+            appConfig: newConf,
+        });
+        this.controlClient.on(ControlAgent.EVENT.RECONFIGURE, this.restart.bind(this));
+
+        this.controlClient.on('ping', () => {
+            this.logger.debug('Received ping from control server');
+            schedulePing();
+        });
+
+        this.controlClient.on('close', () => {
+            clearTimeout(this.pingTimeout);
+            setTimeout(() => {
+                this.logger.debug('Control client closed. Restarting server...');
+                this.restart(_.merge({}, newConf, {
+                    control: { stopped: Date.now() }
+                }));
+            }, RESTART_INTERVAL_MS);
+        });
+
+        restartActionsTaken.updateControlClient = true;
+    }
+
+    async _updateOAuthTestServerIfNeeded(newConf, restartActionsTaken) {
+        const updateOAuthTestServer = !_.isEqual(newConf.oauthTestServer, this.conf.oauthTestServer);
+        if (!updateOAuthTestServer) return;
+
+        await this.oauthTestServer?.stop();
+        if (!this.conf.oauthTestServer.enabled) return;
+
+        this.oauthTestServer = new OAuthTestServer({
+            clientKey: newConf.oauthTestServer.clientKey,
+            clientSecret: newConf.oauthTestServer.clientSecret,
+            port: newConf.oauthTestServer.listenPort,
+            logger: this.logger,
+        });
+        await this.oauthTestServer.start();
+        restartActionsTaken.updateOAuthTestServer = true;
+    }
+
+    async _updateTestServerIfNeeded(newConf, restartActionsTaken) {
+        const updateTestServer = !_.isEqual(newConf.test.port, this.conf.test.port);
+        if (!updateTestServer) return;
+
+        await this.testServer?.stop();
+        if (!this.conf.enableTestFeatures) return;
+
+        this.testServer = new TestServer({
+            port: newConf.test.port,
+            logger: this.logger,
+            cache: this.cache,
+        });
+        await this.testServer.start();
+        restartActionsTaken.updateTestServer = true;
     }
 }
 
