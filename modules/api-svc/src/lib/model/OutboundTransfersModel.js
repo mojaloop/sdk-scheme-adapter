@@ -253,7 +253,7 @@ class OutboundTransfersModel {
      *
      * @param data {object} - The inbound API POST /transfers request body
      */
-    async initialize(data, { traceparent, baggage}) {
+    async initialize(data, { traceparent, baggage} = {}) {
         this.data = data;
 
         if (traceparent) {
