@@ -160,7 +160,7 @@ describe('OutboundTransfersModel Tests', () => {
             metricsClient,
         });
 
-        await model.initialize(JSON.parse(JSON.stringify(transferRequest)));
+        await model.initialize(JSON.parse(JSON.stringify(transferRequest)), {traceparent: '00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01', baggage: 'key1=val1,key2=val2'});
 
         let expectError;
         if (rejects.quoteResponse && delays.requestQuotes && expirySeconds < delays.requestQuotes) {
