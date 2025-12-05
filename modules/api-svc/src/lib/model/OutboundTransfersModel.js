@@ -253,8 +253,15 @@ class OutboundTransfersModel {
      *
      * @param data {object} - The inbound API POST /transfers request body
      */
-    async initialize(data) {
+    async initialize(data, { traceparent, baggage}) {
         this.data = data;
+
+        if (traceparent) {
+            this._traceFlags = traceparent.split('-').pop();
+            this.data.traceId = traceparent.split('-')[1];
+        }
+
+        this._baggage = baggage;
 
         // add a transferId if one is not present e.g. on first submission
         if(!this.data.hasOwnProperty('transferId')) {
@@ -1315,14 +1322,14 @@ class OutboundTransfersModel {
      *
      * @param transferId {string} - UUID transferId of the model to load from cache
      */
-    async load(transferId) {
+    async load(transferId, headers) {
         try {
             const data = await this._cache.get(`transferModel_out_${transferId}`);
 
             if(!data) {
                 throw new Error(`No cached data found for transferId: ${transferId}`);
             }
-            await this.initialize(data);
+            await this.initialize(data, headers);
             this._logger.isDebugEnabled && this._logger.push({ cache: this.data }).debug('Transfer model loaded from cached state');
         }
         catch (err) {
@@ -1543,7 +1550,7 @@ class OutboundTransfersModel {
 
     #generateTraceId() {
         // todo: add possibility to generate traceId based on transferId
-        this.data.traceId = randomBytes(16).toString('hex');
+        this.data.traceId ||= randomBytes(16).toString('hex');
         const { traceId, transferId } = this.data;
         this._logger.isInfoEnabled && this._logger.push({ traceId, transferId }).info('traceId is generated');
         return traceId;
@@ -1552,6 +1559,7 @@ class OutboundTransfersModel {
     #createOtelHeaders() {
         return Object.freeze({
             traceparent: generateTraceparent(this.data.traceId, this._traceFlags),
+            ...this._baggage && { baggage: this._baggage },
         });
     }
 }
