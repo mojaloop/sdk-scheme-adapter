@@ -116,7 +116,7 @@
   },
   "resolutions": {
     "@mojaloop/api-snippets": "17.10.3",
-    "axios": "1.8.2",
+    "axios": "1.13.2",
     "body-parser": "1.20.3",
     "brace-expansion": "2.0.1",
     "cacache/tar": "6.2.1",
