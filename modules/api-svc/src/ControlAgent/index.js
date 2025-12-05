@@ -211,7 +211,7 @@ class Client extends ws {
         try {
             msg = deserialise(data);
         } catch {
-            this._logger.isErrorEnabled && this._logger.push({ data }).console.error();('Couldn\'t parse received message');
+            this._logger.isErrorEnabled && this._logger.push({ data }).error('Couldn\'t parse received message');
             this.send(build.ERROR.NOTIFY.JSON_PARSE_ERROR());
         }
         this._logger.isDebugEnabled && this._logger.push({ msg }).debug('Handling received message');
