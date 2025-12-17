@@ -1,4 +1,21 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+## [24.17.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.16.0...v24.17.0) (2025-12-17)
+
+
+### Features
+
+* preserve traceid and baggage for outbound transfers ([#638](https://github.com/mojaloop/sdk-scheme-adapter/issues/638)) ([3197aa4](https://github.com/mojaloop/sdk-scheme-adapter/commit/3197aa43eb4690ff96bc2504b797bc5d2a940554))
+
+
+### Bug Fixes
+
+* update dependencies ([#641](https://github.com/mojaloop/sdk-scheme-adapter/issues/641)) ([bc9d105](https://github.com/mojaloop/sdk-scheme-adapter/commit/bc9d1054164d52fc9e12aa8095f414d097af4773))
+
+
+### Chore
+
+* **sbom:** update sbom [skip ci] ([d5cdf50](https://github.com/mojaloop/sdk-scheme-adapter/commit/d5cdf50dc0e7477bafca4c23fbb0d52ddc7a226b))
+
 ## [24.16.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.15.3...v24.16.0) (2025-12-02)
 
 
