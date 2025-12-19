@@ -1,4 +1,16 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+## [24.18.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.17.0...v24.18.0) (2025-12-19)
+
+
+### Features
+
+* subid check disable ([#642](https://github.com/mojaloop/sdk-scheme-adapter/issues/642)) ([4b2d94b](https://github.com/mojaloop/sdk-scheme-adapter/commit/4b2d94b638ee9ab245716859ec2ac487425c21f3))
+
+
+### Chore
+
+* **sbom:** update sbom [skip ci] ([87cb86a](https://github.com/mojaloop/sdk-scheme-adapter/commit/87cb86a02224becffae7134a92be63918656256b))
+
 ## [24.17.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.16.0...v24.17.0) (2025-12-17)
 
 
