@@ -275,28 +275,6 @@ class Client extends ws {
         }
 
     }
-
-    _deserialiseMessage (data) {
-        // TODO: json-schema validation of received message- should be pretty straight-forward
-        // and will allow better documentation of the API
-        let msg;
-        try {
-            msg = deserialise(data);
-        } catch {
-            this._logger.warn('failed to parse received message: ', { data });
-            this.send(build.ERROR.NOTIFY.JSON_PARSE_ERROR());
-        }
-        this._logger.isDebugEnabled && this._logger.push({ msg }).debug('Handling received message');
-
-        return msg;
-    }
-
-    _reconfigure(newConf, verb) {
-        this._logger.info(`Emitting new agent configuration [${verb}]`);
-        this._logger.debug('oldConf and newConf: ', { oldConf: this._appConfig, newConf });
-        this.emit(EVENT.RECONFIGURE, newConf);
-        // this._appConfig = newConf;  // (?) todo: think if we need to update appConfig?
-    }
 }
 
 const createConnectedControlAgentWs = async (conf, log) => {

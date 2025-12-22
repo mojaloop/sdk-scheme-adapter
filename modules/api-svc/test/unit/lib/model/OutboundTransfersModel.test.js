@@ -453,13 +453,6 @@ describe('OutboundTransfersModel Tests', () => {
         });
 
         test('test get transfer', async () => {
-            const model = new Model({
-                cache,
-                logger,
-                metricsClient,
-                ...config,
-            });
-
             const TRANSFER_ID = 'tx-id000011';
 
             await model.initialize(JSON.parse(JSON.stringify({
