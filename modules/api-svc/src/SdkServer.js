@@ -323,7 +323,7 @@ class SdkServer extends EventEmitter {
         }
 
         const restartActionsTaken = {};
-        this.logger.debug('Server is restarting...', { source });
+        this.logger.info('Server is restarting...', { source });
         this._configUpdateInProgress = true;
 
         try {

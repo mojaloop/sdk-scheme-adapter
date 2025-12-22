@@ -167,12 +167,42 @@ See [development-commands.md](./_cc/docs/development-commands.md) for all comman
 
 ### API-SVC Module Documentation
 
-Comprehensive documentation for the `api-svc` module (core service handling inbound/outbound APIs):
+The api-svc module has comprehensive documentation in two locations:
 
+#### 1. Standalone Module Documentation (AI-Optimized)
+
+**Location**: `modules/api-svc/_cc/docs/`
+
+Complete standalone documentation for the api-svc module, optimized for AI assistants and quick onboarding:
+
+- **[modules/api-svc/CLAUDE.md](./modules/api-svc/CLAUDE.md)** - Module AI assistant guide (⭐ START HERE)
+- **[00-index.md](./modules/api-svc/_cc/docs/00-index.md)** - Documentation navigation hub
+- **[01-overview.md](./modules/api-svc/_cc/docs/01-overview.md)** - ⭐ MANDATORY 3-page overview (complete mental model)
+- **[02-quickstart.md](./modules/api-svc/_cc/docs/02-quickstart.md)** - 5-minute setup guide
+- **[03-architecture.md](./modules/api-svc/_cc/docs/03-architecture.md)** - Technical architecture deep dive
+- **[04-api-reference.md](./modules/api-svc/_cc/docs/04-api-reference.md)** - API endpoints & schemas
+- **[05-key-flows-use-cases.md](./modules/api-svc/_cc/docs/05-key-flows-use-cases.md)** - Business flows (outbound/inbound transfers)
+- **[06-configuration.md](./modules/api-svc/_cc/docs/06-configuration.md)** - All environment variables
+- **[07-dependencies.md](./modules/api-svc/_cc/docs/07-dependencies.md)** - NPM packages & external services
+- **[08-testing.md](./modules/api-svc/_cc/docs/08-testing.md)** - Testing strategy & examples
+- **[09-deployment.md](./modules/api-svc/_cc/docs/09-deployment.md)** - Production deployment guide
+- **[10-development.md](./modules/api-svc/_cc/docs/10-development.md)** - Development workflow
+- **[11-troubleshooting.md](./modules/api-svc/_cc/docs/11-troubleshooting.md)** - Common issues & solutions
+- **[12-ai-guide.md](./modules/api-svc/_cc/docs/12-ai-guide.md)** - AI assistant quick reference
+- **[13-glossary.md](./modules/api-svc/_cc/docs/13-glossary.md)** - Domain terminology & acronyms
+- **[14-changelog.md](./modules/api-svc/_cc/docs/14-changelog.md)** - Recent changes
+
+**For AI Assistants**: Always start with **[modules/api-svc/CLAUDE.md](./modules/api-svc/CLAUDE.md)**, then read **[01-overview.md](./modules/api-svc/_cc/docs/01-overview.md)** (mandatory).
+
+#### 2. Comprehensive Technical Documentation
+
+**Location**: `_cc/docs/api-svc/`
+
+In-depth technical documentation covering advanced topics:
 
 | Document | Description |
 |----------|-------------|
-| **[api-svc-01-overview.md](./_cc/docs/api-svc/api-svc-01-overview.md)** | Overview, quick start guide, 30-minute onboarding with core concepts and transfer flows |
+| **[api-svc-01-overview.md](./_cc/docs/api-svc/api-svc-01-overview.md)** | Extended overview, 30-minute onboarding with core concepts and transfer flows |
 | **[api-svc-02-architecture.md](./_cc/docs/api-svc/api-svc-02-architecture.md)** | System architecture, component design, configuration system, startup sequence |
 | **[api-svc-03-inbound-server.md](./_cc/docs/api-svc/api-svc-03-inbound-server.md)** | Inbound server handling async FSPIOP callbacks from Mojaloop switch |
 | **[api-svc-04-outbound-server.md](./_cc/docs/api-svc/api-svc-04-outbound-server.md)** | Outbound server providing synchronous REST API for DFSP backends |
@@ -186,3 +216,10 @@ Comprehensive documentation for the `api-svc` module (core service handling inbo
 | **[api-svc-12-testing.md](./_cc/docs/api-svc/api-svc-12-testing.md)** | Testing strategy covering unit, integration, and functional tests |
 | **[api-svc-13-deployment.md](./_cc/docs/api-svc/api-svc-13-deployment.md)** | Kubernetes deployment with Helm charts, production configuration, monitoring |
 | **[api-svc-14-examples.md](./_cc/docs/api-svc/api-svc-14-examples.md)** | Practical examples: outbound/inbound transfers, error handling, bulk operations, auto-accept |
+
+### General Documentation
+
+| Document | Description |
+|----------|-------------|
+| **[development-commands.md](./_cc/docs/development-commands.md)** | Complete command reference for building, testing, and running the project |
+| **[common-workflows.md](./_cc/docs/common-workflows.md)** | Step-by-step guides for common development workflows |
