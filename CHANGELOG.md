@@ -1,4 +1,16 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+### [24.18.1](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.18.0...v24.18.1) (2025-12-22)
+
+
+### Bug Fixes
+
+* **ml-4303:** updated getTransfer to preserve existing transfer state in cache ([#643](https://github.com/mojaloop/sdk-scheme-adapter/issues/643)) ([cadb8bd](https://github.com/mojaloop/sdk-scheme-adapter/commit/cadb8bd6f3046d9950452b2e35c83a74abb0b001))
+
+
+### Chore
+
+* **sbom:** update sbom [skip ci] ([e97261e](https://github.com/mojaloop/sdk-scheme-adapter/commit/e97261e47497c13dd8c445c76fd9c3cc63fa63b7))
+
 ## [24.18.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.17.0...v24.18.0) (2025-12-19)
 
 
