@@ -435,37 +435,75 @@ describe('OutboundTransfersModel Tests', () => {
         expect(StateMachine.__instance.state).toBe('succeeded');
     });
 
-    test('test get transfer', async () => {
+    describe('getTransfer state Tests -->', () => {
         MojaloopRequests.__getTransfers = jest.fn((transferId) => {
             emitTransferFulfilCacheMessage(cache, transferId, transferFulfil);
             return Promise.resolve();
         });
 
-        const model = new Model({
-            cache,
-            logger,
-            metricsClient,
-            ...config,
+        let model;
+
+        beforeEach(async () => {
+            model = new Model({
+                cache,
+                logger,
+                metricsClient,
+                ...config,
+            });
         });
 
-        const TRANSFER_ID = 'tx-id000011';
+        test('test get transfer', async () => {
+            const model = new Model({
+                cache,
+                logger,
+                metricsClient,
+                ...config,
+            });
 
-        await model.initialize(JSON.parse(JSON.stringify({
-            ...transferRequest,
-            currentState: 'getTransfer',
-            transferId: TRANSFER_ID,
-        })));
+            const TRANSFER_ID = 'tx-id000011';
 
-        expect(StateMachine.__instance.state).toBe('getTransfer');
+            await model.initialize(JSON.parse(JSON.stringify({
+                currentState: 'getTransfer',
+                transferId: TRANSFER_ID,
+            })));
 
-        // start the model running
-        const result = await model.run();
+            expect(StateMachine.__instance.state).toBe('getTransfer');
 
-        expect(MojaloopRequests.__getTransfers).toHaveBeenCalledTimes(1);
+            // start the model running
+            const result = await model.run();
 
-        // check we stopped at payeeResolved state
-        expect(result.currentState).toBe(SDKStateEnum.COMPLETED);
-        expect(StateMachine.__instance.state).toBe('succeeded');
+            expect(MojaloopRequests.__getTransfers).toHaveBeenCalledTimes(1);
+
+            // check we stopped at payeeResolved state
+            expect(result.currentState).toBe(SDKStateEnum.COMPLETED);
+            expect(StateMachine.__instance.state).toBe('succeeded');
+        });
+
+        test('should NOT override existing transfer state in cache', async () => {
+            const TRANSFER_ID = `tx-${Date.now()}`;
+            const CACHE_KEY = `transferModel_out_${TRANSFER_ID}`;
+            const txInCache = {
+                homeTransactionId: '123-ABC',
+                from: { idType: 'MSISDN' },
+            };
+            await cache.set(CACHE_KEY, txInCache); // simulate previous successful transfer
+
+            let cached = await cache.get(CACHE_KEY);
+            expect(cached).toMatchObject(txInCache);
+
+            await model.initialize({
+                currentState: 'getTransfer',
+                transferId: TRANSFER_ID,
+            });
+            const result = await model.run();
+
+            expect(result.currentState).toBe(SDKStateEnum.COMPLETED);
+            expect(MojaloopRequests.__getTransfers).toHaveBeenCalledTimes(1);
+            expect(StateMachine.__instance.state).toBe('succeeded');
+
+            cached = await cache.get(CACHE_KEY);
+            expect(cached).toMatchObject(txInCache);
+        });
     });
 
     test('resolves payee and halts when AUTO_ACCEPT_PARTY is false', async () => {

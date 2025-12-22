@@ -53,6 +53,10 @@ const {
 
 const { TransferState } = Enum.Transfers;
 
+const CACHE_KEYS = Object.freeze({
+    transferOutbound: (id) => `transferModel_out_${id}`
+});
+
 /**
  *  Models the state machine and operations required for performing an outbound transfer
  */
@@ -253,7 +257,7 @@ class OutboundTransfersModel {
      *
      * @param data {object} - The inbound API POST /transfers request body
      */
-    async initialize(data, { traceparent, baggage} = {}) {
+    async initialize(data, { traceparent, baggage } = {}) {
         this.data = data;
 
         if (traceparent) {
@@ -1056,9 +1060,19 @@ class OutboundTransfersModel {
      * Get transfer details by sending GET /transfers request to the switch
      */
     async _getTransfer() {
+        const { transferId } = this.data;
+        const log = this._logger.child({ transferId, operation: 'getTransfer' });
+
+        const cachedTransfer = await this._cache.get(CACHE_KEYS.transferOutbound(transferId));
+        if (cachedTransfer) {
+            log.info('transfer data is found in cache');
+            this.data = cachedTransfer;
+            this.#generateTraceId();
+        }
+
         // eslint-disable-next-line no-async-promise-executor
         return new Promise(async (resolve, reject) => {
-            const transferKey = `tf_${this.data.transferId}`;
+            const transferKey = `tf_${transferId}`;
 
             // hook up a subscriber to handle response messages
             const subId = await this._cache.subscribe(transferKey, (cn, msg, subId) => {
@@ -1068,36 +1082,39 @@ class OutboundTransfersModel {
                     if (message.type === 'transferError') {
                         error = new BackendError(`Got an error response retrieving transfer: ${safeStringify(message.data.body, { depth: Infinity })}`, 500);
                         error.mojaloopError = message.data.body;
+                        log.warn('got transferError: ', error);
                     } else if (message.type !== 'transferFulfil') {
-                        this._logger.isVerboseEnabled && this._logger.push({ message }).verbose(`Ignoring cache notification for transfer ${transferKey}. Unknown message type ${message.type}.`);
+                        log.info(`Ignoring cache notification for transfer ${transferKey}. Unknown message type ${message.type}.`);
                         return;
                     }
                     // cancel the timeout handler
                     clearTimeout(timeout);
                     // stop listening for transfer fulfil messages
                     this._cache.unsubscribe(transferKey, subId).catch(e => {
-                        this._logger.isErrorEnabled && this._logger.error(`Error unsubscribing (in callback) ${transferKey} ${subId}: ${e.stack || safeStringify(e)}`);
+                        log.warn(`Error unsubscribing (in callback) ${transferKey} ${subId}: `, e);
                     });
                     if (error) {
                         return reject(error);
                     }
+
                     const fulfil = message.data;
-                    this._logger.isVerboseEnabled && this._logger.push({ fulfil: fulfil.body }).verbose('Transfer fulfil received');
+                    log.push({ fulfil: fulfil.body }).verbose('Transfer fulfil received');
                     this.data.fulfil = fulfil;
                     return resolve(this.data.fulfil);
-                }
-                catch(err) {
+                } catch (err) {
+                    log.error('error inside cache.subscribe(): ', err);
                     return reject(err);
                 }
             });
 
             // set up a timeout for the resolution
             const timeout = setTimeout(() => {
-                const err = new BackendError(`Timeout getting transfer ${this.data.transferId}`, 504);
+                const err = new BackendError(`Timeout getting transfer ${transferId}`, 504);
+                log.warn('transfer resolution timeout: ', err);
 
                 // we dont really care if the unsubscribe fails but we should log it regardless
                 this._cache.unsubscribe(transferKey, subId).catch(e => {
-                    this._logger.isErrorEnabled && this._logger.error(`Error unsubscribing (in timeout handler) ${transferKey} ${subId}: ${e.stack || safeStringify(e)}`);
+                    log.warn(`Error unsubscribing (in timeout handler) ${transferKey} ${subId}: `, e);
                 });
 
                 return reject(err);
@@ -1106,16 +1123,16 @@ class OutboundTransfersModel {
             // now we have a timeout handler and a cache subscriber hooked up we can fire off
             // a GET /transfers request to the switch
             try {
-                const res = await this._requests.getTransfers(this.data.transferId, undefined, this.#createOtelHeaders());
-                this._logger.isVerboseEnabled && this._logger.push({ peer: res }).verbose(`getTransfers ${this.data.transferId} sent to peer`);
-            }
-            catch(err) {
+                const res = await this._requests.getTransfers(transferId, undefined, this.#createOtelHeaders());
+                log.push({ peer: res }).verbose('getTransfers sent to peer');
+            } catch (err) {
+                log.error('error in requests.getTransfers(): ', err);
                 // cancel the timout and unsubscribe before rejecting the promise
                 clearTimeout(timeout);
 
                 // we dont really care if the unsubscribe fails but we should log it regardless
                 this._cache.unsubscribe(transferKey, subId).catch(e => {
-                    this._logger.isErrorEnabled && this._logger.error(`Error unsubscribing ${transferKey} ${subId}: ${e.stack || safeStringify(e)}`);
+                    log.warn(`Error unsubscribing ${transferKey} ${subId}: `, e);
                 });
 
                 return reject(err);
@@ -1249,7 +1266,7 @@ class OutboundTransfersModel {
     async _save() {
         try {
             this.data.currentState = this.stateMachine.state;
-            const res = await this._cache.set(`transferModel_out_${this.data.transferId}`, this.data, this._cacheTtl);
+            const res = await this._cache.set(CACHE_KEYS.transferOutbound(this.data.transferId), this.data, this._cacheTtl);
             // function to modify this.data before saving to cache for UI.
             const modifiedData = this._modifyDataForUi(this.data);
             // save to a UI key, using a modifiedData, as we don't want any side effects to happen on original data
@@ -1326,16 +1343,16 @@ class OutboundTransfersModel {
      */
     async load(transferId, headers) {
         try {
-            const data = await this._cache.get(`transferModel_out_${transferId}`);
+            const data = await this._cache.get(CACHE_KEYS.transferOutbound(transferId));
 
             if(!data) {
                 throw new Error(`No cached data found for transferId: ${transferId}`);
             }
             await this.initialize(data, headers);
-            this._logger.isDebugEnabled && this._logger.push({ cache: this.data }).debug('Transfer model loaded from cached state');
+            this._logger.isDebugEnabled && this._logger.push({ cached: this.data }).debug('Transfer model loaded from cached state');
         }
         catch (err) {
-            this._logger.isWarnEnabled && this._logger.push({ err }).warn('Error loading transfer model');
+            this._logger.warn('Error loading transfer model: ', err);
             throw err;
         }
     }

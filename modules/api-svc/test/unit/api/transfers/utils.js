@@ -45,54 +45,10 @@ function createGetTransfersTester({ reqInbound, reqOutbound, apiSpecsOutbound })
             return [202, null, jsonContentTypeHeader];
         });
 
-        const res = await reqOutbound.get(`/transfers/${TRANSFER_ID}`);
-        const {body} = res;
-        expect(res.statusCode).toEqual(responseCode);
+        const { statusCode, body } = await reqOutbound.get(`/transfers/${TRANSFER_ID}`);
+        expect(statusCode).toEqual(responseCode);
+        expect(body).toMatchObject(responseBody);
 
-        // remove elements of the response we do not want/need to compare for correctness.
-        // timestamps on requests/responses for example will be set by the HTTP framework
-        // and we dont want to compare against static values.
-        delete body.initiatedTimestamp;
-        if (body.transferState) {
-            delete body.transferState.initiatedTimestamp;
-            if(body.transferState.quoteResponse) {
-                delete body.transferState.quoteResponse.headers;
-            }
-            if(body.transferState.getPartiesResponse) {
-                delete body.transferState.getPartiesResponse.headers;
-            }
-            if(body.transferState.fulfil) {
-                delete body.transferState.fulfil.headers;
-            }
-            if(body.transferState.quoteRequest) {
-                delete body.transferState.quoteRequest;
-            }
-            if(body.transferState.getPartiesRequest) {
-                delete body.transferState.getPartiesRequest;
-            }
-            if(body.transferState.prepare) {
-                delete body.transferState.prepare;
-            }
-        }
-        if(body.quoteResponse) {
-            delete body.quoteResponse.headers;
-        }
-        if(body.getPartiesResponse) {
-            delete body.getPartiesResponse.headers;
-        }
-        if(body.fulfil) {
-            delete body.fulfil.headers;
-        }
-        if(body.quoteRequest) {
-            delete body.quoteRequest;
-        }
-        if(body.getPartiesRequest) {
-            delete body.getPartiesRequest;
-        }
-        if(body.prepare) {
-            delete body.prepare;
-        }
-        expect(body).toEqual(responseBody);
         const responseValidator = new OpenAPIResponseValidator(apiSpecsOutbound.paths['/transfers/{transferId}'].get);
         const err = responseValidator.validateResponse(responseCode, body);
         if (err) {

@@ -619,9 +619,9 @@ class InboundTransfersModel {
             return this._mojaloopRequests.putTransfers(transferId, mojaloopResponse, sourceFspId, headers);
         }
         catch (err) {
-            this._logger.isErrorEnabled && this._logger.push({ err, transferId }).error('Error in getTransfers');
+            this._logger.push({ transferId }).error('eError in getTransfers: ', err);
             const mojaloopError = await this._handleError(err);
-            this._logger.isInfoEnabled && this._logger.push({ mojaloopError }).info(`Sending error response to ${sourceFspId}`);
+            this._logger.push({ mojaloopError }).info(`Sending error response to ${sourceFspId}`);
             return this._mojaloopRequests.putTransfersError(transferId, mojaloopError, sourceFspId, headers);
         }
     }

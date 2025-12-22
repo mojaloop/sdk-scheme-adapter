@@ -173,7 +173,6 @@ const postTransfers = async (ctx) => {
 const getTransfers = async (ctx) => {
     try {
         let transferRequest = {
-            ...ctx.request.body,
             transferId: ctx.state.path.params.transferId,
             currentState: 'getTransfer',
         };
