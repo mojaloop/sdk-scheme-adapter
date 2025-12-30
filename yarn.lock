@@ -105,22 +105,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@apidevtools/swagger-parser@npm:12.0.0":
-  version: 12.0.0
-  resolution: "@apidevtools/swagger-parser@npm:12.0.0"
-  dependencies:
-    "@apidevtools/json-schema-ref-parser": "npm:14.0.1"
-    "@apidevtools/openapi-schemas": "npm:^2.1.0"
-    "@apidevtools/swagger-methods": "npm:^3.0.2"
-    ajv: "npm:^8.17.1"
-    ajv-draft-04: "npm:^1.0.0"
-    call-me-maybe: "npm:^1.0.2"
-  peerDependencies:
-    openapi-types: ">=7"
-  checksum: 10/7ed7ec4f424a760cb031daaf604e14ed3b26e940ee45c69898b4acb6028e2fb9b5b38c545171815e066a57c76f5208c8f5ade34ce4b7afe2ca41dee59f348642
-  languageName: node
-  linkType: hard
-
 "@apidevtools/swagger-parser@npm:12.1.0":
   version: 12.1.0
   resolution: "@apidevtools/swagger-parser@npm:12.1.0"
@@ -1867,32 +1851,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@hapi/hapi@npm:21.4.3":
-  version: 21.4.3
-  resolution: "@hapi/hapi@npm:21.4.3"
-  dependencies:
-    "@hapi/accept": "npm:^6.0.3"
-    "@hapi/ammo": "npm:^6.0.1"
-    "@hapi/boom": "npm:^10.0.1"
-    "@hapi/bounce": "npm:^3.0.2"
-    "@hapi/call": "npm:^9.0.1"
-    "@hapi/catbox": "npm:^12.1.1"
-    "@hapi/catbox-memory": "npm:^6.0.2"
-    "@hapi/heavy": "npm:^8.0.1"
-    "@hapi/hoek": "npm:^11.0.7"
-    "@hapi/mimos": "npm:^7.0.1"
-    "@hapi/podium": "npm:^5.0.2"
-    "@hapi/shot": "npm:^6.0.2"
-    "@hapi/somever": "npm:^4.1.1"
-    "@hapi/statehood": "npm:^8.2.0"
-    "@hapi/subtext": "npm:^8.1.1"
-    "@hapi/teamwork": "npm:^6.0.0"
-    "@hapi/topo": "npm:^6.0.2"
-    "@hapi/validate": "npm:^2.0.1"
-  checksum: 10/f23bda02b4337331a6dce4cfa85ecbe877e5e8f81394ed09dde701b3ca7ff88108c9e92b2c1fd7d5c22a9ebd84a8a34278d93ee6ad46a16a834e1f0d207581e8
-  languageName: node
-  linkType: hard
-
 "@hapi/hapi@npm:21.4.4":
   version: 21.4.4
   resolution: "@hapi/hapi@npm:21.4.4"
@@ -2037,21 +1995,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@hapi/statehood@npm:^8.2.0":
-  version: 8.2.0
-  resolution: "@hapi/statehood@npm:8.2.0"
-  dependencies:
-    "@hapi/boom": "npm:^10.0.1"
-    "@hapi/bounce": "npm:^3.0.1"
-    "@hapi/bourne": "npm:^3.0.0"
-    "@hapi/cryptiles": "npm:^6.0.1"
-    "@hapi/hoek": "npm:^11.0.2"
-    "@hapi/iron": "npm:^7.0.1"
-    "@hapi/validate": "npm:^2.0.1"
-  checksum: 10/d55129f8bd9fa65d2b5305c922506baed677a1f36a8a3be8c9005d7a9009154a8b783d94603c49f88f1f24b23dd9e9b262cb19be6a4dc6130679bd0a33d63a75
-  languageName: node
-  linkType: hard
-
 "@hapi/statehood@npm:^8.2.1":
   version: 8.2.1
   resolution: "@hapi/statehood@npm:8.2.1"
@@ -2173,7 +2116,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ioredis/commands@npm:^1.1.1, @ioredis/commands@npm:^1.3.0":
+"@ioredis/commands@npm:^1.1.1":
   version: 1.4.0
   resolution: "@ioredis/commands@npm:1.4.0"
   checksum: 10/ea299f22057139261ebd7dbc7fc85615e90c254e667620a276d3cf771b9d9190ffbdf25af6586c3f52598a2c830d64bee17f32c3ce734db403e93f73548d54d4
@@ -2627,16 +2570,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/central-services-error-handling@npm:13.1.1":
-  version: 13.1.1
-  resolution: "@mojaloop/central-services-error-handling@npm:13.1.1"
-  dependencies:
-    fast-safe-stringify: "npm:2.1.1"
-    lodash: "npm:4.17.21"
-  checksum: 10/a5d8a46f3c222ce7fc6a3598babc6b0f36d8effa1190b8ac58955422447101764a9ce745829af7e33fc3df14d15051b6e7f1b478f6dd247c398b56f7d28e8c8f
-  languageName: node
-  linkType: hard
-
 "@mojaloop/central-services-error-handling@npm:13.1.5":
   version: 13.1.5
   resolution: "@mojaloop/central-services-error-handling@npm:13.1.5"
@@ -2675,34 +2608,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/central-services-logger@npm:11.9.0":
-  version: 11.9.0
-  resolution: "@mojaloop/central-services-logger@npm:11.9.0"
-  dependencies:
-    "@opentelemetry/api": "npm:1.9.0"
-    parse-strings-in-object: "npm:2.0.0"
-    rc: "npm:1.2.8"
-    safe-stable-stringify: "npm:^2.5.0"
-    triple-beam: "npm:1.4.1"
-    winston: "npm:3.17.0"
-  checksum: 10/b9676a5f951f1f33907e5b8ec4cf2ca13ad3db177fa0e24a890760bc0bda3386a26946f7e5689c1941b6c83605e31549a9256c1a6de2ca3148a1ac7702a5d53c
-  languageName: node
-  linkType: hard
-
-"@mojaloop/central-services-logger@npm:11.9.3":
-  version: 11.9.3
-  resolution: "@mojaloop/central-services-logger@npm:11.9.3"
-  dependencies:
-    "@opentelemetry/api": "npm:1.9.0"
-    parse-strings-in-object: "npm:2.0.0"
-    rc: "npm:1.2.8"
-    safe-stable-stringify: "npm:^2.5.0"
-    triple-beam: "npm:1.4.1"
-    winston: "npm:3.17.0"
-  checksum: 10/58cca19ace0f5a596cbb2ce89e91ae3737d9ab3a5e4d0f1efa333c84b4ea6ceeed0f43b2e6c6468244a605b10524d9363e8d5fc2ed66de3d5aa3707369b8c914
-  languageName: node
-  linkType: hard
-
 "@mojaloop/central-services-metrics@npm:12.8.3":
   version: 12.8.3
   resolution: "@mojaloop/central-services-metrics@npm:12.8.3"
@@ -2711,70 +2616,6 @@ __metadata:
     "@typescript-eslint/parser": "npm:^8.49.0"
     prom-client: "npm:15.1.3"
   checksum: 10/7abca0ecb550f0c467f68242e0de4f5ba263be4d5bae64ead5cb9faf6398ff33c1b464aa98e3b467af348ef1175a322a3424a0adc1aab025146c267dbe75fdff
-  languageName: node
-  linkType: hard
-
-"@mojaloop/central-services-shared@npm:18.32.1":
-  version: 18.32.1
-  resolution: "@mojaloop/central-services-shared@npm:18.32.1"
-  dependencies:
-    "@hapi/catbox": "npm:12.1.1"
-    "@hapi/catbox-memory": "npm:5.0.1"
-    "@hapi/hapi": "npm:21.4.3"
-    "@hapi/joi-date": "npm:2.0.1"
-    "@mojaloop/inter-scheme-proxy-cache-lib": "npm:2.6.0"
-    "@opentelemetry/api": "npm:1.9.0"
-    async-exit-hook: "npm:2.0.1"
-    async-retry: "npm:1.3.3"
-    axios: "npm:1.12.2"
-    clone: "npm:2.1.2"
-    convict: "npm:^6.2.4"
-    dotenv: "npm:17.2.2"
-    env-var: "npm:7.5.0"
-    event-stream: "npm:4.0.1"
-    fast-safe-stringify: "npm:2.1.1"
-    immutable: "npm:5.1.3"
-    ioredis: "npm:5.7.0"
-    joi: "npm:18.0.1"
-    lodash: "npm:4.17.21"
-    mustache: "npm:4.2.0"
-    openapi-backend: "npm:5.15.0"
-    raw-body: "npm:3.0.1"
-    rc: "npm:1.2.8"
-    redlock: "npm:5.0.0-beta.2"
-    shins: "npm:2.6.0"
-    ulidx: "npm:2.4.1"
-    uuid4: "npm:2.0.3"
-    widdershins: "npm:4.0.1"
-    yaml: "npm:2.8.1"
-  peerDependencies:
-    "@mojaloop/central-services-error-handling": 13.x.x
-    "@mojaloop/central-services-logger": 11.x.x
-    "@mojaloop/central-services-metrics": 12.x.x
-    "@mojaloop/event-sdk": 14.x.x
-    ajv: 8.x.x
-    ajv-formats: 3.x.x
-    ajv-keywords: 5.x.x
-    knex: 3.x
-    mysql2: 3.x
-  peerDependenciesMeta:
-    "@mojaloop/central-services-error-handling":
-      optional: false
-    "@mojaloop/central-services-logger":
-      optional: false
-    "@mojaloop/central-services-metrics":
-      optional: false
-    "@mojaloop/event-sdk":
-      optional: false
-    ajv:
-      optional: false
-    ajv-keyboards:
-      optional: false
-    knex:
-      optional: false
-    mysql2:
-      optional: false
-  checksum: 10/6f8a3ab04338db1059ff7463b954f7185fcdee2d279a2d53f493e4a66c90023027466adf56448ae4eb7d9e842034f1e7994deea976e212fea8380ce78d6f77d6
   languageName: node
   linkType: hard
 
@@ -2872,19 +2713,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/inter-scheme-proxy-cache-lib@npm:2.6.0":
-  version: 2.6.0
-  resolution: "@mojaloop/inter-scheme-proxy-cache-lib@npm:2.6.0"
-  dependencies:
-    "@mojaloop/central-services-logger": "npm:11.9.0"
-    ajv: "npm:8.17.1"
-    convict: "npm:6.2.4"
-    fast-safe-stringify: "npm:2.1.1"
-    ioredis: "npm:5.6.1"
-  checksum: 10/9b40493fb060e302304814b43ff87a422f239253c5a124e24968237a8d26d733ba59c9caf92b39a5273ba0ce7eae1134ec59a57c499d2e7bf357241877799647
-  languageName: node
-  linkType: hard
-
 "@mojaloop/inter-scheme-proxy-cache-lib@npm:2.9.0":
   version: 2.9.0
   resolution: "@mojaloop/inter-scheme-proxy-cache-lib@npm:2.9.0"
@@ -2932,6 +2760,30 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@mojaloop/ml-schema-transformer-lib@npm:2.7.11-subtype.0":
+  version: 2.7.11-subtype.0
+  resolution: "@mojaloop/ml-schema-transformer-lib@npm:2.7.11-subtype.0"
+  dependencies:
+    "@apidevtools/swagger-parser": "npm:12.1.0"
+    "@mojaloop/api-snippets": "npm:18.2.2"
+    "@mojaloop/central-services-error-handling": "npm:13.1.5"
+    "@mojaloop/central-services-logger": "npm:11.10.2"
+    "@mojaloop/central-services-shared": "npm:18.34.5"
+    "@rollup/rollup-linux-x64-musl": "npm:4.54.0"
+    ajv: "npm:8.17.1"
+    fast-safe-stringify: "npm:2.1.1"
+    ilp-packet: "npm:2.2.0"
+    map-transform-cjs: "npm:0.2.0"
+    node-cache: "npm:5.1.2"
+    openapi-backend: "npm:5.15.0"
+    swagger-parser: "npm:10.0.3"
+  dependenciesMeta:
+    "@rollup/rollup-linux-x64-musl":
+      optional: true
+  checksum: 10/f68112bbad615b37cd134774820abe7095fe8f09f44fc14f0b5e3482a17c4afb23ebec3a7470660e4a968579e0f6c8803aa22339567a8cb891ad45007ae53ccd
+  languageName: node
+  linkType: hard
+
 "@mojaloop/ml-schema-transformer-lib@npm:2.7.11-subtype.1":
   version: 2.7.11-subtype.1
   resolution: "@mojaloop/ml-schema-transformer-lib@npm:2.7.11-subtype.1"
@@ -2953,30 +2805,6 @@ __metadata:
     "@rollup/rollup-linux-x64-musl":
       optional: true
   checksum: 10/044dc499b7d1a3a52fa21158d70108b06f185564292d1d8442a2ca7d6fcbfb256a66765da611459cbcb8fbf36bf0d5e8b624d4734e5a8862ee85df9f34c8fe52
-  languageName: node
-  linkType: hard
-
-"@mojaloop/ml-schema-transformer-lib@npm:2.7.8":
-  version: 2.7.8
-  resolution: "@mojaloop/ml-schema-transformer-lib@npm:2.7.8"
-  dependencies:
-    "@apidevtools/swagger-parser": "npm:12.0.0"
-    "@mojaloop/api-snippets": "npm:18.1.1"
-    "@mojaloop/central-services-error-handling": "npm:13.1.1"
-    "@mojaloop/central-services-logger": "npm:11.9.3"
-    "@mojaloop/central-services-shared": "npm:18.32.1"
-    "@rollup/rollup-linux-x64-musl": "npm:4.50.2"
-    ajv: "npm:8.17.1"
-    fast-safe-stringify: "npm:2.1.1"
-    ilp-packet: "npm:2.2.0"
-    map-transform-cjs: "npm:0.2.0"
-    node-cache: "npm:5.1.2"
-    openapi-backend: "npm:5.15.0"
-    swagger-parser: "npm:10.0.3"
-  dependenciesMeta:
-    "@rollup/rollup-linux-x64-musl":
-      optional: true
-  checksum: 10/06bb19a3047879eb83755a8cd45253bd0c6696adce43fe06fc0ae6d55b7570a9ccfb2395c91df3f88030ef51c5d0f7ba4de5340832e6991a62afb3ab47555c13
   languageName: node
   linkType: hard
 
@@ -3039,7 +2867,7 @@ __metadata:
     "@mojaloop/logging-bc-client-lib": "npm:0.5.8"
     "@mojaloop/ml-schema-transformer-lib": "npm:2.7.11-subtype.1"
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^"
-    "@mojaloop/sdk-standard-components": "npm:19.18.2"
+    "@mojaloop/sdk-standard-components": "npm:19.18.3-subtype.0"
     "@redocly/openapi-cli": "npm:1.0.0-beta.95"
     "@types/jest": "npm:30.0.0"
     "@types/retry": "npm:^0"
@@ -3224,13 +3052,13 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@mojaloop/sdk-standard-components@npm:19.18.2":
-  version: 19.18.2
-  resolution: "@mojaloop/sdk-standard-components@npm:19.18.2"
+"@mojaloop/sdk-standard-components@npm:19.18.3-subtype.0":
+  version: 19.18.3-subtype.0
+  resolution: "@mojaloop/sdk-standard-components@npm:19.18.3-subtype.0"
   dependencies:
     "@mojaloop/central-services-logger": "npm:11.10.2"
     "@mojaloop/ml-number": "npm:^11.4.2"
-    "@mojaloop/ml-schema-transformer-lib": "npm:2.7.8"
+    "@mojaloop/ml-schema-transformer-lib": "npm:2.7.11-subtype.0"
     axios: "npm:1.13.2"
     axios-retry: "npm:4.5.0"
     base64url: "npm:3.0.1"
@@ -3239,7 +3067,7 @@ __metadata:
     ilp-packet-v1: "npm:2.2.0"
     jsonwebtoken: "npm:9.0.3"
     jws: "npm:4.0.1"
-  checksum: 10/79ba2cda2f4bcf8a7d2b44d301de2c2aad0f37804718440223e6be8b2525c6c6c6b8e159ef39eb4bc864432a2c1319d723b671ccb322c8e00be474ef9b475987
+  checksum: 10/478bab4213fec4c78fd915bd7df87b4efe2855a993ad3e0bcc2263788969a6c90241c93fce34f09025069eee8adf9b02a81a5ee60eaeae3d283c119ac9fe72cd
   languageName: node
   linkType: hard
 
@@ -3717,13 +3545,6 @@ __metadata:
     pluralize: "npm:^8.0.0"
     yaml-ast-parser: "npm:0.0.43"
   checksum: 10/9ecce1975b9880c5b91f75d7d0db2a592a1cfc60dca1b3e276e29f1f107d583491e66043f630d76e59802c73d1b8edf6bde35c50384f1b26c05b1d19ab48ee31
-  languageName: node
-  linkType: hard
-
-"@rollup/rollup-linux-x64-musl@npm:4.50.2":
-  version: 4.50.2
-  resolution: "@rollup/rollup-linux-x64-musl@npm:4.50.2"
-  conditions: os=linux & cpu=x64 & libc=musl
   languageName: node
   linkType: hard
 
@@ -7293,13 +7114,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dotenv@npm:17.2.2":
-  version: 17.2.2
-  resolution: "dotenv@npm:17.2.2"
-  checksum: 10/258210c403a426e887f0fb63d1cddb2e7dcc028974a38a4a440411b651b9c588ee4e8605e252d87d15489b3e311d7ba56d588d6cfda1b11bfbf494dd7b3ef2a3
-  languageName: node
-  linkType: hard
-
 "dotenv@npm:17.2.3":
   version: 17.2.3
   resolution: "dotenv@npm:17.2.3"
@@ -9305,15 +9119,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"iconv-lite@npm:0.7.0":
-  version: 0.7.0
-  resolution: "iconv-lite@npm:0.7.0"
-  dependencies:
-    safer-buffer: "npm:>= 2.1.2 < 3.0.0"
-  checksum: 10/5bfc897fedfb7e29991ae5ef1c061ed4f864005f8c6d61ef34aba6a3885c04bd207b278c0642b041383aeac2d11645b4319d0ca7b863b0be4be0cde1c9238ca7
-  languageName: node
-  linkType: hard
-
 "iconv-lite@npm:~0.7.0":
   version: 0.7.1
   resolution: "iconv-lite@npm:0.7.1"
@@ -9391,13 +9196,6 @@ __metadata:
     extensible-error: "npm:^1.0.2"
     oer-utils: "npm:^5.1.2"
   checksum: 10/57df0396e85089b37ee0d0da1a40c1f3e48bf963b9251feb67cd85fbfad9ddc1d7981ac915327bbccd784c091828efc4857221f709aa3eb38c07926e590b3501
-  languageName: node
-  linkType: hard
-
-"immutable@npm:5.1.3":
-  version: 5.1.3
-  resolution: "immutable@npm:5.1.3"
-  checksum: 10/6d29b29036143e7ea1e7f7be581c71bca873ea77c175d33c6c839bf4017265a58c41ec269e3ffcd7b483797fc7fa9c928b4ed3d6edfeeb1b5711d84f60d04090
   languageName: node
   linkType: hard
 
@@ -9549,23 +9347,6 @@ __metadata:
     redis-parser: "npm:^3.0.0"
     standard-as-callback: "npm:^2.1.0"
   checksum: 10/632186e21f2d8b94a12918b5feef0f5df70315e303988989adb0d190377759ffa601660be7536489c0768803a0fb6eb94f861b33c1fcfc673d518fdd31c541e2
-  languageName: node
-  linkType: hard
-
-"ioredis@npm:5.7.0":
-  version: 5.7.0
-  resolution: "ioredis@npm:5.7.0"
-  dependencies:
-    "@ioredis/commands": "npm:^1.3.0"
-    cluster-key-slot: "npm:^1.1.0"
-    debug: "npm:^4.3.4"
-    denque: "npm:^2.1.0"
-    lodash.defaults: "npm:^4.2.0"
-    lodash.isarguments: "npm:^3.1.0"
-    redis-errors: "npm:^1.2.0"
-    redis-parser: "npm:^3.0.0"
-    standard-as-callback: "npm:^2.1.0"
-  checksum: 10/7407736226a866d81110240cb2d67e9c2269f13d84c69391833f26c89ac28cf853ff85d52bc555fcfa0d7553c49441e0a4b5c9a5a95a547b90c42fc1a9f1ba01
   languageName: node
   linkType: hard
 
@@ -10745,21 +10526,6 @@ __metadata:
   version: 1.4.0
   resolution: "jju@npm:1.4.0"
   checksum: 10/1067ff8ce02221faac5a842116ed0ec79a53312a111d0bf8342a80bd02c0a3fdf0b8449694a65947db0a3e8420e8b326dffb489c7dd5866efc380c0d1708a707
-  languageName: node
-  linkType: hard
-
-"joi@npm:18.0.1":
-  version: 18.0.1
-  resolution: "joi@npm:18.0.1"
-  dependencies:
-    "@hapi/address": "npm:^5.1.1"
-    "@hapi/formula": "npm:^3.0.2"
-    "@hapi/hoek": "npm:^11.0.7"
-    "@hapi/pinpoint": "npm:^2.0.1"
-    "@hapi/tlds": "npm:^1.1.1"
-    "@hapi/topo": "npm:^6.0.2"
-    "@standard-schema/spec": "npm:^1.0.0"
-  checksum: 10/d8e391c0e93ca1e83836bd8eb3562004a038d5184e74b9e6c6877fc60c782cbc549dcaa003e41ddb12c10899be3c4da175e7dc290e9457e92f2f4d28b46094df
   languageName: node
   linkType: hard
 
@@ -13890,18 +13656,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"raw-body@npm:3.0.1":
-  version: 3.0.1
-  resolution: "raw-body@npm:3.0.1"
-  dependencies:
-    bytes: "npm:3.1.2"
-    http-errors: "npm:2.0.0"
-    iconv-lite: "npm:0.7.0"
-    unpipe: "npm:1.0.0"
-  checksum: 10/3cc63e154147d15200ebf4fe3fb806682b268b8c6256ef3296f60025b07b67a028c1c92b3985b4ec1c7af08b7365ef91b0d0597b957c1c6ac40241b5f6b7d38b
-  languageName: node
-  linkType: hard
-
 "raw-body@npm:3.0.2":
   version: 3.0.2
   resolution: "raw-body@npm:3.0.2"
@@ -16995,15 +16749,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"yaml@npm:2.8.1, yaml@npm:^2.2.1":
-  version: 2.8.1
-  resolution: "yaml@npm:2.8.1"
-  bin:
-    yaml: bin.mjs
-  checksum: 10/eae07b3947d405012672ec17ce27348aea7d1fa0534143355d24a43a58f5e05652157ea2182c4fe0604f0540be71f99f1173f9d61018379404507790dff17665
-  languageName: node
-  linkType: hard
-
 "yaml@npm:2.8.2":
   version: 2.8.2
   resolution: "yaml@npm:2.8.2"
@@ -17017,6 +16762,15 @@ __metadata:
   version: 1.10.2
   resolution: "yaml@npm:1.10.2"
   checksum: 10/e088b37b4d4885b70b50c9fa1b7e54bd2e27f5c87205f9deaffd1fb293ab263d9c964feadb9817a7b129a5bf30a06582cb08750f810568ecc14f3cdbabb79cb3
+  languageName: node
+  linkType: hard
+
+"yaml@npm:^2.2.1":
+  version: 2.8.1
+  resolution: "yaml@npm:2.8.1"
+  bin:
+    yaml: bin.mjs
+  checksum: 10/eae07b3947d405012672ec17ce27348aea7d1fa0534143355d24a43a58f5e05652157ea2182c4fe0604f0540be71f99f1173f9d61018379404507790dff17665
   languageName: node
   linkType: hard
 

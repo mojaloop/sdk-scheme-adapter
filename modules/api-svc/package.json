@@ -75,7 +75,7 @@
     "@mojaloop/logging-bc-client-lib": "0.5.8",
     "@mojaloop/ml-schema-transformer-lib": "2.7.11-subtype.1",
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^",
-    "@mojaloop/sdk-standard-components": "19.18.2",
+    "@mojaloop/sdk-standard-components": "19.18.3-subtype.0",
     "ajv": "8.17.1",
     "axios": "1.13.2",
     "body-parser": "2.2.1",
