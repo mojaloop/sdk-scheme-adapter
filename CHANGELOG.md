@@ -1,4 +1,16 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+### [24.18.2](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.18.1...v24.18.2) (2026-01-04)
+
+
+### Bug Fixes
+
+* handle subtype mapping ([#644](https://github.com/mojaloop/sdk-scheme-adapter/issues/644)) ([d92c0d9](https://github.com/mojaloop/sdk-scheme-adapter/commit/d92c0d9eb61b8f6546415b64840e2b11ea1d1644))
+
+
+### Chore
+
+* **sbom:** update sbom [skip ci] ([c94fffe](https://github.com/mojaloop/sdk-scheme-adapter/commit/c94fffe9b264e33a15f36901b2f948493b0210e0))
+
 ### [24.18.1](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.18.0...v24.18.1) (2025-12-22)
 
 
