@@ -2882,7 +2882,7 @@ __metadata:
     eslint: "npm:9.15.0"
     eslint-config-airbnb-base: "npm:15.0.0"
     eslint-plugin-import: "npm:2.32.0"
-    eslint-plugin-jest: "npm:29.11.2"
+    eslint-plugin-jest: "npm:29.12.1"
     express: "npm:4.21.2"
     fast-json-patch: "npm:3.1.1"
     fast-safe-stringify: "npm:2.1.1"
@@ -7587,9 +7587,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-jest@npm:29.11.2":
-  version: 29.11.2
-  resolution: "eslint-plugin-jest@npm:29.11.2"
+"eslint-plugin-jest@npm:29.12.1":
+  version: 29.12.1
+  resolution: "eslint-plugin-jest@npm:29.12.1"
   dependencies:
     "@typescript-eslint/utils": "npm:^8.0.0"
   peerDependencies:
@@ -7601,7 +7601,7 @@ __metadata:
       optional: true
     jest:
       optional: true
-  checksum: 10/9489aa9c1bf3af3cd56b4d3beb443fda847e05d69e8f97dd6bb9f200a16f025698250089e9c56459c37137fa1efc32ee1431fdae907847e1b48f22662caa920e
+  checksum: 10/2758d55bc536f936a6dfa61353210fcf607a212d55c4cbdd1778b4e9f9638c63c723c53c2aac9d82ef9a539d98c09ad2b1aa3d6dac2b2b91c8cb3520fcfe6d8f
   languageName: node
   linkType: hard
 

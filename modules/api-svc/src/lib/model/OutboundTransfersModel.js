@@ -418,12 +418,10 @@ class OutboundTransfersModel {
                     return reject(err);
                 }
 
-                // TODO: Disabling this check because of an issue in the ISO transformation in the ml-schema-transformer-lib in subId handling
-                // We need to re-enable this check once that issue is fixed
-                // if(payee.partyIdInfo.partySubIdOrType !== this.data.to.idSubValue) {
-                //     const err = new Error(`Expecting resolved payee party subTypeId to be ${this.data.to.idSubValue} but got ${payee.partyIdInfo.partySubIdOrType}`);
-                //     return reject(err);
-                // }
+                if(payee.partyIdInfo.partySubIdOrType !== this.data.to.idSubValue) {
+                    const err = new Error(`Expecting resolved payee party subTypeId to be ${this.data.to.idSubValue} but got ${payee.partyIdInfo.partySubIdOrType}`);
+                    return reject(err);
+                }
 
                 if(!payee.partyIdInfo.fspId) {
                     const err = new Error(`Expecting resolved payee party to have an FSPID: ${safeStringify(payee.partyIdInfo)}`);
