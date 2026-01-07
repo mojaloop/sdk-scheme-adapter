@@ -73,12 +73,12 @@
     "@mojaloop/central-services-shared": "18.34.5",
     "@mojaloop/event-sdk": "14.8.2",
     "@mojaloop/logging-bc-client-lib": "0.5.8",
-    "@mojaloop/ml-schema-transformer-lib": "2.7.11",
+    "@mojaloop/ml-schema-transformer-lib": "2.7.13",
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^",
-    "@mojaloop/sdk-standard-components": "19.18.3",
+    "@mojaloop/sdk-standard-components": "19.18.4",
     "ajv": "8.17.1",
     "axios": "1.13.2",
-    "body-parser": "2.2.1",
+    "body-parser": "2.2.2",
     "co-body": "6.2.0",
     "dotenv": "17.2.3",
     "env-var": "7.5.0",
@@ -101,7 +101,7 @@
     "redis": "5.10.0",
     "retry": "^0.13.1",
     "uuidv4": "6.2.13",
-    "ws": "8.18.3"
+    "ws": "8.19.0"
   },
   "devDependencies": {
     "@babel/core": "7.28.5",
@@ -123,7 +123,7 @@
     "redis-mock": "0.56.3",
     "replace": "1.2.2",
     "standard-version": "9.5.0",
-    "supertest": "7.1.4",
+    "supertest": "7.2.2",
     "swagger-cli": "4.0.4"
   },
   "standard-version": {
