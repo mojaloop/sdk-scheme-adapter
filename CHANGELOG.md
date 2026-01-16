@@ -1,4 +1,12 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+### [24.18.4](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.18.3...v24.18.4) (2026-01-16)
+
+
+### Chore
+
+* **ci:** update CircleCI orb to 1.1.10 ([#650](https://github.com/mojaloop/sdk-scheme-adapter/issues/650)) ([12cc202](https://github.com/mojaloop/sdk-scheme-adapter/commit/12cc202bcff1b82e7581015139656ec5fc10504e))
+* **sbom:** update sbom [skip ci] ([41c660b](https://github.com/mojaloop/sdk-scheme-adapter/commit/41c660b63b75b5f9cc77e68abed09a2958ab657d))
+
 ### [24.18.3](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.18.2...v24.18.3) (2026-01-07)
 
 
