@@ -1,4 +1,11 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+### [24.18.5](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.18.4...v24.18.5) (2026-01-16)
+
+
+### Chore
+
+* update vuls ([#651](https://github.com/mojaloop/sdk-scheme-adapter/issues/651)) ([be7bb70](https://github.com/mojaloop/sdk-scheme-adapter/commit/be7bb705874d13f667c6ee5728e0b05c45ad40fa))
+
 ### [24.18.4](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.18.3...v24.18.4) (2026-01-16)
 
 
