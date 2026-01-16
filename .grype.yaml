@@ -5,12 +5,12 @@ ignore:
   - vulnerability: CVE-2025-9230
   - vulnerability: CVE-2025-9231
   - vulnerability: CVE-2025-9232
-  - vulnerability: GHSA-9965-vmph-33xx # validator 13.15.15
   - vulnerability: GHSA-5j98-mcp5-4vw2 # glob 10.4.5
-  - vulnerability: GHSA-mh29-5h37-fv8m # js-yaml 3.14.1, 4.1.0
   - vulnerability: CVE-2025-60876 # busybox, ssl_client
-  - vulnerability: GHSA-6rw7-vpxm-498p # qs
-
+  - vulnerability: CVE-2026-22184
+    reason: "No fixes available as of 2026-01-14 on Dockerfile base image 22.21.1-alpine3.23"
+  - vulnerability: CVE-2025-64718
+    reason: "No fixes available as of 2026-01-14 on Dockerfile base image 22.21.1-alpine3.23"
 # Set output format defaults
 output:
   - "table"
