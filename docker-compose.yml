@@ -32,12 +32,7 @@ services:
       - ./secrets:/opt/app/secrets
     user: root # Set Root so we can install Curl for Healthchecks
     healthcheck:
-      test: [
-        "CMD" ,
-        "apk", "add", "--no-cache", "curl", # Install curl
-        "&&",
-        "curl", "-f", "http://localhost:4001" # Check if api is up
-        ]
+      test: ["CMD-SHELL", "apk add --no-cache curl > /dev/null 2>&1; curl -f http://localhost:4001"]
       timeout: 20s
       retries: 10
       start_period: 40s
