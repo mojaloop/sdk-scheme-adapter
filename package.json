@@ -120,6 +120,8 @@
     "js-yaml": "4.1.1"
   },
   "resolutions": {
+    "cacache/glob": "10.5.0",
+    "read-package-json/glob": "10.5.0",
     "validator": "13.15.22",
     "undici": "7.18.2",
     "qs": "6.14.1",
