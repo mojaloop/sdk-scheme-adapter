@@ -1,5 +1,10 @@
 {
   "extends": "nx/presets/npm.json",
+  "pluginsConfig": {
+    "@nx/js": {
+      "analyzePackageJson": false
+    }
+  },
   "tasksRunnerOptions": {
     "default": {
       "runner": "nx/tasks-runners/default",
