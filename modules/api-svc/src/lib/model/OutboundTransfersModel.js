@@ -601,7 +601,9 @@ class OutboundTransfersModel {
     async _requestFxQuote() {
         let latencyTimerDone;
         try {
-            this.data.fxQuoteExpiration = this._getExpirationTimestamp();
+            this.data.fxQuoteExpiration = this._getExpirationTimestamp(
+                this.data.fxQuoteExpirySeconds || this._expirySeconds
+            );
             const payload = dto.outboundPostFxQuotePayloadDto(this.data);
             const channel = `${CacheKeyPrefixes.FX_QUOTE_CALLBACK_CHANNEL}_${payload.conversionRequestId}`;
 
@@ -800,7 +802,7 @@ class OutboundTransfersModel {
             transactionId: this.data.transferId,
             amountType: this.data.amountType,
             amount: this.defineQuoteAmount(),
-            expiration: this._getExpirationTimestamp()
+            expiration: this._getExpirationTimestamp(this.data.quoteExpirySeconds || this._expirySeconds),
         };
 
         quote.payer = shared.internalPartyToMojaloopParty(this.data.from, this._dfspId);
@@ -854,7 +856,7 @@ class OutboundTransfersModel {
     async _executeFxTransfer() {
         let latencyTimerDone;
         try {
-            this.data.fxTransferExpiration = this._getExpirationTimestamp();
+            this.data.fxTransferExpiration = this._getExpirationTimestamp(this.data.fxPrepareExpirySeconds || this._expirySeconds);
             const payload = dto.outboundPostFxTransferPayloadDto(this.data);
             const channel = `${CacheKeyPrefixes.FX_TRANSFER_CALLBACK_CHANNEL}_${payload.commitRequestId}`;
 
@@ -1159,7 +1161,7 @@ class OutboundTransfersModel {
             },
             ilpPacket: this.data.quoteResponse.body.ilpPacket,
             condition: this.data.quoteResponse.body.condition,
-            expiration: this._getExpirationTimestamp()
+            expiration: this._getExpirationTimestamp(this.data.prepareExpirySeconds || this._expirySeconds),
         };
 
         if(this._useQuoteSourceFSPAsTransferPayeeFSP) {
@@ -1207,9 +1209,9 @@ class OutboundTransfersModel {
      *
      * @returns {string} - ISO-8601 format future expiration timestamp
      */
-    _getExpirationTimestamp() {
+    _getExpirationTimestamp(expirySeconds) {
         let now = new Date();
-        return new Date(now.getTime() + (this._expirySeconds * 1000)).toISOString();
+        return new Date(now.getTime() + (expirySeconds * 1000)).toISOString();
     }
 
 

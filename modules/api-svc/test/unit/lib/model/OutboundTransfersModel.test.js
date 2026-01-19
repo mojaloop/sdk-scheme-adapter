@@ -1607,6 +1607,243 @@ describe('OutboundTransfersModel Tests', () => {
         expect(metrics).toEqual(expect.stringContaining('mojaloop_connector_outbound_party_lookup_latency'));
     });
 
+    test('should use quoteExpirySeconds override when set', async () => {
+        config.autoAcceptParty = true;
+        config.autoAcceptQuotes = true;
+        const customQuoteExpirySeconds = 10;
+
+        MojaloopRequests.__getParties = jest.fn(() => {
+            emitPartyCacheMessage(cache, payeeParty);
+            return Promise.resolve(dummyRequestsModuleResponse);
+        });
+
+        MojaloopRequests.__postQuotes = jest.fn((postQuotesBody) => {
+            expect(postQuotesBody.expiration).toBeTruthy();
+            emitQuoteResponseCacheMessage(cache, postQuotesBody.quoteId, quoteResponse);
+            return Promise.resolve(dummyRequestsModuleResponse);
+        });
+
+        MojaloopRequests.__postTransfers = jest.fn((postTransfersBody) => {
+            emitTransferFulfilCacheMessage(cache, postTransfersBody.transferId, transferFulfil);
+            return Promise.resolve(dummyRequestsModuleResponse);
+        });
+
+        const model = new Model({
+            cache,
+            logger,
+            metricsClient,
+            ...config,
+        });
+
+        const req = JSON.parse(JSON.stringify(transferRequest));
+        req.quoteExpirySeconds = customQuoteExpirySeconds;
+
+        await model.initialize(req);
+
+        const getExpirationTimestampSpy = jest.spyOn(model, '_getExpirationTimestamp');
+
+        const result = await model.run();
+
+        expect(result.currentState).toBe(SDKStateEnum.COMPLETED);
+        expect(getExpirationTimestampSpy).toHaveBeenCalledWith(customQuoteExpirySeconds);
+
+        getExpirationTimestampSpy.mockRestore();
+    });
+
+    test('should use default expirySeconds when quoteExpirySeconds is not set', async () => {
+        config.autoAcceptParty = true;
+        config.autoAcceptQuotes = true;
+        const defaultExpirySeconds = config.expirySeconds;
+
+        MojaloopRequests.__getParties = jest.fn(() => {
+            emitPartyCacheMessage(cache, payeeParty);
+            return Promise.resolve(dummyRequestsModuleResponse);
+        });
+
+        MojaloopRequests.__postQuotes = jest.fn((postQuotesBody) => {
+            emitQuoteResponseCacheMessage(cache, postQuotesBody.quoteId, quoteResponse);
+            return Promise.resolve(dummyRequestsModuleResponse);
+        });
+
+        MojaloopRequests.__postTransfers = jest.fn((postTransfersBody) => {
+            emitTransferFulfilCacheMessage(cache, postTransfersBody.transferId, transferFulfil);
+            return Promise.resolve(dummyRequestsModuleResponse);
+        });
+
+        const model = new Model({
+            cache,
+            logger,
+            metricsClient,
+            ...config,
+        });
+
+        await model.initialize(JSON.parse(JSON.stringify(transferRequest)));
+
+        const getExpirationTimestampSpy = jest.spyOn(model, '_getExpirationTimestamp');
+
+        const result = await model.run();
+
+        expect(result.currentState).toBe(SDKStateEnum.COMPLETED);
+        expect(getExpirationTimestampSpy).toHaveBeenCalledWith(defaultExpirySeconds);
+
+        getExpirationTimestampSpy.mockRestore();
+    });
+
+    test('should use prepareExpirySeconds override when set', async () => {
+        config.autoAcceptParty = true;
+        config.autoAcceptQuotes = true;
+        const customPrepareExpirySeconds = 15;
+
+        MojaloopRequests.__getParties = jest.fn(() => {
+            emitPartyCacheMessage(cache, payeeParty);
+            return Promise.resolve(dummyRequestsModuleResponse);
+        });
+
+        MojaloopRequests.__postQuotes = jest.fn((postQuotesBody) => {
+            emitQuoteResponseCacheMessage(cache, postQuotesBody.quoteId, quoteResponse);
+            return Promise.resolve(dummyRequestsModuleResponse);
+        });
+
+        MojaloopRequests.__postTransfers = jest.fn((postTransfersBody) => {
+            expect(postTransfersBody.expiration).toBeTruthy();
+            emitTransferFulfilCacheMessage(cache, postTransfersBody.transferId, transferFulfil);
+            return Promise.resolve(dummyRequestsModuleResponse);
+        });
+
+        const model = new Model({
+            cache,
+            logger,
+            metricsClient,
+            ...config,
+        });
+
+        const req = JSON.parse(JSON.stringify(transferRequest));
+        req.prepareExpirySeconds = customPrepareExpirySeconds;
+
+        await model.initialize(req);
+
+        const getExpirationTimestampSpy = jest.spyOn(model, '_getExpirationTimestamp');
+
+        const result = await model.run();
+
+        expect(result.currentState).toBe(SDKStateEnum.COMPLETED);
+        expect(getExpirationTimestampSpy).toHaveBeenCalledWith(customPrepareExpirySeconds);
+
+        getExpirationTimestampSpy.mockRestore();
+    });
+
+    test('should use default expirySeconds when prepareExpirySeconds is not set', async () => {
+        config.autoAcceptParty = true;
+        config.autoAcceptQuotes = true;
+        const defaultExpirySeconds = config.expirySeconds;
+
+        MojaloopRequests.__getParties = jest.fn(() => {
+            emitPartyCacheMessage(cache, payeeParty);
+            return Promise.resolve(dummyRequestsModuleResponse);
+        });
+
+        MojaloopRequests.__postQuotes = jest.fn((postQuotesBody) => {
+            emitQuoteResponseCacheMessage(cache, postQuotesBody.quoteId, quoteResponse);
+            return Promise.resolve(dummyRequestsModuleResponse);
+        });
+
+        MojaloopRequests.__postTransfers = jest.fn((postTransfersBody) => {
+            emitTransferFulfilCacheMessage(cache, postTransfersBody.transferId, transferFulfil);
+            return Promise.resolve(dummyRequestsModuleResponse);
+        });
+
+        const model = new Model({
+            cache,
+            logger,
+            metricsClient,
+            ...config,
+        });
+
+        await model.initialize(JSON.parse(JSON.stringify(transferRequest)));
+
+        const getExpirationTimestampSpy = jest.spyOn(model, '_getExpirationTimestamp');
+
+        const result = await model.run();
+
+        expect(result.currentState).toBe(SDKStateEnum.COMPLETED);
+        expect(getExpirationTimestampSpy).toHaveBeenCalledWith(defaultExpirySeconds);
+
+        getExpirationTimestampSpy.mockRestore();
+    });
+
+    test('should reject quote response when expired and rejectExpiredQuoteResponses is true with quoteExpirySeconds override', async () => {
+        config.autoAcceptParty = true;
+        config.autoAcceptQuotes = true;
+        config.rejectExpiredQuoteResponses = true;
+        const customQuoteExpirySeconds = 1;
+
+        MojaloopRequests.__getParties = jest.fn(() => {
+            emitPartyCacheMessage(cache, payeeParty);
+            return Promise.resolve(dummyRequestsModuleResponse);
+        });
+
+        MojaloopRequests.__postQuotes = jest.fn((postQuotesBody) => {
+            // simulate a delayed callback with the quote response
+            setTimeout(() => {
+                emitQuoteResponseCacheMessage(cache, postQuotesBody.quoteId, quoteResponse);
+            }, 2000);
+            return Promise.resolve(dummyRequestsModuleResponse);
+        });
+
+        const model = new Model({
+            cache,
+            logger,
+            metricsClient,
+            ...config,
+        });
+
+        const req = JSON.parse(JSON.stringify(transferRequest));
+        req.quoteExpirySeconds = customQuoteExpirySeconds;
+
+        await model.initialize(req);
+
+        await expect(model.run()).rejects.toThrow('Quote response missed expiry deadline');
+    });
+
+    test('should reject transfer fulfil when expired and rejectExpiredTransferFulfils is true with prepareExpirySeconds override', async () => {
+        config.autoAcceptParty = true;
+        config.autoAcceptQuotes = true;
+        config.rejectExpiredTransferFulfils = true;
+        const customPrepareExpirySeconds = 1;
+
+        MojaloopRequests.__getParties = jest.fn(() => {
+            emitPartyCacheMessage(cache, payeeParty);
+            return Promise.resolve(dummyRequestsModuleResponse);
+        });
+
+        MojaloopRequests.__postQuotes = jest.fn((postQuotesBody) => {
+            emitQuoteResponseCacheMessage(cache, postQuotesBody.quoteId, quoteResponse);
+            return Promise.resolve(dummyRequestsModuleResponse);
+        });
+
+        MojaloopRequests.__postTransfers = jest.fn((postTransfersBody) => {
+            // simulate a delayed callback with the transfer fulfilment
+            setTimeout(() => {
+                emitTransferFulfilCacheMessage(cache, postTransfersBody.transferId, transferFulfil);
+            }, 2000);
+            return Promise.resolve(dummyRequestsModuleResponse);
+        });
+
+        const model = new Model({
+            cache,
+            logger,
+            metricsClient,
+            ...config,
+        });
+
+        const req = JSON.parse(JSON.stringify(transferRequest));
+        req.prepareExpirySeconds = customPrepareExpirySeconds;
+
+        await model.initialize(req);
+
+        await expect(model.run()).rejects.toThrow('Transfer fulfil missed expiry deadline');
+    });
+
     describe('FX flow Tests -->', () => {
         const TARGET_AMOUNT = '48000';
         let model;
@@ -1909,5 +2146,132 @@ describe('OutboundTransfersModel Tests', () => {
             expect(result.currentState).toBe(SDKStateEnum.COMPLETED);
             expect(model.data.currentState).toBe(States.SUCCEEDED);
         });
+
+        test('should use fxQuoteExpirySeconds override when set', async () => {
+            model._rejectExpiredQuoteResponses = true;
+            const customFxQuoteExpirySeconds = 5;
+
+            // Mock expiration to return a future timestamp
+            model._getExpirationTimestamp = jest.fn(() => {
+                let now = new Date();
+                return new Date(now.getTime() + (customFxQuoteExpirySeconds * 1000)).toISOString();
+            });
+
+            await model.initialize({
+                ...mocks.coreConnectorPostTransfersPayloadDto(),
+                currentState: States.PAYEE_RESOLVED,
+                needFx: true,
+                supportedCurrencies: ['USD'],
+                fxQuoteExpirySeconds: customFxQuoteExpirySeconds,
+            });
+
+            const result = await model.run();
+            expect(result).toBeTruthy();
+            expect(result.fxQuoteRequest).toBeTruthy();
+            expect(model.data.fxQuoteExpiration).toBeTruthy();
+            expect(model._getExpirationTimestamp).toHaveBeenCalledWith(customFxQuoteExpirySeconds);
+        });
+
+        test('should use default expirySeconds when fxQuoteExpirySeconds is not set', async () => {
+            const defaultExpirySeconds = config.expirySeconds;
+
+            model._getExpirationTimestamp = jest.fn(() => {
+                let now = new Date();
+                return new Date(now.getTime() + (defaultExpirySeconds * 1000)).toISOString();
+            });
+
+            await model.initialize({
+                ...mocks.coreConnectorPostTransfersPayloadDto(),
+                currentState: States.PAYEE_RESOLVED,
+                needFx: true,
+                supportedCurrencies: ['USD'],
+            });
+
+            const result = await model.run();
+            expect(result).toBeTruthy();
+            expect(model._getExpirationTimestamp).toHaveBeenCalledWith(defaultExpirySeconds);
+        });
+
+        test('should use default expirySeconds when fxPrepareExpirySeconds is not set', async () => {
+            const defaultExpirySeconds = config.expirySeconds;
+
+            model._getExpirationTimestamp = jest.fn(() => {
+                let now = new Date();
+                return new Date(now.getTime() + (defaultExpirySeconds * 1000)).toISOString();
+            });
+
+            await model.initialize({
+                ...mocks.coreConnectorPostTransfersPayloadDto(),
+                currentState: States.QUOTE_RECEIVED,
+                needFx: true,
+                supportedCurrencies: ['USD'],
+                acceptQuote: true,
+                fxQuoteResponse: {
+                    body: mocks.mockFxQuotesPayload(),
+                },
+                quoteResponse: {
+                    body: {
+                        transferAmount: {},
+                    }
+                },
+            });
+
+            const result = await model.run();
+            expect(result).toBeTruthy();
+            expect(result.fxTransferRequest).toBeTruthy();
+            expect(model._getExpirationTimestamp).toHaveBeenCalledWith(defaultExpirySeconds);
+        });
+
+        test('should reject fxQuote response when expired and rejectExpiredQuoteResponses is true with fxQuoteExpirySeconds override', async () => {
+            model._rejectExpiredQuoteResponses = true;
+            const customFxQuoteExpirySeconds = 1;
+
+            // Mock expiration to return an expired timestamp
+            model._getExpirationTimestamp = jest.fn(() => {
+                let now = new Date();
+                return new Date(now.getTime() - 2000).toISOString(); // 2 seconds in the past
+            });
+
+            await model.initialize({
+                ...mocks.coreConnectorPostTransfersPayloadDto(),
+                currentState: States.PAYEE_RESOLVED,
+                needFx: true,
+                supportedCurrencies: ['USD'],
+                fxQuoteExpirySeconds: customFxQuoteExpirySeconds,
+            });
+
+            await expect(model.run()).rejects.toThrow(`${ErrorMessages.responseMissedExpiryDeadline} (fxQuote)`);
+        });
+
+        test('should reject fxTransfer fulfil when expired and rejectExpiredTransferFulfils is true with prepareExpirySeconds override', async () => {
+            model._rejectExpiredTransferFulfils = true;
+            const customPrepareExpirySeconds = 1;
+
+            // Mock expiration to return an expired timestamp
+            model._getExpirationTimestamp = jest.fn(() => {
+                let now = new Date();
+                return new Date(now.getTime() - 2000).toISOString(); // 2 seconds in the past
+            });
+
+            await model.initialize({
+                ...mocks.coreConnectorPostTransfersPayloadDto(),
+                currentState: States.QUOTE_RECEIVED,
+                needFx: true,
+                supportedCurrencies: ['USD'],
+                acceptQuote: true,
+                prepareExpirySeconds: customPrepareExpirySeconds,
+                fxQuoteResponse: {
+                    body: mocks.mockFxQuotesPayload(),
+                },
+                quoteResponse: {
+                    body: {
+                        transferAmount: {},
+                    }
+                },
+            });
+
+            await expect(model.run()).rejects.toThrow(`${ErrorMessages.responseMissedExpiryDeadline} (fxTransfers fulfil)`);
+        });
+
     });
 });
