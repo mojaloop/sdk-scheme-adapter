@@ -2222,6 +2222,37 @@ describe('OutboundTransfersModel Tests', () => {
             expect(model._getExpirationTimestamp).toHaveBeenCalledWith(defaultExpirySeconds);
         });
 
+        test('should use fxPrepareExpirySeconds override when set', async () => {
+            const customFxPrepareExpirySeconds = 20;
+
+            model._getExpirationTimestamp = jest.fn(() => {
+                let now = new Date();
+                return new Date(now.getTime() + (customFxPrepareExpirySeconds * 1000)).toISOString();
+            });
+
+            await model.initialize({
+                ...mocks.coreConnectorPostTransfersPayloadDto(),
+                currentState: States.QUOTE_RECEIVED,
+                needFx: true,
+                supportedCurrencies: ['USD'],
+                acceptQuote: true,
+                fxPrepareExpirySeconds: customFxPrepareExpirySeconds,
+                fxQuoteResponse: {
+                    body: mocks.mockFxQuotesPayload(),
+                },
+                quoteResponse: {
+                    body: {
+                        transferAmount: {},
+                    }
+                },
+            });
+
+            const result = await model.run();
+            expect(result).toBeTruthy();
+            expect(result.fxTransferRequest).toBeTruthy();
+            expect(model._getExpirationTimestamp).toHaveBeenCalledWith(customFxPrepareExpirySeconds);
+        });
+
         test('should reject fxQuote response when expired and rejectExpiredQuoteResponses is true with fxQuoteExpirySeconds override', async () => {
             model._rejectExpiredQuoteResponses = true;
             const customFxQuoteExpirySeconds = 1;
