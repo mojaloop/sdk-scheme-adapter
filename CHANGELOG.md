@@ -1,4 +1,11 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+## [24.19.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.18.5...v24.19.0) (2026-01-20)
+
+
+### Features
+
+* add granular expiry for outbound transfers ([#652](https://github.com/mojaloop/sdk-scheme-adapter/issues/652)) ([faa1444](https://github.com/mojaloop/sdk-scheme-adapter/commit/faa1444f10dfad455ddb4caa99bc2a4638aaf4bd))
+
 ### [24.18.5](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.18.4...v24.18.5) (2026-01-16)
 
 
