@@ -167,7 +167,7 @@ module.exports = {
     multiDfsp: env.get('MULTI_DFSP').default('false').asBool(),
     ilpSecret: env.get('ILP_SECRET').default('mojaloop-sdk').asString(),
     checkIlp: env.get('CHECK_ILP').default('true').asBool(),
-    expirySeconds: env.get('EXPIRY_SECONDS').default('60').asIntPositive(),
+    expirySeconds: env.get('EXPIRY_SECONDS').default('20').asIntPositive(),
 
     multiplePartiesResponse: env.get('MULTIPLE_PARTIES_RESPONSE').default('false').asBool(),
     multiplePartiesResponseSeconds: env.get('MULTIPLE_PARTIES_RESPONSE_SECONDS').default('30').asIntPositive(),
