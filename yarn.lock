@@ -3089,7 +3089,7 @@ __metadata:
     "@babel/core": "npm:7.28.6"
     "@babel/preset-env": "npm:7.28.6"
     "@koa/cors": "npm:5.0.0"
-    "@mojaloop/api-snippets": "npm:18.2.3"
+    "@mojaloop/api-snippets": "npm:18.3.0"
     "@mojaloop/central-services-error-handling": "npm:13.1.5"
     "@mojaloop/central-services-logger": "npm:11.10.3"
     "@mojaloop/central-services-metrics": "npm:12.8.3"
@@ -3152,7 +3152,7 @@ __metadata:
   resolution: "@mojaloop/sdk-scheme-adapter-outbound-command-event-handler@workspace:modules/outbound-command-event-handler"
   dependencies:
     "@eslint/compat": "npm:2.0.1"
-    "@mojaloop/api-snippets": "npm:18.2.3"
+    "@mojaloop/api-snippets": "npm:18.3.0"
     "@mojaloop/central-services-shared": "npm:18.34.6"
     "@mojaloop/logging-bc-client-lib": "npm:0.5.8"
     "@mojaloop/logging-bc-public-types-lib": "npm:0.5.7"
@@ -3192,7 +3192,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mojaloop/sdk-scheme-adapter-outbound-domain-event-handler@workspace:modules/outbound-domain-event-handler"
   dependencies:
-    "@mojaloop/api-snippets": "npm:18.2.3"
+    "@mojaloop/api-snippets": "npm:18.3.0"
     "@mojaloop/logging-bc-client-lib": "npm:0.5.8"
     "@mojaloop/logging-bc-public-types-lib": "npm:0.5.7"
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^"
@@ -3231,7 +3231,7 @@ __metadata:
   resolution: "@mojaloop/sdk-scheme-adapter-private-shared-lib@workspace:modules/private-shared-lib"
   dependencies:
     "@eslint/compat": "npm:2.0.1"
-    "@mojaloop/api-snippets": "npm:18.2.3"
+    "@mojaloop/api-snippets": "npm:18.3.0"
     "@mojaloop/central-services-shared": "npm:18.34.6"
     "@mojaloop/logging-bc-public-types-lib": "npm:0.5.7"
     "@mojaloop/platform-shared-lib-messaging-types-lib": "npm:0.7.4"
