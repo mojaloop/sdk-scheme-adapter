@@ -37,9 +37,9 @@ const {
 } = require('@mojaloop/central-services-shared').Util.HeaderValidation;
 const {
     defaultProtocolResources,
-    defaultProtocolVersions,
-    errorMessages
+    defaultProtocolVersions
 } = require('@mojaloop/central-services-shared').Util.Hapi.FSPIOPHeaderValidation;
+const { errorMessages } = require('@mojaloop/central-services-shared/src/constants');
 const { TransformFacades } = require('@mojaloop/ml-schema-transformer-lib');
 
 const { transformHeadersIsoToFspiop } = require('../lib/utils');
