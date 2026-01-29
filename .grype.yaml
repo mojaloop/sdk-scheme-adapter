@@ -7,6 +7,7 @@ ignore:
   - vulnerability: CVE-2025-9232
   - vulnerability: GHSA-5j98-mcp5-4vw2 # glob 10.4.5
   - vulnerability: CVE-2025-60876 # busybox, ssl_client
+  - vulnerability: GHSA-xxjr-mmjv-4gpg # lodash
   - vulnerability: CVE-2026-22184
     reason: "No fixes available as of 2026-01-14 on Dockerfile base image 22.21.1-alpine3.23"
   - vulnerability: CVE-2025-64718
