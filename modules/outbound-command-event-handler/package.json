@@ -56,11 +56,11 @@
     "yamljs": "0.3.0"
   },
   "devDependencies": {
-    "@eslint/compat": "2.0.1",
+    "@eslint/compat": "2.0.2",
     "@types/convict": "6.1.6",
     "@types/express": "5.0.6",
     "@types/jest": "30.0.0",
-    "@types/node": "25.1.0",
+    "@types/node": "25.2.0",
     "@types/node-cache": "4.2.5",
     "@types/supertest": "6.0.3",
     "@types/swagger-ui-express": "4.1.8",

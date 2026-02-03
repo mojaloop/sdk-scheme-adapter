@@ -18,6 +18,8 @@ ignore:
     package:
       name: "tar"
       versions: ["6.2.1", "7.4.3", "7.5.2"]
+  - vulnerability: GHSA-37qj-frw5-hhjh # fast-xml-parser 4.5.3
+  - vulnerability: GHSA-p5wg-g6qr-c7cg # eslint 9.15.0
 # Set output format defaults
 output:
   - "table"
