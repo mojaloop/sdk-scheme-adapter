@@ -3149,7 +3149,7 @@ __metadata:
     "@types/convict": "npm:6.1.6"
     "@types/express": "npm:5.0.6"
     "@types/jest": "npm:30.0.0"
-    "@types/node": "npm:25.2.0"
+    "@types/node": "npm:25.2.1"
     "@types/node-cache": "npm:4.2.5"
     "@types/supertest": "npm:6.0.3"
     "@types/swagger-ui-express": "npm:4.1.8"
@@ -3188,7 +3188,7 @@ __metadata:
     "@types/convict": "npm:6.1.6"
     "@types/express": "npm:5.0.6"
     "@types/jest": "npm:30.0.0"
-    "@types/node": "npm:25.2.0"
+    "@types/node": "npm:25.2.1"
     "@types/node-cache": "npm:4.2.5"
     "@types/supertest": "npm:6.0.3"
     "@types/swagger-ui-express": "npm:4.1.8"
@@ -3225,7 +3225,7 @@ __metadata:
     "@mojaloop/logging-bc-public-types-lib": "npm:0.5.7"
     "@mojaloop/platform-shared-lib-messaging-types-lib": "npm:0.7.4"
     "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib": "npm:0.5.18"
-    "@types/node": "npm:25.2.0"
+    "@types/node": "npm:25.2.1"
     "@types/uuid": "npm:10.0.0"
     "@typescript-eslint/eslint-plugin": "npm:8.54.0"
     "@typescript-eslint/parser": "npm:8.54.0"
@@ -4329,15 +4329,6 @@ __metadata:
   dependencies:
     undici-types: "npm:~7.13.0"
   checksum: 10/8d1e64b37abdafd3da295394235ad5357509ac0b47e6991d36b1eecacd7ad830ada60ca71b7b3598b6c8b519361fb70aab691888c378ff25e69dba5690afcc22
-  languageName: node
-  linkType: hard
-
-"@types/node@npm:25.2.0":
-  version: 25.2.0
-  resolution: "@types/node@npm:25.2.0"
-  dependencies:
-    undici-types: "npm:~7.16.0"
-  checksum: 10/18a7245e20556bc92486161872c54bef7601e1e7970028e8a18d1f57d88aa3035efef42c144a2100f9e9bf6fba7a15b4ae8ee044cd98a8b06d6f754232611f70
   languageName: node
   linkType: hard
 
