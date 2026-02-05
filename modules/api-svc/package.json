@@ -82,7 +82,7 @@
     "co-body": "6.2.0",
     "dotenv": "17.2.3",
     "env-var": "7.5.0",
-    "express": "4.21.2",
+    "express": "4.22.0",
     "fast-json-patch": "3.1.1",
     "fast-safe-stringify": "2.1.1",
     "javascript-state-machine": "3.1.0",
