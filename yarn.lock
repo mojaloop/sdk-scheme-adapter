@@ -3004,9 +3004,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/ml-schema-transformer-lib@npm:2.8.1":
-  version: 2.8.1
-  resolution: "@mojaloop/ml-schema-transformer-lib@npm:2.8.1"
+"@mojaloop/ml-schema-transformer-lib@npm:2.9.0":
+  version: 2.9.0
+  resolution: "@mojaloop/ml-schema-transformer-lib@npm:2.9.0"
   dependencies:
     "@apidevtools/swagger-parser": "npm:12.1.0"
     "@mojaloop/api-snippets": "npm:18.3.0"
@@ -3024,7 +3024,7 @@ __metadata:
   dependenciesMeta:
     "@rollup/rollup-linux-x64-musl":
       optional: true
-  checksum: 10/1879173ca74f7710476b1ec61552c73ae782db63d75459c0acded857112748bcaa276c76fb1c65d84786644106838ea3f73bfadbc2ca357c2ffc60a89b559e2d
+  checksum: 10/73e818101c46be742a09368cb210fe0c5e9ff6ec8a3e686299b6adc35de73b5f224a66c311f89b0a76fd975f88c6af040f0f93d67a3bcbd7d6e3ac73a233cb4a
   languageName: node
   linkType: hard
 
@@ -3085,9 +3085,9 @@ __metadata:
     "@mojaloop/central-services-shared": "npm:18.35.2"
     "@mojaloop/event-sdk": "npm:14.8.2"
     "@mojaloop/logging-bc-client-lib": "npm:0.5.8"
-    "@mojaloop/ml-schema-transformer-lib": "npm:2.8.1"
+    "@mojaloop/ml-schema-transformer-lib": "npm:2.9.0"
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^"
-    "@mojaloop/sdk-standard-components": "npm:19.18.6"
+    "@mojaloop/sdk-standard-components": "npm:19.18.7"
     "@redocly/openapi-cli": "npm:1.0.0-beta.95"
     "@types/jest": "npm:30.0.0"
     "@types/retry": "npm:^0"
@@ -3115,7 +3115,7 @@ __metadata:
     koa: "npm:3.1.1"
     koa-body: "npm:7.0.1"
     lodash: "npm:4.17.23"
-    module-alias: "npm:2.3.3"
+    module-alias: "npm:2.3.4"
     npm-check-updates: "npm:16.7.10"
     oauth2-server: "npm:4.0.0-dev.2"
     openapi-jsonschema-parameters: "npm:12.1.3"
@@ -3272,13 +3272,13 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@mojaloop/sdk-standard-components@npm:19.18.6":
-  version: 19.18.6
-  resolution: "@mojaloop/sdk-standard-components@npm:19.18.6"
+"@mojaloop/sdk-standard-components@npm:19.18.7":
+  version: 19.18.7
+  resolution: "@mojaloop/sdk-standard-components@npm:19.18.7"
   dependencies:
     "@mojaloop/central-services-logger": "npm:11.10.3"
     "@mojaloop/ml-number": "npm:^11.4.2"
-    "@mojaloop/ml-schema-transformer-lib": "npm:2.8.1"
+    "@mojaloop/ml-schema-transformer-lib": "npm:2.9.0"
     axios: "npm:1.13.4"
     axios-retry: "npm:4.5.0"
     base64url: "npm:3.0.1"
@@ -3287,7 +3287,7 @@ __metadata:
     ilp-packet-v1: "npm:2.2.0"
     jsonwebtoken: "npm:9.0.3"
     jws: "npm:4.0.1"
-  checksum: 10/2de9c6787c5ade3aa90891c907bb4018259392a63628b0fd4f316a94dab6c93fc5f76e8ef05882de2a1a273d379e349d152baef43876d2cf4ff708c18098ae03
+  checksum: 10/bde6aa8081f0b8873c40e814a4943812d6feecc148edc70e5a3eaa94f8246b85da1feeb7d62a1c0f378b600909d097d0548098e5965f2128f7a9adb148f34835
   languageName: node
   linkType: hard
 
@@ -12126,10 +12126,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"module-alias@npm:2.3.3":
-  version: 2.3.3
-  resolution: "module-alias@npm:2.3.3"
-  checksum: 10/65f55f15bdf49669825413814bec99d5ae91e0ade3445ebf03d6faa3d12d2166529e8ae2de35e9dbea62a6c7fee242de6b311f6b1a5cfd440146a971aaef8134
+"module-alias@npm:2.3.4":
+  version: 2.3.4
+  resolution: "module-alias@npm:2.3.4"
+  checksum: 10/32386c3dc8de3527aa636dfa5bfa75339929296562468491445768b5607310586856f510bea32a179a5425f21f484cc50ba2727f3ee96acb0d30d032dbb2bc11
   languageName: node
   linkType: hard
 
