@@ -1136,4 +1136,127 @@ describe('Inbound API handlers:', () => {
             });
         });
     });
+
+    describe('Trace and baggage header extraction', () => {
+
+        let mockContext;
+
+        beforeEach(() => {
+            mockContext = {
+                request: {
+                    body: mockArgs.quoteRequest,
+                    headers: {
+                        'fspiop-source': 'foo',
+                        'traceparent': '00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01',
+                        'tracestate': 'congo=t61rcWkgMzE',
+                        'baggage': 'userId=alice,serverNode=DF:28,isProduction=false'
+                    }
+                },
+                response: {},
+                state: {
+                    conf: {
+                        traceFlags: '01'
+                    },
+                    logger: {
+                        isVerboseEnabled: true,
+                        push: jest.fn().mockReturnThis(),
+                        verbose: jest.fn()
+                    }
+                }
+            };
+        });
+
+        test('extracts traceparent, tracestate, and baggage headers for POST /quotes', async () => {
+            const quoteRequestSpy = jest.spyOn(Model.prototype, 'quoteRequest');
+
+            await expect(handlers['/quotes'].post(mockContext)).resolves.toBe(undefined);
+
+            expect(quoteRequestSpy).toHaveBeenCalledTimes(1);
+            expect(quoteRequestSpy.mock.calls[0][2]).toEqual({
+                traceparent: '00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01',
+                tracestate: 'congo=t61rcWkgMzE',
+                baggage: 'userId=alice,serverNode=DF:28,isProduction=false'
+            });
+        });
+
+        test('extracts only traceparent when tracestate and baggage are missing for POST /quotes', async () => {
+            delete mockContext.request.headers.tracestate;
+            delete mockContext.request.headers.baggage;
+
+            const quoteRequestSpy = jest.spyOn(Model.prototype, 'quoteRequest');
+
+            await expect(handlers['/quotes'].post(mockContext)).resolves.toBe(undefined);
+
+            expect(quoteRequestSpy).toHaveBeenCalledTimes(1);
+            expect(quoteRequestSpy.mock.calls[0][2]).toEqual({
+                traceparent: '00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01'
+            });
+        });
+
+        test('generates traceparent when missing for POST /quotes', async () => {
+            delete mockContext.request.headers.traceparent;
+            delete mockContext.request.headers.tracestate;
+            delete mockContext.request.headers.baggage;
+
+            const quoteRequestSpy = jest.spyOn(Model.prototype, 'quoteRequest');
+
+            await expect(handlers['/quotes'].post(mockContext)).resolves.toBe(undefined);
+
+            expect(quoteRequestSpy).toHaveBeenCalledTimes(1);
+            const traceHeaders = quoteRequestSpy.mock.calls[0][2];
+            expect(traceHeaders).toHaveProperty('traceparent');
+            expect(traceHeaders.traceparent).toMatch(/^00-[a-f0-9]{32}-[a-f0-9]{16}-01$/);
+            expect(traceHeaders).not.toHaveProperty('tracestate');
+            expect(traceHeaders).not.toHaveProperty('baggage');
+        });
+
+        test('extracts trace headers for GET /parties', async () => {
+            const getPartiesSpy = jest.spyOn(Model.prototype, 'getParties');
+
+            const partiesContext = {
+                ...mockContext,
+                state: {
+                    ...mockContext.state,
+                    path: {
+                        params: {
+                            'Type': 'MSISDN',
+                            'ID': '1234567890'
+                        }
+                    }
+                }
+            };
+
+            await expect(handlers['/parties/{Type}/{ID}'].get(partiesContext)).resolves.toBe(undefined);
+
+            expect(getPartiesSpy).toHaveBeenCalledTimes(1);
+            expect(getPartiesSpy.mock.calls[0][4]).toEqual({
+                traceparent: '00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01',
+                tracestate: 'congo=t61rcWkgMzE',
+                baggage: 'userId=alice,serverNode=DF:28,isProduction=false'
+            });
+        });
+
+        test('extracts trace headers for POST /transfers', async () => {
+            const prepareTransferSpy = jest.spyOn(Model.prototype, 'prepareTransfer');
+
+            const transferContext = {
+                ...mockContext,
+                request: {
+                    ...mockContext.request,
+                    body: mockArgs.transferRequest
+                }
+            };
+
+            await expect(handlers['/transfers'].post(transferContext)).resolves.toBe(undefined);
+
+            expect(prepareTransferSpy).toHaveBeenCalledTimes(1);
+            expect(prepareTransferSpy.mock.calls[0][2]).toEqual({
+                traceparent: '00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01',
+                tracestate: 'congo=t61rcWkgMzE',
+                baggage: 'userId=alice,serverNode=DF:28,isProduction=false'
+            });
+        });
+
+    });
+
 });
