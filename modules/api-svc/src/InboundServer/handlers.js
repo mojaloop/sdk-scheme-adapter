@@ -50,12 +50,17 @@ const extractBodyHeadersSourceFspId = ctx => ({
     headers: { ...ctx.request.headers },
 });
 
-const extractTraceHeaders = ctx => {
-    const { traceparent = generateTraceparent(undefined, ctx.state.conf.traceFlags), tracestate } = ctx.request.headers;
+const extractTraceAndBaggageHeaders = ctx => {
+    const {
+        traceparent = generateTraceparent(undefined, ctx.state.conf.traceFlags),
+        tracestate,
+        baggage
+    } = ctx.request.headers;
 
     const traceHeaders = {
         traceparent,
-        ...(tracestate && { tracestate })
+        ...(tracestate && { tracestate }),
+        ...(baggage && { baggage })
     };
     ctx.state?.logger?.isVerboseEnabled && ctx.state.logger.push({ traceHeaders }).verbose('extracted traceHeaders');
 
@@ -132,7 +137,7 @@ const getParticipantsByTypeAndId = async (ctx) => {
             const model = createInboundTransfersModel(ctx);
 
             // use the model to handle the request
-            const response = await model.getParticipants(idType, idValue, subIdValue, sourceFspId, extractTraceHeaders(ctx));
+            const response = await model.getParticipants(idType, idValue, subIdValue, sourceFspId, extractTraceAndBaggageHeaders(ctx));
 
             // log the result
             ctx.state.logger.isDebugEnabled && ctx.state.logger.push({ response }).debug('Inbound transfers model handled GET /participants/{idType}/{idValue}');
@@ -164,7 +169,7 @@ const getPartiesByTypeAndId = async (ctx) => {
             // use the transfers model to execute asynchronous stages with the switch
             const model = createInboundTransfersModel(ctx);
 
-            const response = await model.getParties(idType, idValue, subIdValue, sourceFspId, extractTraceHeaders(ctx));
+            const response = await model.getParties(idType, idValue, subIdValue, sourceFspId, extractTraceAndBaggageHeaders(ctx));
 
             // log the result
             ctx.state.logger.isDebugEnabled && ctx.state.logger.push({ response }).debug('Inbound transfers model handled GET /parties/{idType}/{idValue} request');
@@ -217,7 +222,7 @@ const postQuotes = async (ctx) => {
             // use the transfers model to execute asynchronous stages with the switch
             const model = createInboundTransfersModel(ctx);
 
-            const response = await model.quoteRequest(quoteRequest, sourceFspId, extractTraceHeaders(ctx));
+            const response = await model.quoteRequest(quoteRequest, sourceFspId, extractTraceAndBaggageHeaders(ctx));
 
             // log the result
             ctx.state.logger.isDebugEnabled && ctx.state.logger.push({ response }).debug('Inbound transfers model handled POST /quotes request');
@@ -258,7 +263,7 @@ const postTransfers = async (ctx) => {
             const model = createInboundTransfersModel(ctx);
 
             // use the model to handle the request
-            const response = await model.prepareTransfer(transferRequest, sourceFspId, extractTraceHeaders(ctx));
+            const response = await model.prepareTransfer(transferRequest, sourceFspId, extractTraceAndBaggageHeaders(ctx));
 
             // log the result
             ctx.state.logger.isDebugEnabled && ctx.state.logger.push({ response }).debug('Inbound transfers model handled POST /transfers request');
@@ -288,7 +293,7 @@ const getTransfersById = async (ctx) => {
             const model = createInboundTransfersModel(ctx);
 
             // use the model to handle the request
-            const response = await model.getTransfer(transferId, sourceFspId, extractTraceHeaders(ctx));
+            const response = await model.getTransfer(transferId, sourceFspId, extractTraceAndBaggageHeaders(ctx));
 
             // log the result
             ctx.state.logger.isDebugEnabled && ctx.state.logger.push({response}).
@@ -319,7 +324,7 @@ const postTransactionRequests = async (ctx) => {
             const model = createInboundTransfersModel(ctx);
 
             // use the model to handle the request
-            const response = await model.transactionRequest(transactionRequest, sourceFspId, extractTraceHeaders(ctx));
+            const response = await model.transactionRequest(transactionRequest, sourceFspId, extractTraceAndBaggageHeaders(ctx));
 
             // log the result
             ctx.state.logger.isDebugEnabled && ctx.state.logger.push({ response }).debug('Inbound transfers model handled POST /transactionRequests request');
@@ -594,7 +599,7 @@ const getQuoteById = async (ctx) => {
             const model = createInboundTransfersModel(ctx);
 
             // use the model to handle the request
-            const response = await model.getQuoteRequest(quoteId, sourceFspId, extractTraceHeaders(ctx));
+            const response = await model.getQuoteRequest(quoteId, sourceFspId, extractTraceAndBaggageHeaders(ctx));
 
             // log the result
             ctx.state.logger.isDebugEnabled && ctx.state.logger.push({ response }).debug('Inbound transfers model handled GET /quotes request');
@@ -637,7 +642,7 @@ const putTransactionRequestsById = async (ctx) => {
 
                 // use the model to handle the request
                 const response = await model.putTransactionRequest(
-                    putTransactionRequest, transactionRequestId, sourceFspId, extractTraceHeaders(ctx)
+                    putTransactionRequest, transactionRequestId, sourceFspId, extractTraceAndBaggageHeaders(ctx)
                 );
 
                 // log the result
@@ -835,7 +840,7 @@ const getBulkQuotesById = async (ctx) => {
             const model = createInboundTransfersModel(ctx);
 
             // use the model to handle the request
-            const response = await model.getBulkQuote(bulkQuoteId, sourceFspId, extractTraceHeaders(ctx));
+            const response = await model.getBulkQuote(bulkQuoteId, sourceFspId, extractTraceAndBaggageHeaders(ctx));
 
             // log the result
             ctx.state.logger.isDebugEnabled && ctx.state.logger.push({response}).
@@ -865,7 +870,7 @@ const postBulkQuotes = async (ctx) => {
             const model = createInboundTransfersModel(ctx);
 
             // use the model to handle the request
-            const response = await model.bulkQuoteRequest(bulkQuoteRequest, sourceFspId, extractTraceHeaders(ctx));
+            const response = await model.bulkQuoteRequest(bulkQuoteRequest, sourceFspId, extractTraceAndBaggageHeaders(ctx));
 
             // log the result
             ctx.state.logger.isDebugEnabled && ctx.state.logger.push({ response }).debug('Inbound transfers model handled POST /bulkQuotes request');
@@ -930,7 +935,7 @@ const getBulkTransfersById = async (ctx) => {
             const model = createInboundTransfersModel(ctx);
 
             // use the model to handle the request
-            const response = await model.getBulkTransfer(bulkTransferId, sourceFspId, extractTraceHeaders(ctx));
+            const response = await model.getBulkTransfer(bulkTransferId, sourceFspId, extractTraceAndBaggageHeaders(ctx));
 
             // log the result
             ctx.state.logger.isDebugEnabled && ctx.state.logger.push({response}).
@@ -960,7 +965,7 @@ const postBulkTransfers = async (ctx) => {
             const model = createInboundTransfersModel(ctx);
 
             // use the model to handle the request
-            const response = await model.prepareBulkTransfer(bulkPrepareRequest, sourceFspId, extractTraceHeaders(ctx));
+            const response = await model.prepareBulkTransfer(bulkPrepareRequest, sourceFspId, extractTraceAndBaggageHeaders(ctx));
 
             // log the result
             ctx.state.logger.isDebugEnabled && ctx.state.logger.push({ response }).debug('Inbound transfers model handled POST /bulkTransfers request');
@@ -1030,7 +1035,7 @@ const postFxQuotes = async (ctx) => {
 
     const model = createInboundTransfersModel(ctx);
 
-    model.postFxQuotes({ body, headers }, sourceFspId, extractTraceHeaders(ctx))
+    model.postFxQuotes({ body, headers }, sourceFspId, extractTraceAndBaggageHeaders(ctx))
         .then(response => logger.push({ response }).debug(`${logPrefix} is done`))
         .catch(err => logger.push({ err }).error(`${logPrefix} error`));
 
@@ -1075,7 +1080,7 @@ const postFxTransfers = async (ctx) => {
     const logPrefix = 'Handling POST fxTransfers request';
 
     const model = createInboundTransfersModel(ctx);
-    model.postFxTransfers({ body, headers }, sourceFspId, extractTraceHeaders(ctx))
+    model.postFxTransfers({ body, headers }, sourceFspId, extractTraceAndBaggageHeaders(ctx))
         .then(response => logger.push({ response }).debug(`${logPrefix} is done`))
         .catch(err => logger.push({ err }).error(`${logPrefix} error`));
 
