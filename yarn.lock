@@ -3092,7 +3092,7 @@ __metadata:
     "@types/jest": "npm:30.0.0"
     "@types/retry": "npm:^0"
     ajv: "npm:8.17.1"
-    axios: "npm:1.13.4"
+    axios: "npm:1.13.5"
     axios-mock-adapter: "npm:2.1.0"
     babel-jest: "npm:30.2.0"
     body-parser: "npm:2.2.2"
