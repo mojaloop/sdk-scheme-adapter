@@ -109,7 +109,7 @@ describe('Outbound Transfers API', () => {
                     send(postTransfersBadBody).
                     expect(400, {
                         message: 'must be equal to one of the allowed values',
-                        statusCode: 400,
+                        statusCode: '400',
                     }).
                     end((err) => {
                         if (err) {

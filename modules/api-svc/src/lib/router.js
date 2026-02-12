@@ -39,7 +39,7 @@ const router = (handlerMap) => async function routeHandling (ctx, next) {
         ctx.state.logger.isErrorEnabled && ctx.state.logger.error('No handler found');
         ctx.response.status = ReturnCodes.NOTFOUND.CODE;
         // TODO: response content according to API spec. Should probably actually be a 404 here.
-        ctx.response.body = { statusCode: 404, message: 'Not found' };
+        ctx.response.body = { statusCode: '404', message: 'Not found' };
     }
     else {
         await handler(ctx);

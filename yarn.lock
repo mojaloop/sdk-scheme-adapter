@@ -3184,7 +3184,7 @@ __metadata:
     oauth2-server: "npm:4.0.0-dev.2"
     openapi-jsonschema-parameters: "npm:12.1.3"
     openapi-response-validator: "npm:12.1.3"
-    openapi-typescript: "npm:7.12.0"
+    openapi-typescript: "npm:7.13.0"
     prom-client: "npm:15.1.3"
     promise-timeout: "npm:1.3.0"
     random-word-slugs: "npm:0.1.7"
@@ -13118,9 +13118,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"openapi-typescript@npm:7.12.0":
-  version: 7.12.0
-  resolution: "openapi-typescript@npm:7.12.0"
+"openapi-typescript@npm:7.13.0":
+  version: 7.13.0
+  resolution: "openapi-typescript@npm:7.13.0"
   dependencies:
     "@redocly/openapi-core": "npm:^1.34.6"
     ansi-colors: "npm:^4.1.3"
@@ -13132,7 +13132,7 @@ __metadata:
     typescript: ^5.x
   bin:
     openapi-typescript: bin/cli.js
-  checksum: 10/1bfb14c1e68d8a9cc1a7ec2ae051484c91cfb73dffab0aa5700e59eba4a1ee55419d1d61c92b6f9548de976a79673101355da19d134da9acf1fd294446e7b08a
+  checksum: 10/5dc238f351eaebb69175f46f2637474dcf23fab0148aff58b22e43e2ad1b0aa6c3fbbb58b5637e424d07a11813d2f7323dba264c22385a30b3b0b469a0953fca
   languageName: node
   linkType: hard
 

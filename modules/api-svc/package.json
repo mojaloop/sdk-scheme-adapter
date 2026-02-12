@@ -119,7 +119,7 @@
     "jest-junit": "16.0.0",
     "npm-check-updates": "16.7.10",
     "openapi-response-validator": "12.1.3",
-    "openapi-typescript": "7.12.0",
+    "openapi-typescript": "7.13.0",
     "redis-mock": "0.56.3",
     "replace": "1.2.2",
     "standard-version": "9.5.0",
