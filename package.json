@@ -1,6 +1,6 @@
 {
   "name": "@mojaloop/sdk-scheme-adapter",
-  "version": "24.19.0",
+  "version": "24.19.3",
   "description": "mojaloop sdk-scheme-adapter",
   "license": "Apache-2.0",
   "homepage": "https://github.com/mojaloop/sdk-scheme-adapter",
@@ -83,7 +83,7 @@
   },
   "devDependencies": {
     "@types/jest": "30.0.0",
-    "@types/node": "25.0.10",
+    "@types/node": "25.2.1",
     "@types/node-cache": "4.2.5",
     "@typescript-eslint/eslint-plugin": "8.54.0",
     "@typescript-eslint/parser": "8.54.0",

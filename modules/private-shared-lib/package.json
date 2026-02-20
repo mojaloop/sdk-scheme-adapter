@@ -32,7 +32,7 @@
   },
   "dependencies": {
     "@mojaloop/api-snippets": "18.3.0",
-    "@mojaloop/central-services-shared": "18.35.1",
+    "@mojaloop/central-services-shared": "18.35.2",
     "@mojaloop/logging-bc-public-types-lib": "0.5.7",
     "@mojaloop/platform-shared-lib-messaging-types-lib": "0.7.4",
     "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib": "0.5.18",
@@ -41,8 +41,8 @@
     "uuid": "11.1.0"
   },
   "devDependencies": {
-    "@eslint/compat": "2.0.1",
-    "@types/node": "25.0.10",
+    "@eslint/compat": "2.0.2",
+    "@types/node": "25.2.1",
     "@types/uuid": "10.0.0",
     "@typescript-eslint/eslint-plugin": "8.54.0",
     "@typescript-eslint/parser": "8.54.0",

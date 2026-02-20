@@ -1,4 +1,25 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+### [24.19.3](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.19.2...v24.19.3) (2026-02-05)
+
+
+### Chore
+
+* bump dep ([#661](https://github.com/mojaloop/sdk-scheme-adapter/issues/661)) ([2033a84](https://github.com/mojaloop/sdk-scheme-adapter/commit/2033a844fd1823878bc198d2547cc171987b5f7b))
+
+### [24.19.2](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.19.1...v24.19.2) (2026-02-03)
+
+
+### Chore
+
+* bump dep ([#660](https://github.com/mojaloop/sdk-scheme-adapter/issues/660)) ([fbc95ed](https://github.com/mojaloop/sdk-scheme-adapter/commit/fbc95ed29ec37dca793b70f769b2288efade34b0))
+
+### [24.19.1](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.19.0...v24.19.1) (2026-01-29)
+
+
+### Chore
+
+* update dependencies and audit ([#659](https://github.com/mojaloop/sdk-scheme-adapter/issues/659)) ([981c5f1](https://github.com/mojaloop/sdk-scheme-adapter/commit/981c5f10a4f79fd072f7390526e6bcbc82321ac2))
+
 ## [24.19.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.18.5...v24.19.0) (2026-01-20)
 
 
