@@ -85,17 +85,19 @@
       "asynchronous": true
     },
     {
-      "type": "sdk-scheme-adapter-backend-v2_1_0-openapi3-snippets",
+      "type": "scheme_adapter_backend",
       "version": "2.1",
       "folderPath": "sdk-scheme-adapter-backend-v2_1_0-openapi3-snippets_2.1",
       "asynchronous": false,
       "prefix": "/backend"
     },
     {
-      "type": "sdk-scheme-adapter-outbound-v2_1_0-openapi3-snippets",
+      "type": "scheme_adapter_outbound",
       "version": "2.1",
       "folderPath": "sdk-scheme-adapter-outbound-v2_1_0-openapi3-snippets_2.1",
-      "asynchronous": false
+      "hostnames": [],
+      "prefix": "/sdk-out",
+      "asynchronous": true
     }
   ]
 }
