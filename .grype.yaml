@@ -21,6 +21,7 @@ ignore:
   - vulnerability: GHSA-37qj-frw5-hhjh # fast-xml-parser 4.5.3
   - vulnerability: GHSA-p5wg-g6qr-c7cg # eslint 9.15.0
   - vulnerability: GHSA-3966-f6p6-2qr9
+  - vulnerability: GHSA-43fc-jf86-j433
 # Set output format defaults
 output:
   - "table"

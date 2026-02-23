@@ -1222,7 +1222,7 @@ class InboundTransfersModel {
                     // this is a custom error, so construct a mojaloop spec body
                     mojaloopError = {
                         errorInformation: {
-                            errorCode: e.res.data.statusCode,
+                            errorCode: `${e.res.data.statusCode}`,
                             errorDescription: e.res.data.message,
                         }
                     };
