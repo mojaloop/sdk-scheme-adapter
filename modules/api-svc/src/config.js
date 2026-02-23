@@ -263,9 +263,8 @@ module.exports = {
     //    - 4
     ilpVersion: env.get('ILP_VERSION').default('1').asString(),
 
-    // Redis key ttl when stored in the cache, if value is used as zero it will
-    // persist throughout the session , value used is in seconds
-    redisCacheTtl: env.get('REDIS_CACHE_TTL').default('0').asInt(),
+    // Redis key TTL in seconds. Default 604800 (7 days). Set to 0 for no expiry.
+    redisCacheTtl: env.get('REDIS_CACHE_TTL').default('604800').asInt(),
 
     backendRequestRetry: {
         enabled: env.get('BACKEND_REQUEST_RETRY_ENABLED').default('true').asBool(),
