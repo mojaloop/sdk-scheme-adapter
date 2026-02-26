@@ -3224,7 +3224,7 @@ __metadata:
     js-yaml: "npm:4.1.1"
     json-schema-ref-parser: "npm:9.0.9"
     knex: "npm:3.1.0"
-    koa: "npm:3.1.1"
+    koa: "npm:3.1.2"
     koa-body: "npm:7.0.1"
     lodash: "npm:4.17.23"
     module-alias: "npm:2.3.4"
@@ -3263,7 +3263,7 @@ __metadata:
     "@types/jest": "npm:30.0.0"
     "@types/node": "npm:25.3.1"
     "@types/node-cache": "npm:4.2.5"
-    "@types/supertest": "npm:6.0.3"
+    "@types/supertest": "npm:7.2.0"
     "@types/swagger-ui-express": "npm:4.1.8"
     "@types/yamljs": "npm:0.2.34"
     "@typescript-eslint/eslint-plugin": "npm:8.56.1"
@@ -3302,7 +3302,7 @@ __metadata:
     "@types/jest": "npm:30.0.0"
     "@types/node": "npm:25.3.1"
     "@types/node-cache": "npm:4.2.5"
-    "@types/supertest": "npm:6.0.3"
+    "@types/supertest": "npm:7.2.0"
     "@types/swagger-ui-express": "npm:4.1.8"
     "@types/yamljs": "npm:0.2.34"
     "@typescript-eslint/eslint-plugin": "npm:8.56.1"
@@ -4567,13 +4567,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/supertest@npm:6.0.3":
-  version: 6.0.3
-  resolution: "@types/supertest@npm:6.0.3"
+"@types/supertest@npm:7.2.0":
+  version: 7.2.0
+  resolution: "@types/supertest@npm:7.2.0"
   dependencies:
     "@types/methods": "npm:^1.1.4"
     "@types/superagent": "npm:^8.1.0"
-  checksum: 10/6ec05eb591c97bc856b0e78c12f5bec10545f3a749688f34232d189797a506d971bc95931718eb57b378d8513f6d2d12462383e6d68455fa72df35c19de6e89e
+  checksum: 10/5a322e29b81033e90ac50ab315d49559b21809ee39b5681ab7386819463e30d68e29c63c946023a1c353e7f13fb3f20d64dcb89d3d8a0fff569450501aff786c
   languageName: node
   linkType: hard
 
