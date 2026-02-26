@@ -50,7 +50,7 @@
     "ajv-formats": "3.0.1",
     "convict": "6.2.4",
     "express": "4.21.2",
-    "openapi-backend": "5.16.1",
+    "openapi-backend": "5.15.0",
     "redis": "5.11.0",
     "swagger-ui-express": "5.0.1",
     "yamljs": "0.3.0"
