@@ -127,7 +127,7 @@
     "qs": "6.14.1",
     "js-yaml": "4.1.1",
     "@mojaloop/api-snippets": "17.10.3",
-    "axios": "1.13.2",
+    "axios": "1.13.5",
     "body-parser": "1.20.3",
     "brace-expansion": "2.0.1",
     "cacache/tar": "6.2.1",
@@ -135,7 +135,7 @@
     "express": "4.21.2",
     "form-data": "4.0.4",
     "formidable": "3.5.4",
-    "koa": "3.0.3",
+    "koa": "3.1.2",
     "on-headers": "1.1.0",
     "path-to-regexp": "0.1.12",
     "serve-static": "1.16.2",
@@ -153,7 +153,8 @@
     "widdershins/yargs-parser": "13.1.2",
     "widdershins/markdown-it": "12.3.2",
     "widdershins/swagger2openapi": "7.0.8",
-    "yargs-parser": "21.1.1"
+    "yargs-parser": "21.1.1",
+    "fast-xml-parser": "5.3.6"
   },
   "standard-version": {
     "scripts": {
