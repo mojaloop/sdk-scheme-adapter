@@ -18,5 +18,7 @@ reject: [
   ## uuid 13.0.0 introduces breaking changes that are not compatible with the current codebase.
   "uuid",
   ## openapi-backend 5.16.x bundles its own ajv with types incompatible with the project's ajv@8.18.0, causing TS build failures in customizeAjv callback.
-  "openapi-backend"
+  "openapi-backend",
+  ## ajv must stay at 8.17.1 to match the version openapi-backend@5.15.0 resolves (ajv@^8.6.2 -> 8.17.1). Using 8.18.0 creates two different ajv TypeScript types, causing customizeAjv callback type mismatch.
+  "ajv"
 ]

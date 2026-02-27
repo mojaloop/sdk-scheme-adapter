@@ -2975,9 +2975,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/central-services-shared@npm:18.35.5":
-  version: 18.35.5
-  resolution: "@mojaloop/central-services-shared@npm:18.35.5"
+"@mojaloop/central-services-shared@npm:18.35.6":
+  version: 18.35.6
+  resolution: "@mojaloop/central-services-shared@npm:18.35.6"
   dependencies:
     "@hapi/catbox": "npm:12.1.1"
     "@hapi/catbox-memory": "npm:5.0.1"
@@ -2999,7 +2999,7 @@ __metadata:
     joi: "npm:18.0.2"
     lodash: "npm:4.17.23"
     mustache: "npm:4.2.0"
-    openapi-backend: "npm:5.15.0"
+    openapi-backend: "npm:5.16.1"
     raw-body: "npm:3.0.2"
     rc: "npm:1.2.8"
     redlock: "npm:5.0.0-beta.2"
@@ -3035,7 +3035,7 @@ __metadata:
       optional: false
     mysql2:
       optional: false
-  checksum: 10/6cf9224143e77b8f1f3a88175210ae8bc9796d5c55fbc46d33877f50a6b5576e026eda0f5ff3d165ded92b37e0c698658171e753d006170d67940e649fe83fef
+  checksum: 10/1614e41a8b5a2704bb288832b88d44cb362c5d6f1f3675b139d229490705a448f389a03a76f608f979a518083150fc82a75dddf840a985854fab2de1bc260d48
   languageName: node
   linkType: hard
 
@@ -3194,7 +3194,7 @@ __metadata:
     "@mojaloop/central-services-error-handling": "npm:13.1.6"
     "@mojaloop/central-services-logger": "npm:11.10.4"
     "@mojaloop/central-services-metrics": "npm:12.8.5"
-    "@mojaloop/central-services-shared": "npm:18.35.5"
+    "@mojaloop/central-services-shared": "npm:18.35.6"
     "@mojaloop/event-sdk": "npm:14.8.3"
     "@mojaloop/logging-bc-client-lib": "npm:0.5.8"
     "@mojaloop/ml-schema-transformer-lib": "npm:2.9.0"
@@ -3203,7 +3203,7 @@ __metadata:
     "@redocly/openapi-cli": "npm:1.0.0-beta.95"
     "@types/jest": "npm:30.0.0"
     "@types/retry": "npm:^0"
-    ajv: "npm:8.18.0"
+    ajv: "npm:8.17.1"
     axios: "npm:1.13.5"
     axios-mock-adapter: "npm:2.1.0"
     babel-jest: "npm:30.2.0"
@@ -3254,21 +3254,21 @@ __metadata:
   dependencies:
     "@eslint/compat": "npm:2.0.2"
     "@mojaloop/api-snippets": "npm:18.3.2"
-    "@mojaloop/central-services-shared": "npm:18.35.5"
+    "@mojaloop/central-services-shared": "npm:18.35.6"
     "@mojaloop/logging-bc-client-lib": "npm:0.5.8"
     "@mojaloop/logging-bc-public-types-lib": "npm:0.5.7"
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^"
     "@types/convict": "npm:6.1.6"
     "@types/express": "npm:5.0.6"
     "@types/jest": "npm:30.0.0"
-    "@types/node": "npm:25.3.1"
+    "@types/node": "npm:25.3.2"
     "@types/node-cache": "npm:4.2.5"
     "@types/supertest": "npm:7.2.0"
     "@types/swagger-ui-express": "npm:4.1.8"
     "@types/yamljs": "npm:0.2.34"
     "@typescript-eslint/eslint-plugin": "npm:8.56.1"
     "@typescript-eslint/parser": "npm:8.56.1"
-    ajv: "npm:8.18.0"
+    ajv: "npm:8.17.1"
     ajv-formats: "npm:3.0.1"
     convict: "npm:6.2.4"
     copyfiles: "npm:2.4.1"
@@ -3300,7 +3300,7 @@ __metadata:
     "@types/convict": "npm:6.1.6"
     "@types/express": "npm:5.0.6"
     "@types/jest": "npm:30.0.0"
-    "@types/node": "npm:25.3.1"
+    "@types/node": "npm:25.3.2"
     "@types/node-cache": "npm:4.2.5"
     "@types/supertest": "npm:7.2.0"
     "@types/swagger-ui-express": "npm:4.1.8"
@@ -3333,15 +3333,15 @@ __metadata:
   dependencies:
     "@eslint/compat": "npm:2.0.2"
     "@mojaloop/api-snippets": "npm:18.3.2"
-    "@mojaloop/central-services-shared": "npm:18.35.5"
+    "@mojaloop/central-services-shared": "npm:18.35.6"
     "@mojaloop/logging-bc-public-types-lib": "npm:0.5.7"
     "@mojaloop/platform-shared-lib-messaging-types-lib": "npm:0.7.4"
     "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib": "npm:0.5.18"
-    "@types/node": "npm:25.3.1"
+    "@types/node": "npm:25.3.2"
     "@types/uuid": "npm:10.0.0"
     "@typescript-eslint/eslint-plugin": "npm:8.56.1"
     "@typescript-eslint/parser": "npm:8.56.1"
-    ajv: "npm:8.18.0"
+    ajv: "npm:8.17.1"
     eslint: "npm:9.15.0"
     jest: "npm:29.7.0"
     npm-check-updates: "npm:16.7.10"
@@ -3360,7 +3360,7 @@ __metadata:
   resolution: "@mojaloop/sdk-scheme-adapter@workspace:."
   dependencies:
     "@types/jest": "npm:30.0.0"
-    "@types/node": "npm:25.3.1"
+    "@types/node": "npm:25.3.2"
     "@types/node-cache": "npm:4.2.5"
     "@typescript-eslint/eslint-plugin": "npm:8.56.1"
     "@typescript-eslint/parser": "npm:8.56.1"
@@ -4466,12 +4466,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:25.3.1":
-  version: 25.3.1
-  resolution: "@types/node@npm:25.3.1"
+"@types/node@npm:25.3.2":
+  version: 25.3.2
+  resolution: "@types/node@npm:25.3.2"
   dependencies:
     undici-types: "npm:~7.18.0"
-  checksum: 10/7f999e88e7ff3d2e2ee4efbf1de60d9375577d1ad3e1bee01455ec9d8257da2fb1f83dce4cb8fdf9c05dde9fec9e54f61fc9b1731393b53fc74f254712de9f6e
+  checksum: 10/3a7783f0a9508dd8bd3f386e44c062d0d9fe0414fa8983ab203350d1b95db24aad694a54f21b9a0f0a30691ca26c7959c9329e37fea909d35124ec99b6e7b418
   languageName: node
   linkType: hard
 
@@ -5046,18 +5046,6 @@ __metadata:
     json-schema-traverse: "npm:^1.0.0"
     require-from-string: "npm:^2.0.2"
   checksum: 10/ee3c62162c953e91986c838f004132b6a253d700f1e51253b99791e2dbfdb39161bc950ebdc2f156f8568035bb5ed8be7bd78289cd9ecbf3381fe8f5b82e3f33
-  languageName: node
-  linkType: hard
-
-"ajv@npm:8.18.0":
-  version: 8.18.0
-  resolution: "ajv@npm:8.18.0"
-  dependencies:
-    fast-deep-equal: "npm:^3.1.3"
-    fast-uri: "npm:^3.0.1"
-    json-schema-traverse: "npm:^1.0.0"
-    require-from-string: "npm:^2.0.2"
-  checksum: 10/bfed9de827a2b27c6d4084324eda76a4e32bdde27410b3e9b81d06e6f8f5c78370fc6b93fe1d869f1939ff1d7c4ae8896960995acb8425e3e9288c8884247c48
   languageName: node
   linkType: hard
 
@@ -13021,6 +13009,24 @@ __metadata:
     openapi-types: "npm:^12.0.2"
     qs: "npm:^6.9.3"
   checksum: 10/f7bdc40ac67f9660af1789ae62f2d9d5b21b8b0188692bd70af81f50c7dadaca62f4ee039a750da0dc264a27e60c1ba8de2bd8410f3cd09315c9f6f2a0dcd7e1
+  languageName: node
+  linkType: hard
+
+"openapi-backend@npm:5.16.1":
+  version: 5.16.1
+  resolution: "openapi-backend@npm:5.16.1"
+  dependencies:
+    "@apidevtools/json-schema-ref-parser": "npm:^11.1.0"
+    ajv: "npm:^8.6.2"
+    bath-es5: "npm:^3.0.3"
+    cookie: "npm:^1.0.1"
+    dereference-json-schema: "npm:^0.2.1"
+    lodash: "npm:^4.17.15"
+    mock-json-schema: "npm:^1.0.7"
+    openapi-schema-validator: "npm:^12.0.0"
+    openapi-types: "npm:^12.0.2"
+    qs: "npm:^6.15.0"
+  checksum: 10/939df4a5127f66958f8de3348ed69ca52e040d80969f0b49d2c9a022c1666babeb3899f6e536695d3b4e4c40021038f5f37ce3818b928e5e592c4d534a865457
   languageName: node
   linkType: hard
 
