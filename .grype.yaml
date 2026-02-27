@@ -1,33 +1,62 @@
+scan-type: source
+
 ignore:
-  - vulnerability: CVE-2025-3277 #  sqlite-libs 3.48.0-r2
-  - vulnerability: CVE-2024-9410 # ada-libs 2.9.2-r1
-  - vulnerability: GHSA-4hjh-wcwx-xvwj # axios 1.8.2
+  - vulnerability: CVE-2025-3277
+  - vulnerability: CVE-2024-9410
+  - vulnerability: GHSA-4hjh-wcwx-xvwj
   - vulnerability: CVE-2025-9230
   - vulnerability: CVE-2025-9231
   - vulnerability: CVE-2025-9232
-  - vulnerability: GHSA-5j98-mcp5-4vw2 # glob 10.4.5
-  - vulnerability: CVE-2025-60876 # busybox, ssl_client
-  - vulnerability: GHSA-xxjr-mmjv-4gpg # lodash
+  - vulnerability: GHSA-5j98-mcp5-4vw2
+  - vulnerability: CVE-2025-60876
+  - vulnerability: GHSA-xxjr-mmjv-4gpg
   - vulnerability: GHSA-r6q2-hw4h-h46w
   - vulnerability: GHSA-34x7-hfp2-rc4v
   - vulnerability: CVE-2026-22184
-    reason: "No fixes available as of 2026-01-14 on Dockerfile base image 22.21.1-alpine3.23"
+    reason: No fixes available as of 2026-01-14 on Dockerfile base image 22.21.1-alpine3.23
   - vulnerability: CVE-2025-64718
-    reason: "No fixes available as of 2026-01-14 on Dockerfile base image 22.21.1-alpine3.23"
-  - vulnerability: "GHSA-8qq5-rm4j-mr97"
+    reason: No fixes available as of 2026-01-14 on Dockerfile base image 22.21.1-alpine3.23
+  - vulnerability: GHSA-8qq5-rm4j-mr97
     package:
-      name: "tar"
-      versions: ["6.2.1", "7.4.3", "7.5.2"]
-  - vulnerability: GHSA-37qj-frw5-hhjh # fast-xml-parser 4.5.3
-  - vulnerability: GHSA-p5wg-g6qr-c7cg # eslint 9.15.0
+      name: tar
+      versions:
+        - 6.2.1
+        - 7.4.3
+        - 7.5.2
+  - vulnerability: GHSA-37qj-frw5-hhjh
+  - vulnerability: GHSA-p5wg-g6qr-c7cg
   - vulnerability: GHSA-3966-f6p6-2qr9
-# Set output format defaults
+  - vulnerability: GHSA-3ppc-4f35-3m26
+    include-aliases: true
+    reason: >-
+      Base image npm package: minimatch - bundled in Node.js base image, not fixable via application dependencies as of
+      2026-02-23 (high severity)
+  - vulnerability: GHSA-83g3-92jg-28cx
+    include-aliases: true
+    reason: >-
+      Base image npm package: tar - bundled in Node.js base image, not fixable via application dependencies as of
+      2026-02-23 (high severity)
+  - vulnerability: GHSA-73rr-hh4g-fpgx
+    include-aliases: true
+    reason: >-
+      Base image npm package: diff - bundled in Node.js base image, not fixable via application dependencies as of
+      2026-02-23 (low severity)
+  - vulnerability: CVE-2026-27171
+    include-aliases: true
+    reason: "Alpine base image package (apk): zlib - no npm fix available as of 2026-02-23 (moderate severity)"
+  - vulnerability: GHSA-7r86-cg39-jmmj
+    include-aliases: true
+    reason: "Unfixable npm transitive vulnerability: minimatch ReDoS (high severity) as of 2026-02-27"
+  - vulnerability: GHSA-23c5-xmqv-rm74
+    include-aliases: true
+    reason: "Unfixable npm transitive vulnerability: minimatch ReDoS (high severity) as of 2026-02-27"
+  - vulnerability: GHSA-2g4f-4pwh-qvx6
+    include-aliases: true
+    reason: "Unfixable npm transitive vulnerability: ajv (moderate severity) as of 2026-02-27"
 output:
-  - "table"
-  - "json"
-
-# Modify your CircleCI job to check critical count
+  - table
+  - json
 search:
-  scope: "squashed"
+  scope: squashed
 quiet: false
 check-for-app-update: false
