@@ -2121,32 +2121,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@hapi/hapi@npm:21.4.6":
-  version: 21.4.6
-  resolution: "@hapi/hapi@npm:21.4.6"
-  dependencies:
-    "@hapi/accept": "npm:^6.0.3"
-    "@hapi/ammo": "npm:^6.0.1"
-    "@hapi/boom": "npm:^10.0.1"
-    "@hapi/bounce": "npm:^3.0.2"
-    "@hapi/call": "npm:^9.0.1"
-    "@hapi/catbox": "npm:^12.1.1"
-    "@hapi/catbox-memory": "npm:^6.0.2"
-    "@hapi/heavy": "npm:^8.0.1"
-    "@hapi/hoek": "npm:^11.0.7"
-    "@hapi/mimos": "npm:^7.0.1"
-    "@hapi/podium": "npm:^5.0.2"
-    "@hapi/shot": "npm:^6.0.2"
-    "@hapi/somever": "npm:^4.1.1"
-    "@hapi/statehood": "npm:^8.2.1"
-    "@hapi/subtext": "npm:^8.1.1"
-    "@hapi/teamwork": "npm:^6.0.1"
-    "@hapi/topo": "npm:^6.0.2"
-    "@hapi/validate": "npm:^2.0.1"
-  checksum: 10/d89a1906cfd2edc85cd3f438c5fea0494b2d0865005c774b17b608bd449cc9b8fdb878005b9c796d0198233ad2313cddf300f73fc0ebf6b88d880419cf9352e9
-  languageName: node
-  linkType: hard
-
 "@hapi/heavy@npm:^8.0.1":
   version: 8.0.1
   resolution: "@hapi/heavy@npm:8.0.1"
@@ -2902,6 +2876,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@mojaloop/central-services-logger@npm:11.11.0-infitx.0":
+  version: 11.11.0-infitx.0
+  resolution: "@mojaloop/central-services-logger@npm:11.11.0-infitx.0"
+  dependencies:
+    "@opentelemetry/api": "npm:1.9.0"
+    "@opentelemetry/semantic-conventions": "npm:1.39.0"
+    parse-strings-in-object: "npm:2.0.0"
+    rc: "npm:1.2.8"
+    safe-stable-stringify: "npm:^2.5.0"
+    triple-beam: "npm:1.4.1"
+    winston: "npm:3.19.0"
+  checksum: 10/b0f0f370c072ea21f362759e59cad0b877615efe099f83f154c17d127ecc6a1931af946f1e43f4a9c5e2e5361b5efe079b008a4deee494467d076dcc960aec3f
+  languageName: node
+  linkType: hard
+
 "@mojaloop/central-services-metrics@npm:12.8.5":
   version: 12.8.5
   resolution: "@mojaloop/central-services-metrics@npm:12.8.5"
@@ -2975,13 +2964,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/central-services-shared@npm:18.35.5":
-  version: 18.35.5
-  resolution: "@mojaloop/central-services-shared@npm:18.35.5"
+"@mojaloop/central-services-shared@npm:18.36.0-infitx.0":
+  version: 18.36.0-infitx.0
+  resolution: "@mojaloop/central-services-shared@npm:18.36.0-infitx.0"
   dependencies:
     "@hapi/catbox": "npm:12.1.1"
     "@hapi/catbox-memory": "npm:5.0.1"
-    "@hapi/hapi": "npm:21.4.6"
+    "@hapi/hapi": "npm:21.4.4"
     "@hapi/joi-date": "npm:2.0.1"
     "@mojaloop/inter-scheme-proxy-cache-lib": "npm:2.9.0"
     "@opentelemetry/api": "npm:1.9.0"
@@ -3035,7 +3024,7 @@ __metadata:
       optional: false
     mysql2:
       optional: false
-  checksum: 10/6cf9224143e77b8f1f3a88175210ae8bc9796d5c55fbc46d33877f50a6b5576e026eda0f5ff3d165ded92b37e0c698658171e753d006170d67940e649fe83fef
+  checksum: 10/d1e7992e32ce70c3afec15e3d5f9d2e3d4083d8f7f4647e5e41bf4d3fb5359796fd9e7e765590697f24fdfa1a77621b29f940cafacbe12ce670f2a0e01ee090f
   languageName: node
   linkType: hard
 
@@ -3192,9 +3181,9 @@ __metadata:
     "@koa/cors": "npm:5.0.0"
     "@mojaloop/api-snippets": "npm:18.3.1"
     "@mojaloop/central-services-error-handling": "npm:13.1.6"
-    "@mojaloop/central-services-logger": "npm:11.10.4"
+    "@mojaloop/central-services-logger": "npm:11.11.0-infitx.0"
     "@mojaloop/central-services-metrics": "npm:12.8.5"
-    "@mojaloop/central-services-shared": "npm:18.35.5"
+    "@mojaloop/central-services-shared": "npm:18.36.0-infitx.0"
     "@mojaloop/event-sdk": "npm:14.8.3"
     "@mojaloop/logging-bc-client-lib": "npm:0.5.8"
     "@mojaloop/ml-schema-transformer-lib": "npm:2.9.0"
@@ -3254,7 +3243,7 @@ __metadata:
   dependencies:
     "@eslint/compat": "npm:2.0.2"
     "@mojaloop/api-snippets": "npm:18.3.1"
-    "@mojaloop/central-services-shared": "npm:18.35.5"
+    "@mojaloop/central-services-shared": "npm:18.36.0-infitx.0"
     "@mojaloop/logging-bc-client-lib": "npm:0.5.8"
     "@mojaloop/logging-bc-public-types-lib": "npm:0.5.7"
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^"
@@ -3333,7 +3322,7 @@ __metadata:
   dependencies:
     "@eslint/compat": "npm:2.0.2"
     "@mojaloop/api-snippets": "npm:18.3.1"
-    "@mojaloop/central-services-shared": "npm:18.35.5"
+    "@mojaloop/central-services-shared": "npm:18.36.0-infitx.0"
     "@mojaloop/logging-bc-public-types-lib": "npm:0.5.7"
     "@mojaloop/platform-shared-lib-messaging-types-lib": "npm:0.7.4"
     "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib": "npm:0.5.18"
@@ -3630,6 +3619,13 @@ __metadata:
   version: 1.9.0
   resolution: "@opentelemetry/api@npm:1.9.0"
   checksum: 10/a607f0eef971893c4f2ee2a4c2069aade6ec3e84e2a1f5c2aac19f65c5d9eeea41aa72db917c1029faafdd71789a1a040bdc18f40d63690e22ccae5d7070f194
+  languageName: node
+  linkType: hard
+
+"@opentelemetry/semantic-conventions@npm:1.39.0":
+  version: 1.39.0
+  resolution: "@opentelemetry/semantic-conventions@npm:1.39.0"
+  checksum: 10/30b8f78468ef38c541f9c8a6831d53dc66c097c4c2cf5eb662c64dd2c52327d44779104fdcd14c8d0f1e9802dc7674accfd9186777493202595f9a9af2e5d1b6
   languageName: node
   linkType: hard
 
