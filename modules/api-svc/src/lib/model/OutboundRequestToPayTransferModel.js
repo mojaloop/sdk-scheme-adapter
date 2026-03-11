@@ -55,6 +55,8 @@ class OutboundRequestToPayTransferModel {
         this._useQuoteSourceFSPAsTransferPayeeFSP = config.useQuoteSourceFSPAsTransferPayeeFSP;
         this._checkIlp = config.checkIlp;
 
+        this._cacheTtl = config.redisCacheTtl;
+
         this._requests = new MojaloopRequests({
             logger: this._logger,
             peerEndpoint: config.peerEndpoint,
@@ -894,7 +896,7 @@ class OutboundRequestToPayTransferModel {
     async _save() {
         try {
             this.data.currentState = this.stateMachine.state;
-            const res = await this._cache.set(`requestToPayTransferModel_${this.data.transactionRequestId}`, this.data);
+            const res = await this._cache.set(`requestToPayTransferModel_${this.data.transactionRequestId}`, this.data, this._cacheTtl);
             this._logger.isDebugEnabled && this._logger.push({ res }).debug('Persisted transfer model in cache');
         }
         catch(err) {

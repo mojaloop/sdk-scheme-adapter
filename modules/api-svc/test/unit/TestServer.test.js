@@ -32,6 +32,7 @@ process.env.BACKEND_ENDPOINT = '172.17.0.5:4000';
 process.env.CACHE_URL = 'redis://172.17.0.2:6379';
 process.env.MGMT_API_WS_URL = '0.0.0.0';
 process.env.SUPPORTED_CURRENCIES='USD';
+process.env.REDIS_CACHE_TTL = '600';
 
 jest.mock('@mojaloop/sdk-standard-components');
 jest.mock('~/lib/cache');
@@ -229,7 +230,8 @@ describe('Test Server', () => {
             {
                 data: putParticipantsBody,
                 headers: expect.objectContaining(headers),
-            }
+            },
+            600
         );
 
         expect(testServer._wsapi._cache.get).toHaveBeenCalledTimes(1);
@@ -301,7 +303,8 @@ describe('Test Server', () => {
             {
                 data: postQuotesBody,
                 headers: expect.objectContaining(headers),
-            }
+            },
+            600
         );
 
         expect(testServer._wsapi._cache.get).toHaveBeenCalledTimes(1);
@@ -362,7 +365,8 @@ describe('Test Server', () => {
             {
                 data: postQuotesBody,
                 headers: expect.objectContaining(quoteRequestHeaders),
-            }
+            },
+            600
         );
 
         expect(testServer._wsapi._cache.get).toHaveBeenCalledTimes(1);
@@ -404,7 +408,8 @@ describe('Test Server', () => {
             {
                 data: putParticipantsBody,
                 headers: expect.objectContaining(putParticipantsHeaders),
-            }
+            },
+            600
         ]);
 
         // Called once for the quote request earlier in this test, another time now for the

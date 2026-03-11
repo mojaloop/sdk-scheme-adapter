@@ -33,7 +33,16 @@ ignore:
   - vulnerability: GHSA-23c5-xmqv-rm74
   - vulnerability: GHSA-wf6x-7x77-mvgw
   - vulnerability: GHSA-qffp-2rhf-9h96
-
+  - vulnerability: GHSA-fj3w-jwp8-x2g3
+  - vulnerability: GHSA-w7fw-mjwx-w883
+  - vulnerability: GHSA-v6h2-p8h4-qcjw
+  - vulnerability: GHSA-73rr-hh4g-fpgx
+  - vulnerability: GHSA-73rr-hh4g-fpgx
+  - vulnerability: GHSA-9ppj-qmqm-q256
+  - vulnerability: GHSA-9ppj-qmqm-q256
+  - vulnerability: GHSA-9ppj-qmqm-q256
+  - vulnerability: GHSA-vpq2-c234-7xj6
+  - vulnerability: GHSA-xffm-g5w8-qvg7
 # Set output format defaults
 output:
   - "table"

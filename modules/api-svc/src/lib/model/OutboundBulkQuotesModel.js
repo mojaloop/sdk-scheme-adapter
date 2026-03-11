@@ -51,6 +51,8 @@ class OutboundBulkQuotesModel {
         this._expirySeconds = config.expirySeconds;
         this._rejectExpiredQuoteResponses = config.rejectExpiredQuoteResponses;
 
+        this._cacheTtl = config.redisCacheTtl;
+
         this._requests = new MojaloopRequests({
             logger: this._logger,
             peerEndpoint: config.peerEndpoint,
@@ -422,7 +424,7 @@ class OutboundBulkQuotesModel {
     async _save() {
         try {
             this.data.currentState = this.stateMachine.state;
-            const res = await this._cache.set(`bulkQuoteModel_${this.data.bulkQuoteId}`, this.data);
+            const res = await this._cache.set(`bulkQuoteModel_${this.data.bulkQuoteId}`, this.data, this._cacheTtl);
             this._logger.isDebugEnabled && this._logger.push({ res }).debug('Persisted bulk quote model in cache');
         }
         catch(err) {

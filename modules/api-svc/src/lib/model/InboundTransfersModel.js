@@ -318,7 +318,7 @@ class InboundTransfersModel {
                         putTransactionRequestNotification: request
                     };
                     // Update transactionRequest model in cache with notification
-                    await this._cache.set(`txnReqModel_${transactionRequestId}`, udpatedTxnReq);
+                    await this._cache.set(`txnReqModel_${transactionRequestId}`, udpatedTxnReq, this._cacheTtl);
                 } else {
                     this._logger.isErrorEnabled && this._logger.error(`No previous transactionRequest found in cache with transactionRequestId: ${transactionRequestId}. Unable to fetch homeR2PTransactionId.`);
                 }
@@ -511,7 +511,7 @@ class InboundTransfersModel {
                 const transferId = prepareRequest.transferId;
                 const cacheKey = `patchNotificationSent_${transferId}`;
                 // Mark as not notified yet
-                await this._cache.set(cacheKey, false, Math.ceil(this._patchNotificationGraceTimeMs / 1000) + 5);
+                await this._cache.set(cacheKey, false, Math.ceil(this._patchNotificationGraceTimeMs / 1000) + 5, this._cacheTtl);
 
                 setTimeout(async () => {
                     try {
@@ -809,7 +809,7 @@ class InboundTransfersModel {
                 mojaloopResponse: mojaloopResponse,
                 response,
                 fulfilments
-            });
+            }, this._cacheTtl);
 
             // make a callback to the source fsp with the quote response
             return this._mojaloopRequests.putBulkQuotes(bulkQuoteId, mojaloopResponse, sourceFspId, headers);
