@@ -69,7 +69,7 @@
     "@mojaloop/api-snippets": "18.3.1",
     "@mojaloop/central-services-error-handling": "13.1.6",
     "@mojaloop/central-services-logger": "11.11.0-infitx.4",
-    "@mojaloop/central-services-metrics": "12.8.5",
+    "@mojaloop/central-services-metrics": "12.9.0-infitx.0",
     "@mojaloop/central-services-shared": "18.36.0-infitx.8",
     "@mojaloop/event-sdk": "14.9.0-infitx.0",
     "@mojaloop/logging-bc-client-lib": "0.5.8",

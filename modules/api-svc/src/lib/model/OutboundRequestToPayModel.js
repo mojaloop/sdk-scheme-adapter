@@ -48,6 +48,8 @@ class OutboundRequestToPayModel {
         this._expirySeconds = config.expirySeconds;
         this._autoAcceptR2PParty = config.autoAcceptR2PParty;
 
+        this._cacheTtl = config.redisCacheTtl;
+
         this._requests = new MojaloopRequests({
             logger: this._logger,
             peerEndpoint: config.peerEndpoint,
@@ -524,7 +526,7 @@ class OutboundRequestToPayModel {
     async _save() {
         try {
             this.data.currentState = this.stateMachine.state;
-            const res = await this._cache.set(`txnReqModel_${this.data.transactionRequestId}`, this.data);
+            const res = await this._cache.set(`txnReqModel_${this.data.transactionRequestId}`, this.data, this._cacheTtl);
             this._logger.isDebugEnabled && this._logger.push({ res }).debug('Persisted transaction request model in cache');
         }
         catch(err) {

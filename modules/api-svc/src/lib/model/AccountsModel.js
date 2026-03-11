@@ -50,6 +50,8 @@ class AccountsModel {
         this._dfspId = config.dfspId;
         this._mojaloopSharedAgents = config.mojaloopSharedAgents;
 
+        this._cacheTtl = config.redisCacheTtl;
+
         const mojaloopRequestsConfig = {
             logger: this._logger,
             peerEndpoint: config.alsEndpoint,
@@ -376,7 +378,7 @@ class AccountsModel {
     async _save() {
         try {
             this._data.currentState = this._stateMachine.state;
-            const res = await this._cache.set(`accountModel_${this._data.modelId}`, this._data);
+            const res = await this._cache.set(`accountModel_${this._data.modelId}`, this._data, this._cacheTtl);
             this._logger.isDebugEnabled && this._logger.push({ res }).debug('Persisted account model in cache');
         }
         catch(err) {

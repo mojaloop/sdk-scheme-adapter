@@ -214,7 +214,7 @@ const cacheRequest = (cache) => async (ctx, next) => {
         }
 
         const prefix = ctx.method.toLowerCase() === 'put' ? cache.CALLBACK_PREFIX : cache.REQUEST_PREFIX;
-        const res = await cache.set(`${prefix}${ctx.state.fspiopId}`, req);
+        const res = await cache.set(`${prefix}${ctx.state.fspiopId}`, req, Config.redisCacheTtl);
         ctx.state.logger.isDebugEnabled && ctx.state.logger.push({ res }).debug('Caching request');
     }
     await next();

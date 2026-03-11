@@ -50,6 +50,8 @@ class OutboundBulkTransfersModel {
         this._expirySeconds = config.expirySeconds;
         this._rejectExpiredTransferFulfils = config.rejectExpiredTransferFulfils;
 
+        this._cacheTtl = config.redisCacheTtl;
+
         this._requests = new MojaloopRequests({
             logger: this._logger,
             peerEndpoint: config.peerEndpoint,
@@ -414,7 +416,7 @@ class OutboundBulkTransfersModel {
     async _save() {
         try {
             this.data.currentState = this.stateMachine.state;
-            const res = await this._cache.set(`bulkTransferModel_${this.data.bulkTransferId}`, this.data);
+            const res = await this._cache.set(`bulkTransferModel_${this.data.bulkTransferId}`, this.data, this._cacheTtl);
             this._logger.isDebugEnabled && this._logger.push({ res }).debug('Persisted bulk transfer model in cache');
         }
         catch(err) {
