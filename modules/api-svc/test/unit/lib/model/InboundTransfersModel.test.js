@@ -636,10 +636,9 @@ describe('inboundModel', () => {
             }
             return Cache.prototype.get.call(cache, key);
             });
-            // Mock subscribeToOneMessageWithTimer to immediately resolve with a message to simulate successful notification
-            jest.spyOn(cache, 'subscribeToOneMessageWithTimer').mockImplementation(async () => {
-                // Simulate a successful message received
-                return { data: { transferState: 'COMMITTED' } };
+            // Mock subscribeToOneMessageWithTimer to simulate successful message
+            jest.spyOn(cache, 'subscribeToOneMessageWithTimer').mockResolvedValue({
+                data: { body: { transferState: 'COMMITTED' } }
             });
 
             // Mock backendRequests.putTransfersNotification to return 200
@@ -650,8 +649,12 @@ describe('inboundModel', () => {
             ...config,
             cache,
             logger,
+            reserveNotification: true,
             patchNotificationGraceTimeMs: PATCH_GRACE_MS,
             });
+
+            // Mock sendNotificationToPayee
+            jest.spyOn(model, 'sendNotificationToPayee').mockResolvedValue();
 
             // Mock _load to avoid actual cache access
             jest.spyOn(model, '_load').mockImplementation(async (transferId) => {
@@ -699,13 +702,10 @@ describe('inboundModel', () => {
 
             await model.prepareTransfer(args, mockArgs.fspId);
 
-            // Advance timers to simulate PATCH_GRACE_MS passing
-            jest.advanceTimersByTime(PATCH_GRACE_MS + 50);
+            // Advance timers and run all pending async operations
+            await jest.runOnlyPendingTimersAsync();
 
-            // Wait for any pending promises
-            await Promise.resolve();
             expect(getTransfersSpy).toHaveBeenCalled();
-
             expect(getTransfersSpy).toHaveBeenCalledWith(TRANSFER_ID, mockArgs.fspId, undefined);
             getTransfersSpy.mockRestore();
             jest.useRealTimers();
@@ -768,6 +768,272 @@ describe('inboundModel', () => {
             await model.prepareTransfer(args, mockArgs.fspId);
             // getTransfers should not be called at all
             expect(model._mojaloopRequests.getTransfers).not.toHaveBeenCalled();
+        });
+
+        test('should not set up patch notification timer if reserveNotification is false', async () => {
+            jest.useFakeTimers();
+            const TRANSFER_ID = 'patch-notify-reserve-false';
+            shared.mojaloopPrepareToInternalTransfer = jest.fn().mockReturnValue({
+                transferId: TRANSFER_ID,
+                amount: { currency: 'USD', amount: 20.13 },
+                ilpPacket: 'mockBase64encodedIlpPacket',
+                condition: 'mockCondition'
+            });
+
+            const model = new Model({
+                ...config,
+                cache,
+                logger,
+                reserveNotification: false,
+                patchNotificationGraceTimeMs: 100,
+            });
+
+            jest.spyOn(model._mojaloopRequests, 'getTransfers');
+            jest.spyOn(model, '_load').mockImplementation(async (transferId) => ({
+                transferId,
+                quote: {
+                    fulfilment: 'mockFulfilment',
+                    mojaloopResponse: {
+                        condition: 'mockCondition',
+                        expiration: new Date(Date.now() + 10000).toISOString(),
+                    }
+                }
+            }));
+            jest.spyOn(model, '_save').mockImplementation(async () => {});
+
+            cache.set(`transferModel_in_${TRANSFER_ID}`, {
+                transferId: TRANSFER_ID,
+                quote: {
+                    fulfilment: 'mockFulfilment',
+                    mojaloopResponse: {
+                        condition: 'mockCondition',
+                        expiration: new Date(Date.now() + 10000).toISOString(),
+                    }
+                }
+            });
+
+            const args = {
+                body: {
+                    transferId: TRANSFER_ID,
+                    amount: { currency: 'USD', amount: 20.13 },
+                    ilpPacket: 'mockBase64encodedIlpPacket',
+                    condition: 'mockCondition'
+                }
+            };
+
+            await model.prepareTransfer(args, mockArgs.fspId);
+
+            // Advance timers - should not trigger any timer callbacks since reserveNotification is false
+            jest.advanceTimersByTime(200);
+            await Promise.resolve();
+
+            expect(model._mojaloopRequests.getTransfers).not.toHaveBeenCalled();
+            jest.useRealTimers();
+        });
+
+        test('should not make getTransfers call if patch notification was already sent', async () => {
+            jest.useFakeTimers();
+            const TRANSFER_ID = 'patch-notify-already-sent';
+            const PATCH_GRACE_MS = 100;
+
+            shared.mojaloopPrepareToInternalTransfer = jest.fn().mockReturnValue({
+                transferId: TRANSFER_ID,
+                amount: { currency: 'USD', amount: 20.13 },
+                ilpPacket: 'mockBase64encodedIlpPacket',
+                condition: 'mockCondition'
+            });
+
+            // Mock cache.get to return true for patchNotificationSent key (already notified)
+            jest.spyOn(cache, 'get').mockImplementation(async (key) => {
+                if (key.startsWith('patchNotificationSent_')) {
+                    return true; // Already notified
+                }
+                return Cache.prototype.get.call(cache, key);
+            });
+            jest.spyOn(cache, 'set').mockImplementation(async () => true);
+
+            const model = new Model({
+                ...config,
+                cache,
+                logger,
+                reserveNotification: true,
+                patchNotificationGraceTimeMs: PATCH_GRACE_MS,
+            });
+
+            jest.spyOn(model._mojaloopRequests, 'getTransfers');
+            jest.spyOn(model, '_load').mockImplementation(async (transferId) => ({
+                transferId,
+                quote: {
+                    fulfilment: 'mockFulfilment',
+                    mojaloopResponse: {
+                        condition: 'mockCondition',
+                        expiration: new Date(Date.now() + 10000).toISOString(),
+                    }
+                }
+            }));
+            jest.spyOn(model, '_save').mockImplementation(async () => {});
+
+            const args = {
+                body: {
+                    transferId: TRANSFER_ID,
+                    amount: { currency: 'USD', amount: 20.13 },
+                    ilpPacket: 'mockBase64encodedIlpPacket',
+                    condition: 'mockCondition'
+                }
+            };
+
+            await model.prepareTransfer(args, mockArgs.fspId);
+
+            // Advance timers to trigger grace time expiry
+            jest.advanceTimersByTime(PATCH_GRACE_MS + 50);
+            await Promise.resolve();
+
+            // Should not call getTransfers since notification was already sent
+            expect(model._mojaloopRequests.getTransfers).not.toHaveBeenCalled();
+            jest.useRealTimers();
+        });
+
+        test('should handle errors in patch notification timer logic', async () => {
+            jest.useFakeTimers();
+            const TRANSFER_ID = 'patch-notify-error';
+            const PATCH_GRACE_MS = 100;
+
+            shared.mojaloopPrepareToInternalTransfer = jest.fn().mockReturnValue({
+                transferId: TRANSFER_ID,
+                amount: { currency: 'USD', amount: 20.13 },
+                ilpPacket: 'mockBase64encodedIlpPacket',
+                condition: 'mockCondition'
+            });
+
+            // Mock cache.get to throw an error
+            jest.spyOn(cache, 'get').mockImplementation(async (key) => {
+                if (key.startsWith('patchNotificationSent_')) {
+                    throw new Error('Cache error');
+                }
+                return Cache.prototype.get.call(cache, key);
+            });
+            jest.spyOn(cache, 'set').mockImplementation(async () => true);
+
+            const model = new Model({
+                ...config,
+                cache,
+                logger,
+                reserveNotification: true,
+                patchNotificationGraceTimeMs: PATCH_GRACE_MS,
+            });
+
+            // Mock the logger's push method to return an object with error method
+            const mockLoggerWithError = {
+                ...logger,
+                push: jest.fn().mockReturnValue({
+                    ...logger,
+                    error: jest.fn()
+                }),
+                error: jest.fn()
+            };
+            // Replace the model's logger
+            model._logger = mockLoggerWithError;
+
+            jest.spyOn(model._mojaloopRequests, 'getTransfers');
+            jest.spyOn(model, '_load').mockImplementation(async (transferId) => ({
+                transferId,
+                quote: {
+                    fulfilment: 'mockFulfilment',
+                    mojaloopResponse: {
+                        condition: 'mockCondition',
+                        expiration: new Date(Date.now() + 10000).toISOString(),
+                    }
+                }
+            }));
+            jest.spyOn(model, '_save').mockImplementation(async () => {});
+
+            const args = {
+                body: {
+                    transferId: TRANSFER_ID,
+                    amount: { currency: 'USD', amount: 20.13 },
+                    ilpPacket: 'mockBase64encodedIlpPacket',
+                    condition: 'mockCondition'
+                }
+            };
+
+            await model.prepareTransfer(args, mockArgs.fspId);
+
+            // Run all pending timers
+            await jest.runOnlyPendingTimersAsync();
+
+            // Should log the error but not fail
+            expect(mockLoggerWithError.push).toHaveBeenCalledWith(
+                expect.objectContaining({ err: expect.any(Error), transferId: TRANSFER_ID })
+            );
+            jest.useRealTimers();
+        });
+
+        test('should call sendNotificationToPayee when callback message is received', async () => {
+            jest.useFakeTimers();
+            const TRANSFER_ID = 'patch-notify-success';
+            const PATCH_GRACE_MS = 100;
+            const callbackData = { transferState: 'COMMITTED' };
+
+            shared.mojaloopPrepareToInternalTransfer = jest.fn().mockReturnValue({
+                transferId: TRANSFER_ID,
+                amount: { currency: 'USD', amount: 20.13 },
+                ilpPacket: 'mockBase64encodedIlpPacket',
+                condition: 'mockCondition'
+            });
+
+            // Mock cache operations
+            jest.spyOn(cache, 'get').mockImplementation(async (key) => {
+                if (key.startsWith('patchNotificationSent_')) {
+                    return false; // Not notified yet
+                }
+                return Cache.prototype.get.call(cache, key);
+            });
+            jest.spyOn(cache, 'set').mockImplementation(async () => true);
+
+            // Mock subscribeToOneMessageWithTimer to resolve with a message
+            jest.spyOn(cache, 'subscribeToOneMessageWithTimer').mockResolvedValue({
+                data: { body: callbackData }
+            });
+
+            const model = new Model({
+                ...config,
+                cache,
+                logger,
+                reserveNotification: true,
+                patchNotificationGraceTimeMs: PATCH_GRACE_MS,
+            });
+
+            jest.spyOn(model._mojaloopRequests, 'getTransfers').mockResolvedValue();
+            const sendNotificationSpy = jest.spyOn(model, 'sendNotificationToPayee').mockResolvedValue();
+            jest.spyOn(model, '_load').mockImplementation(async (transferId) => ({
+                transferId,
+                quote: {
+                    fulfilment: 'mockFulfilment',
+                    mojaloopResponse: {
+                        condition: 'mockCondition',
+                        expiration: new Date(Date.now() + 10000).toISOString(),
+                    }
+                }
+            }));
+            jest.spyOn(model, '_save').mockImplementation(async () => {});
+
+            const args = {
+                body: {
+                    transferId: TRANSFER_ID,
+                    amount: { currency: 'USD', amount: 20.13 },
+                    ilpPacket: 'mockBase64encodedIlpPacket',
+                    condition: 'mockCondition'
+                }
+            };
+
+            await model.prepareTransfer(args, mockArgs.fspId);
+
+            // Run all pending timers to trigger grace time expiry and async operations
+            await jest.runOnlyPendingTimersAsync();
+
+            // Should call sendNotificationToPayee with the callback data
+            expect(sendNotificationSpy).toHaveBeenCalledWith(callbackData, TRANSFER_ID);
+            jest.useRealTimers();
         });
     });
 
