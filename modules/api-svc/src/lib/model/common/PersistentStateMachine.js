@@ -32,7 +32,7 @@ const StateMachine = require('javascript-state-machine');
 async function saveToCache() {
     const { data, cache, key, logger } = this.context;
     try {
-        const res = await cache.set(key, data);
+        const res = await cache.set(key, data, 600); // TODO: set it from config
         logger.isDebugEnabled && logger.push({ res }).debug(`Persisted model in cache: ${key}`);
     }
     catch(err) {

@@ -415,6 +415,34 @@ describe('inboundModel', () => {
             expect(call[1].errorInformation.errorCode).toEqual('3208');
         });
 
+        test('getTransfer should convert numeric statusCode to string', async () => {
+            const TRANSFER_ID = 'fake-transfer-id-numeric';
+
+            BackendRequests.__getTransfers = jest.fn().mockReturnValue(
+                Promise.reject(new HTTPResponseError({
+                    res: {
+                        data: {
+                            statusCode: 400,
+                            message: 'Bad request'
+                        },
+                    }
+                })));
+
+            const model = new Model({
+                ...config,
+                cache,
+                logger,
+            });
+
+            await model.getTransfer(TRANSFER_ID, mockArgs.fspId);
+
+            expect(MojaloopRequests.__putTransfersError).toHaveBeenCalledTimes(1);
+            const call = MojaloopRequests.__putTransfersError.mock.calls[0];
+            expect(call[0]).toEqual(`${TRANSFER_ID}`);
+            expect(call[1].errorInformation.errorCode).toEqual('400');
+            expect(typeof call[1].errorInformation.errorCode).toBe('string');
+        });
+
         test('fail on transfer without quote.', async () => {
             const TRANSFER_ID = 'without_quote-transfer-id';
             const args = {

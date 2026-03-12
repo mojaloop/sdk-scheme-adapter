@@ -63,7 +63,7 @@ const createRequestValidator = (validator) => async (ctx, next) => {
         ctx.response.status = ReturnCodes.BADREQUEST.CODE;
         ctx.response.body = {
             message: `${err.dataPath ? err.dataPath + ' ' : ''}${err.message}`,
-            statusCode: 400
+            statusCode: '400'
         };
         logResponse(ctx);
     }

@@ -58,7 +58,7 @@ function createProxyTester({ reqOutbound }) {
         } else {
             expect(res.body).toEqual({
                 'message': `Couldn't match path ${sdkUrlPath}`,
-                'statusCode': 400,
+                'statusCode': '400',
             });
             expect(res.statusCode).toBe(400);
         }
