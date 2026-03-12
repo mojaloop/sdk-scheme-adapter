@@ -507,7 +507,7 @@ class InboundTransfersModel {
 
             // --- PATCH NOTIFICATION TIMER LOGIC ---
             // Set a timer to trigger GET /transfers/{ID} if sendNotificationToPayee is not called in time
-            if (this._patchNotificationGraceTimeMs > 0) {
+            if (this._reserveNotification && this._patchNotificationGraceTimeMs > 0) {
                 const transferId = prepareRequest.transferId;
                 const cacheKey = `patchNotificationSent_${transferId}`;
                 // Mark as not notified yet
