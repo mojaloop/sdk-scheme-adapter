@@ -1,5 +1,3 @@
-scan-type: source
-
 ignore:
   - vulnerability: CVE-2025-3277
   - vulnerability: CVE-2024-9410
