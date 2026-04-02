@@ -81,6 +81,7 @@ const env = from(process.env, {
 //   - iso20022
 const apiType = env.get('API_TYPE').default(API_TYPES.fspiop).asString();
 const isIsoApi = apiType === API_TYPES.iso20022;
+const jwsSign = env.get('JWS_SIGN').default('true').asBool();
 
 module.exports = {
     __parseResourceVersion: parseResourceVersions,
@@ -189,9 +190,9 @@ module.exports = {
 
     validateInboundJws: env.get('VALIDATE_INBOUND_JWS').default('true').asBool(),
     validateInboundPutPartiesJws: env.get('VALIDATE_INBOUND_PUT_PARTIES_JWS').default('false').asBool(),
-    jwsSign: env.get('JWS_SIGN').default('true').asBool(),
+    jwsSign,
     jwsSignPutParties: env.get('JWS_SIGN_PUT_PARTIES').default('false').asBool(),
-    jwsSigningKey: env.get('JWS_SIGNING_KEY_PATH').asFileContent(),
+    jwsSigningKey: jwsSign ? env.get('JWS_SIGNING_KEY_PATH').asFileContent() : null,
     jwsVerificationKeysDirectory: env.get('JWS_VERIFICATION_KEYS_DIRECTORY').asString(),
     cacheUrl: env.get('CACHE_URL').default('redis://localhost:6379').asUrlString(),
     unsubscribeTimeoutMs: env.get('UNSUBSCRIBE_TIMEOUT_MS').default('5000').asIntPositive(),
