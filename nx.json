@@ -1,56 +1,102 @@
 {
-  "extends": "nx/presets/npm.json",
   "pluginsConfig": {
     "@nx/js": {
       "analyzePackageJson": false
     }
   },
-  "tasksRunnerOptions": {
-    "default": {
-      "runner": "nx/tasks-runners/default",
-      "options": {
-        "cacheableOperations": [
-          "build",
-          "build:openapi",
-          "build:openapi:inbound",
-          "build:openapi:outbound",
-          "build:dto:outbound",
-          "lint",
-          "lint:fix",
-          "test",
-          "test:unit",
-          "test:int",
-          "validate:api",
-          "validate:api:in",
-          "validate:api:out",
-          "validate:api-sequence-diagram",
-          "updates:check",
-          "updates:update",
-          "dep:check",
-          "dep:update",
-          "release",
-          "snapshot",
-          "service",
-          "watch",
-          "dev",
-          "pretest",
-          "standard",
-          "copy-files",
-          "test:integration",
-          "test:coverage",
-          "test:coverage-check"
-        ]
-      }
-    }
-  },
+  "extends": "nx/presets/npm.json",
   "targetDefaults": {
     "build": {
       "dependsOn": [
         "^build"
-      ]
+      ],
+      "cache": true
+    },
+    "build:openapi": {
+      "cache": true
+    },
+    "build:openapi:inbound": {
+      "cache": true
+    },
+    "build:openapi:outbound": {
+      "cache": true
+    },
+    "build:dto:outbound": {
+      "cache": true
+    },
+    "lint": {
+      "cache": true
+    },
+    "lint:fix": {
+      "cache": true
+    },
+    "test": {
+      "cache": true
+    },
+    "test:unit": {
+      "cache": true
+    },
+    "test:int": {
+      "cache": true
+    },
+    "validate:api": {
+      "cache": true
+    },
+    "validate:api:in": {
+      "cache": true
+    },
+    "validate:api:out": {
+      "cache": true
+    },
+    "validate:api-sequence-diagram": {
+      "cache": true
+    },
+    "updates:check": {
+      "cache": true
+    },
+    "updates:update": {
+      "cache": true
+    },
+    "dep:check": {
+      "cache": true
+    },
+    "dep:update": {
+      "cache": true
+    },
+    "release": {
+      "cache": true
+    },
+    "snapshot": {
+      "cache": true
+    },
+    "service": {
+      "cache": true
+    },
+    "watch": {
+      "cache": true
+    },
+    "dev": {
+      "cache": true
+    },
+    "pretest": {
+      "cache": true
+    },
+    "standard": {
+      "cache": true
+    },
+    "copy-files": {
+      "cache": true
+    },
+    "test:integration": {
+      "cache": true
+    },
+    "test:coverage": {
+      "cache": true
+    },
+    "test:coverage-check": {
+      "cache": true
     }
   },
-  "affected": {
-    "defaultBase": "master"
-  }
+  "useInferencePlugins": false,
+  "defaultBase": "master"
 }
