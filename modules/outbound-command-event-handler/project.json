@@ -1,11 +1,110 @@
 {
   "name": "modules-outbound-command-event-handler",
-  "root": "modules/outbound-command-event-handler/",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "modules/outbound-command-event-handler/src",
   "projectType": "application",
+  "implicitDependencies": [
+    "modules-private-shared-lib"
+  ],
   "namedInputs": {
-    "default": ["{projectRoot}/**/*"]
+    "default": [
+      "{projectRoot}/**/*"
+    ]
   },
-  "targets": {},
-  "implicitDependencies": ["modules-private-shared-lib"]
+  "targets": {
+    "build": {
+      "executor": "nx:run-script",
+      "options": {
+        "script": "build"
+      },
+      "outputs": [
+        "{projectRoot}/dist"
+      ],
+      "dependsOn": [
+        "^build"
+      ],
+      "cache": true
+    },
+    "test:unit": {
+      "executor": "nx:run-script",
+      "options": {
+        "script": "test:unit"
+      },
+      "dependsOn": [
+        "build"
+      ],
+      "cache": true
+    },
+    "test:xunit": {
+      "executor": "nx:run-script",
+      "options": {
+        "script": "test:xunit"
+      },
+      "dependsOn": [
+        "build"
+      ],
+      "cache": true
+    },
+    "test:integration": {
+      "executor": "nx:run-script",
+      "options": {
+        "script": "test:integration"
+      },
+      "dependsOn": [
+        "build"
+      ],
+      "cache": true
+    },
+    "test:coverage": {
+      "executor": "nx:run-script",
+      "options": {
+        "script": "test:coverage"
+      },
+      "dependsOn": [
+        "build"
+      ],
+      "cache": true
+    },
+    "test:coverage-check": {
+      "executor": "nx:run-script",
+      "options": {
+        "script": "test:coverage-check"
+      },
+      "dependsOn": [
+        "build"
+      ],
+      "cache": true
+    },
+    "lint": {
+      "executor": "nx:run-script",
+      "options": {
+        "script": "lint"
+      },
+      "cache": true
+    },
+    "lint:fix": {
+      "executor": "nx:run-script",
+      "options": {
+        "script": "lint:fix"
+      }
+    },
+    "clean:dist": {
+      "executor": "nx:run-script",
+      "options": {
+        "script": "clean:dist"
+      }
+    },
+    "dep:check": {
+      "executor": "nx:run-script",
+      "options": {
+        "script": "dep:check"
+      }
+    },
+    "dep:update": {
+      "executor": "nx:run-script",
+      "options": {
+        "script": "dep:update"
+      }
+    }
+  }
 }
