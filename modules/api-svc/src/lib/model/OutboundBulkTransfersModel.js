@@ -50,7 +50,7 @@ class OutboundBulkTransfersModel {
         this._expirySeconds = config.expirySeconds;
         this._rejectExpiredTransferFulfils = config.rejectExpiredTransferFulfils;
 
-        this._requests = new MojaloopRequests({
+        const mojaloopRequestsConfig = {
             logger: this._logger,
             peerEndpoint: config.peerEndpoint,
             bulkTransfersEndpoint: config.bulkTransfersEndpoint,
@@ -64,7 +64,14 @@ class OutboundBulkTransfersModel {
             jwsSigningKey: config.jwsSigningKey,
             oidc: config.oidc,
             resourceVersions: config.resourceVersions,
-        });
+        };
+
+        if (config.mojaloopSharedAgents) {
+            mojaloopRequestsConfig.httpAgent = config.mojaloopSharedAgents.httpAgent;
+            mojaloopRequestsConfig.httpsAgent = config.mojaloopSharedAgents.httpsAgent;
+        }
+
+        this._requests = new MojaloopRequests(mojaloopRequestsConfig);
     }
 
     /**

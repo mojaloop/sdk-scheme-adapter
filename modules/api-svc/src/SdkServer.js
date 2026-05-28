@@ -134,6 +134,7 @@ class SdkServer extends EventEmitter {
                 logger: this.logger,
                 cache: this.cache,
                 oidc: this.oidc,
+                mojaloopSharedAgents: this.mojaloopSharedAgents,
             });
         }
     }
@@ -414,6 +415,7 @@ class SdkServer extends EventEmitter {
                     logger: this.logger,
                     cache: this.cache,
                     oidc: this.oidc,
+                    mojaloopSharedAgents: this.mojaloopSharedAgents,
                 });
                 await this.fspiopEventHandler.start();
                 restartActionsTaken.updateFspiopEventHandler = true;

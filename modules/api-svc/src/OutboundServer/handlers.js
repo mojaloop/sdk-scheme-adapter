@@ -139,6 +139,7 @@ const createOutboundBulkTransfersModel = (ctx) => new OutboundBulkTransfersModel
     cache: ctx.state.cache,
     logger: ctx.state.logger,
     oidc: ctx.state.oidc,
+    mojaloopSharedAgents: ctx.state.sharedAgents,
 });
 
 /**
@@ -341,6 +342,7 @@ const postBulkQuotes = async (ctx) => {
             cache: ctx.state.cache,
             logger: ctx.state.logger,
             oidc: ctx.state.oidc,
+            mojaloopSharedAgents: ctx.state.sharedAgents,
         });
 
         await model.initialize(bulkQuoteRequest);
@@ -373,6 +375,7 @@ const getBulkQuoteById = async (ctx) => {
             cache: ctx.state.cache,
             logger: ctx.state.logger,
             oidc: ctx.state.oidc,
+            mojaloopSharedAgents: ctx.state.sharedAgents,
         });
 
         await model.initialize(bulkQuoteRequest);
@@ -404,6 +407,7 @@ const postRequestToPayTransfer = async (ctx) => {
             cache: ctx.state.cache,
             logger: ctx.state.logger,
             oidc: ctx.state.oidc,
+            mojaloopSharedAgents: ctx.state.sharedAgents,
         });
 
         // initialize the transfer model and start it running
@@ -432,6 +436,7 @@ const putRequestToPayTransfer = async (ctx) => {
             cache: ctx.state.cache,
             logger: ctx.state.logger,
             oidc: ctx.state.oidc,
+            mojaloopSharedAgents: ctx.state.sharedAgents,
         });
 
         // TODO: check the incoming body to reject party or quote when requested to do so
@@ -534,6 +539,7 @@ const postRequestToPay = async (ctx) => {
             cache: ctx.state.cache,
             logger: ctx.state.logger,
             oidc: ctx.state.oidc,
+            mojaloopSharedAgents: ctx.state.sharedAgents,
         });
 
         // initialize the transfer model and start it running
@@ -563,6 +569,7 @@ const putRequestToPay = async (ctx) => {
             cache: ctx.state.cache,
             logger: ctx.state.logger,
             oidc: ctx.state.oidc,
+            mojaloopSharedAgents: ctx.state.sharedAgents,
         });
 
         // TODO: check the incoming body to reject party or quote when requested to do so
@@ -605,6 +612,7 @@ const getPartiesByTypeAndId = async (ctx) => {
             cache: ctx.state.cache,
             logger: ctx.state.logger,
             oidc: ctx.state.oidc,
+            mojaloopSharedAgents: ctx.state.sharedAgents,
         };
 
         const cacheKey = PartiesModel.generateKey(args);
@@ -640,6 +648,7 @@ const postQuotes = async (ctx) => {
             cache: ctx.state.cache,
             logger: ctx.state.logger,
             oidc: ctx.state.oidc,
+            mojaloopSharedAgents: ctx.state.sharedAgents,
         };
 
         const cacheKey = QuotesModel.generateKey(args);
@@ -671,6 +680,7 @@ const postSimpleTransfers = async (ctx) => {
             cache: ctx.state.cache,
             logger: ctx.state.logger,
             oidc: ctx.state.oidc,
+            mojaloopSharedAgents: ctx.state.sharedAgents,
         };
 
         const cacheKey = TransfersModel.generateKey(args);

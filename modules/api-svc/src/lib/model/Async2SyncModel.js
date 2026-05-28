@@ -254,7 +254,11 @@ function generate({
                         jwsSignPutParties: config.jwsSignPutParties,
                         jwsSigningKey: config.jwsSigningKey,
                         oidc: config.oidc,
-                        apiType: config.apiType
+                        apiType: config.apiType,
+                        ...(config.mojaloopSharedAgents && {
+                            httpAgent: config.mojaloopSharedAgents.httpAgent,
+                            httpsAgent: config.mojaloopSharedAgents.httpsAgent,
+                        }),
                     })
                 }
             }

@@ -47,6 +47,7 @@ module.exports.handlePartyInfoRequestedDmEvt = async (
             cache: options.cache,
             logger: logger,
             oidc: options.oidc,
+            mojaloopSharedAgents: options.mojaloopSharedAgents,
         };
 
         const cacheKey = PartiesModel.generateKey(args);
