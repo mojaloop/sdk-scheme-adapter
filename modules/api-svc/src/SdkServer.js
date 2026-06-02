@@ -544,13 +544,13 @@ class SdkServer extends EventEmitter {
     _createMojaloopSharedAgents(conf) {
         const httpAgent = new http.Agent({
             keepAlive: true,
-            maxSockets: conf.outbound?.maxSockets || 256,
+            maxSockets: conf.outbound.maxSockets,
         });
 
         // Create HTTPS agent based on TLS configuration for Mojaloop switch communication
         const httpsAgentOptions = {
             keepAlive: true,
-            maxSockets: conf.outbound?.maxSockets || 256,
+            maxSockets: conf.outbound.maxSockets,
         };
 
         // Apply TLS configuration if mTLS is enabled for switch communication
