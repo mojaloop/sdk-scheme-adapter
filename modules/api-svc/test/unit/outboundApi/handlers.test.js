@@ -546,6 +546,7 @@ describe('Outbound API handlers:', () => {
                     oidc: 'mocked oidc',
                     logger: mockLogger({ app: 'outbound-api-handlers-test'}),
                     cache: { the: 'mocked cache' },
+                    sharedAgents: { httpAgent: {}, httpsAgent: {} },
                     path: {
                         params: {
                             'Type': 'MSISDN',
@@ -577,7 +578,8 @@ describe('Outbound API handlers:', () => {
             const expectedConfig = {
                 cache: state.cache,
                 logger: state.logger,
-                oidc: state.oidc
+                oidc: state.oidc,
+                mojaloopSharedAgents: state.sharedAgents
             };
             expect(createSpy).toHaveBeenCalledWith({}, cacheKey, expectedConfig);
 
@@ -602,6 +604,7 @@ describe('Outbound API handlers:', () => {
                     oidc: 'mocked oidc',
                     logger: mockLogger({ app: 'outbound-api-handlers-test'}),
                     cache: { the: 'mocked cache' },
+                    sharedAgents: { httpAgent: {}, httpsAgent: {} },
                     path: {
                         params: {
                             'Type': 'MSISDN',
@@ -633,7 +636,8 @@ describe('Outbound API handlers:', () => {
             const expectedConfig = {
                 cache: state.cache,
                 logger: state.logger,
-                oidc: state.oidc
+                oidc: state.oidc,
+                mojaloopSharedAgents: state.sharedAgents
             };
             expect(createSpy).toHaveBeenCalledWith({}, cacheKey, expectedConfig);
 
@@ -660,6 +664,7 @@ describe('Outbound API handlers:', () => {
                 cache: {
                     subscribe: jest.fn(() => Promise.resolve())
                 },
+                sharedAgents: { httpAgent: {}, httpsAgent: {} },
                 path: {
                     params: {
                         'Type': 'MSISDN',
@@ -691,7 +696,8 @@ describe('Outbound API handlers:', () => {
             const expectedConfig = {
                 cache: state.cache,
                 logger: state.logger,
-                oidc: state.oidc
+                oidc: state.oidc,
+                mojaloopSharedAgents: state.sharedAgents
             };
             expect(createSpy).toHaveBeenCalledWith({}, cacheKey, expectedConfig);
 
@@ -725,7 +731,8 @@ describe('Outbound API handlers:', () => {
             const expectedConfig = {
                 cache: state.cache,
                 logger: state.logger,
-                oidc: state.oidc
+                oidc: state.oidc,
+                mojaloopSharedAgents: state.sharedAgents
             };
             expect(createSpy).toHaveBeenCalledWith({}, cacheKey, expectedConfig);
 
@@ -763,7 +770,8 @@ describe('Outbound API handlers:', () => {
             const expectedConfig = {
                 cache: state.cache,
                 logger: state.logger,
-                oidc: state.oidc
+                oidc: state.oidc,
+                mojaloopSharedAgents: state.sharedAgents
             };
             expect(createSpy).toHaveBeenCalledWith({}, cacheKey, expectedConfig);
 
@@ -804,7 +812,8 @@ describe('Outbound API handlers:', () => {
             const expectedConfig = {
                 cache: state.cache,
                 logger: state.logger,
-                oidc: state.oidc
+                oidc: state.oidc,
+                mojaloopSharedAgents: state.sharedAgents
             };
             expect(createSpy).toHaveBeenCalledWith({}, cacheKey, expectedConfig);
 
@@ -842,7 +851,8 @@ describe('Outbound API handlers:', () => {
                 logger: mockLogger({ app: 'outbound-api-handlers-test' }),
                 cache: {
                     subscribe: jest.fn(() => Promise.resolve())
-                }
+                },
+                sharedAgents: { httpAgent: {}, httpsAgent: {} }
             },
         };
         test('happy flow', async () => {
@@ -867,7 +877,8 @@ describe('Outbound API handlers:', () => {
             const expectedConfig = {
                 cache: state.cache,
                 logger: state.logger,
-                oidc: state.oidc
+                oidc: state.oidc,
+                mojaloopSharedAgents: state.sharedAgents
             };
             expect(createSpy).toHaveBeenCalledWith({}, cacheKey, expectedConfig);
 
@@ -904,7 +915,8 @@ describe('Outbound API handlers:', () => {
             const expectedConfig = {
                 cache: state.cache,
                 logger: state.logger,
-                oidc: state.oidc
+                oidc: state.oidc,
+                mojaloopSharedAgents: state.sharedAgents
             };
             expect(createSpy).toHaveBeenCalledWith({}, cacheKey, expectedConfig);
 
@@ -941,7 +953,8 @@ describe('Outbound API handlers:', () => {
                 logger: mockLogger({ app: 'outbound-api-handlers-test' }),
                 cache: {
                     subscribe: jest.fn(() => Promise.resolve())
-                }
+                },
+                sharedAgents: { httpAgent: {}, httpsAgent: {} }
             },
         };
         test('happy flow', async () => {
@@ -966,7 +979,8 @@ describe('Outbound API handlers:', () => {
             const expectedConfig = {
                 cache: state.cache,
                 logger: state.logger,
-                oidc: state.oidc
+                oidc: state.oidc,
+                mojaloopSharedAgents: state.sharedAgents
             };
             expect(createSpy).toHaveBeenCalledWith({}, cacheKey, expectedConfig);
 
@@ -1003,7 +1017,8 @@ describe('Outbound API handlers:', () => {
             const expectedConfig = {
                 cache: state.cache,
                 logger: state.logger,
-                oidc: state.oidc
+                oidc: state.oidc,
+                mojaloopSharedAgents: state.sharedAgents
             };
             expect(createSpy).toHaveBeenCalledWith({}, cacheKey, expectedConfig);
 
