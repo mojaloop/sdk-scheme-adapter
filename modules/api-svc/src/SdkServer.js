@@ -353,13 +353,21 @@ class SdkServer extends EventEmitter {
 
             this.logger.isDebugEnabled && this.logger.push({ oldConf: this.conf.inbound, newConf: newConf.inbound }).debug('Inbound server configuration');
             const updateInboundServer = this._shouldUpdateInboundServer(newConf);
+            const updateOutboundServer = this._shouldUpdateOutboundServer(newConf);
+
+            // Create new shared agents once for both servers, before either block runs,
+            // so both get the same pool. Destroy old agents after new servers are wired.
+            const oldAgents = this.mojaloopSharedAgents;
+            if (updateInboundServer || updateOutboundServer) {
+                this.mojaloopSharedAgents = this._createMojaloopSharedAgents(newConf);
+            }
+
             if (updateInboundServer) {
                 const stopStartLabel = 'InboundServer stop/start duration';
                 // eslint-disable-next-line no-console
                 console.time(stopStartLabel); // todo: remove console.time
                 await this.inboundServer.stop();
 
-                this.mojaloopSharedAgents = this._createMojaloopSharedAgents(newConf);
                 this.inboundServer = new InboundServer(
                     newConf,
                     this.logger,
@@ -379,14 +387,12 @@ class SdkServer extends EventEmitter {
             }
 
             this.logger.isDebugEnabled && this.logger.push({ oldConf: this.conf.outbound, newConf: newConf.outbound }).debug('Outbound server configuration');
-            const updateOutboundServer = this._shouldUpdateOutboundServer(newConf);
             if (updateOutboundServer) {
                 const stopStartLabel = 'OutboundServer stop/start duration';
                 // eslint-disable-next-line no-console
                 console.time(stopStartLabel);
                 await this.outboundServer.stop();
 
-                this.mojaloopSharedAgents = this._createMojaloopSharedAgents(newConf);
                 this.outboundServer = new OutboundServer(
                     newConf,
                     this.logger,
@@ -404,6 +410,12 @@ class SdkServer extends EventEmitter {
                 // eslint-disable-next-line no-console
                 console.timeEnd(stopStartLabel);
                 restartActionsTaken.updateOutboundServer = true;
+            }
+
+            // Destroy old agents now that both servers are running on the new pool.
+            if ((updateInboundServer || updateOutboundServer) && oldAgents) {
+                oldAgents.httpAgent.destroy();
+                oldAgents.httpsAgent.destroy();
             }
 
             const updateFspiopEventHandler = !_.isEqual(this.conf.outbound, newConf.outbound)
@@ -514,6 +526,8 @@ class SdkServer extends EventEmitter {
         this.oidc.auth.stop();
         this.controlClient?.removeAllListeners();
         this.inboundServer.removeAllListeners();
+        this.mojaloopSharedAgents?.httpAgent.destroy();
+        this.mojaloopSharedAgents?.httpsAgent.destroy();
         return Promise.all([
             this.cache.disconnect(),
             this.inboundServer.stop(),
