@@ -134,6 +134,7 @@ class SdkServer extends EventEmitter {
                 logger: this.logger,
                 cache: this.cache,
                 oidc: this.oidc,
+                mojaloopSharedAgents: this.mojaloopSharedAgents,
             });
         }
     }
@@ -352,13 +353,21 @@ class SdkServer extends EventEmitter {
 
             this.logger.isDebugEnabled && this.logger.push({ oldConf: this.conf.inbound, newConf: newConf.inbound }).debug('Inbound server configuration');
             const updateInboundServer = this._shouldUpdateInboundServer(newConf);
+            const updateOutboundServer = this._shouldUpdateOutboundServer(newConf);
+
+            // Single flag drives both agent creation and destruction so the two can never diverge.
+            const shouldReplaceAgents = updateInboundServer || updateOutboundServer;
+            const oldAgents = this.mojaloopSharedAgents;
+            if (shouldReplaceAgents) {
+                this.mojaloopSharedAgents = this._createMojaloopSharedAgents(newConf);
+            }
+
             if (updateInboundServer) {
                 const stopStartLabel = 'InboundServer stop/start duration';
                 // eslint-disable-next-line no-console
                 console.time(stopStartLabel); // todo: remove console.time
                 await this.inboundServer.stop();
 
-                this.mojaloopSharedAgents = this._createMojaloopSharedAgents(newConf);
                 this.inboundServer = new InboundServer(
                     newConf,
                     this.logger,
@@ -378,14 +387,12 @@ class SdkServer extends EventEmitter {
             }
 
             this.logger.isDebugEnabled && this.logger.push({ oldConf: this.conf.outbound, newConf: newConf.outbound }).debug('Outbound server configuration');
-            const updateOutboundServer = this._shouldUpdateOutboundServer(newConf);
             if (updateOutboundServer) {
                 const stopStartLabel = 'OutboundServer stop/start duration';
                 // eslint-disable-next-line no-console
                 console.time(stopStartLabel);
                 await this.outboundServer.stop();
 
-                this.mojaloopSharedAgents = this._createMojaloopSharedAgents(newConf);
                 this.outboundServer = new OutboundServer(
                     newConf,
                     this.logger,
@@ -405,6 +412,12 @@ class SdkServer extends EventEmitter {
                 restartActionsTaken.updateOutboundServer = true;
             }
 
+            // Destroy old agents now that both servers are running on the new pool.
+            if (shouldReplaceAgents && oldAgents) {
+                oldAgents.httpAgent.destroy();
+                oldAgents.httpsAgent.destroy();
+            }
+
             const updateFspiopEventHandler = !_.isEqual(this.conf.outbound, newConf.outbound)
             && this.conf.fspiopEventHandler.enabled;
             if (updateFspiopEventHandler) {
@@ -414,6 +427,7 @@ class SdkServer extends EventEmitter {
                     logger: this.logger,
                     cache: this.cache,
                     oidc: this.oidc,
+                    mojaloopSharedAgents: this.mojaloopSharedAgents,
                 });
                 await this.fspiopEventHandler.start();
                 restartActionsTaken.updateFspiopEventHandler = true;
@@ -512,6 +526,8 @@ class SdkServer extends EventEmitter {
         this.oidc.auth.stop();
         this.controlClient?.removeAllListeners();
         this.inboundServer.removeAllListeners();
+        this.mojaloopSharedAgents?.httpAgent.destroy();
+        this.mojaloopSharedAgents?.httpsAgent.destroy();
         return Promise.all([
             this.cache.disconnect(),
             this.inboundServer.stop(),
@@ -528,13 +544,13 @@ class SdkServer extends EventEmitter {
     _createMojaloopSharedAgents(conf) {
         const httpAgent = new http.Agent({
             keepAlive: true,
-            maxSockets: conf.outbound?.maxSockets || 256,
+            maxSockets: conf.outbound.maxSockets,
         });
 
         // Create HTTPS agent based on TLS configuration for Mojaloop switch communication
         const httpsAgentOptions = {
             keepAlive: true,
-            maxSockets: conf.outbound?.maxSockets || 256,
+            maxSockets: conf.outbound.maxSockets,
         };
 
         // Apply TLS configuration if mTLS is enabled for switch communication

@@ -88,6 +88,7 @@ class OutboundApi extends EventEmitter {
                 logger: this._logger,
                 oidc: oidc,
                 tls: conf.outbound.tls,
+                mojaloopSharedAgents: sharedAgents,
             }));
         }
 

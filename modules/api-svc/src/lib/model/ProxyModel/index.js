@@ -51,7 +51,7 @@ class ProxyModel {
     constructor(config) {
         this._logger = config.logger;
 
-        this._requests = new MojaloopRequests({
+        const mojaloopRequestsConfig = {
             logger: this._logger,
             peerEndpoint: config.peerEndpoint,
             tls: {
@@ -60,8 +60,15 @@ class ProxyModel {
             },
             jwsSign: config.jwsSign,
             jwsSigningKey: config.jwsSigningKey,
-            oidc: config.oidc
-        });
+            oidc: config.oidc,
+        };
+
+        if (config.mojaloopSharedAgents) {
+            mojaloopRequestsConfig.httpAgent = config.mojaloopSharedAgents.httpAgent;
+            mojaloopRequestsConfig.httpsAgent = config.mojaloopSharedAgents.httpsAgent;
+        }
+
+        this._requests = new MojaloopRequests(mojaloopRequestsConfig);
 
         this._validateConfig(config.proxyConfig);
         this._routes = this._createRoutes(config.proxyConfig);
