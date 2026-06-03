@@ -124,7 +124,8 @@
     "replace": "1.2.2",
     "standard-version": "9.5.0",
     "supertest": "7.2.2",
-    "swagger-cli": "4.0.4"
+    "swagger-cli": "4.0.4",
+    "typescript": "5.9.3"
   },
   "standard-version": {
     "scripts": {
