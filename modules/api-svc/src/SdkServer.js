@@ -355,10 +355,10 @@ class SdkServer extends EventEmitter {
             const updateInboundServer = this._shouldUpdateInboundServer(newConf);
             const updateOutboundServer = this._shouldUpdateOutboundServer(newConf);
 
-            // Create new shared agents once for both servers, before either block runs,
-            // so both get the same pool. Destroy old agents after new servers are wired.
+            // Single flag drives both agent creation and destruction so the two can never diverge.
+            const shouldReplaceAgents = updateInboundServer || updateOutboundServer;
             const oldAgents = this.mojaloopSharedAgents;
-            if (updateInboundServer || updateOutboundServer) {
+            if (shouldReplaceAgents) {
                 this.mojaloopSharedAgents = this._createMojaloopSharedAgents(newConf);
             }
 
@@ -413,7 +413,7 @@ class SdkServer extends EventEmitter {
             }
 
             // Destroy old agents now that both servers are running on the new pool.
-            if ((updateInboundServer || updateOutboundServer) && oldAgents) {
+            if (shouldReplaceAgents && oldAgents) {
                 oldAgents.httpAgent.destroy();
                 oldAgents.httpsAgent.destroy();
             }
