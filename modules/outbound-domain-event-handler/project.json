@@ -43,7 +43,7 @@
       "dependsOn": [
         "build"
       ],
-      "cache": true
+      "cache": false
     },
     "test:integration": {
       "executor": "nx:run-script",

@@ -12,22 +12,7 @@
       ],
       "cache": true
     },
-    "build:openapi": {
-      "cache": true
-    },
-    "build:openapi:inbound": {
-      "cache": true
-    },
-    "build:openapi:outbound": {
-      "cache": true
-    },
-    "build:dto:outbound": {
-      "cache": true
-    },
     "lint": {
-      "cache": true
-    },
-    "lint:fix": {
       "cache": true
     },
     "test": {
@@ -36,64 +21,22 @@
     "test:unit": {
       "cache": true
     },
-    "test:int": {
+    "test:integration": {
+      "cache": true
+    },
+    "test:coverage": {
+      "cache": true,
+      "outputs": [
+        "{projectRoot}/coverage"
+      ]
+    },
+    "test:coverage-check": {
       "cache": true
     },
     "validate:api": {
       "cache": true
     },
     "validate:api:in": {
-      "cache": true
-    },
-    "validate:api:out": {
-      "cache": true
-    },
-    "validate:api-sequence-diagram": {
-      "cache": true
-    },
-    "updates:check": {
-      "cache": true
-    },
-    "updates:update": {
-      "cache": true
-    },
-    "dep:check": {
-      "cache": true
-    },
-    "dep:update": {
-      "cache": true
-    },
-    "release": {
-      "cache": true
-    },
-    "snapshot": {
-      "cache": true
-    },
-    "service": {
-      "cache": true
-    },
-    "watch": {
-      "cache": true
-    },
-    "dev": {
-      "cache": true
-    },
-    "pretest": {
-      "cache": true
-    },
-    "standard": {
-      "cache": true
-    },
-    "copy-files": {
-      "cache": true
-    },
-    "test:integration": {
-      "cache": true
-    },
-    "test:coverage": {
-      "cache": true
-    },
-    "test:coverage-check": {
       "cache": true
     }
   },

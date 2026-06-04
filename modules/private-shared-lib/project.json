@@ -31,7 +31,7 @@
       "options": {
         "script": "test:xunit"
       },
-      "cache": true
+      "cache": false
     },
     "test:coverage": {
       "executor": "nx:run-script",
