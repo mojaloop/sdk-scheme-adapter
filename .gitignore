@@ -5,6 +5,7 @@ junit.xml
 .vscode
 secrets/*.pem
 coverage
+test/results
 .env
 .pnp.*
 .yarn/*
