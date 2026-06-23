@@ -1,4 +1,11 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+### [24.19.6](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.19.5...v24.19.6) (2026-06-03)
+
+
+### Bug Fixes
+
+* make maxsocket configurable so it doesnt use infinite number of sockets [#4480](https://github.com/mojaloop/sdk-scheme-adapter/issues/4480) ([#676](https://github.com/mojaloop/sdk-scheme-adapter/issues/676)) ([c60ed65](https://github.com/mojaloop/sdk-scheme-adapter/commit/c60ed653b0f6a1c46ca428c28a889b1d9c536e4d))
+
 ### [24.19.5](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.19.4...v24.19.5) (2026-04-22)
 
 

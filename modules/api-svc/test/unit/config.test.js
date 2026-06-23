@@ -86,6 +86,18 @@ describe('config', () => {
         expect(config.validateInboundPutPartiesJws).toBeTruthy();
     });
 
+    it('correctly parses OUTBOUND_MAX_SOCKETS when set', () => {
+        process.env.OUTBOUND_MAX_SOCKETS = '200';
+        const config = require('~/config');
+        expect(config.outbound.maxSockets).toBe(200);
+    });
+
+    it('uses default 100 for OUTBOUND_MAX_SOCKETS when not set', () => {
+        delete process.env.OUTBOUND_MAX_SOCKETS;
+        const config = require('~/config');
+        expect(config.outbound.maxSockets).toBe(100);
+    });
+
     it('return single cert content from IN_SERVER_CERT_PATH', () => {
         const cert = path.join(certDir, 'cert.pem');
         const certContent = 'cert-data';

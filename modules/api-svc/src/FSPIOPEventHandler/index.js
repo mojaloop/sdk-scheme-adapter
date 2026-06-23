@@ -44,11 +44,12 @@ const {
 } = require('./handlers');
 
 class FSPIOPEventHandler {
-    constructor({ config, logger, cache, oidc }) {
+    constructor({ config, logger, cache, oidc, mojaloopSharedAgents }) {
         this._conf = config;
         this._logger = logger.push({ component: this.constructor.name });
         this._cache = cache;
         this._oidc = oidc;
+        this._mojaloopSharedAgents = mojaloopSharedAgents;
 
         this._loggerFromLoggingBC = new DefaultLogger(BC_CONFIG.bcName, 'fspiop-event-handler', '0.0.1', config.logLevel);
 
@@ -72,6 +73,7 @@ class FSPIOPEventHandler {
             cache: this._cache,
             oidc: this._oidc,
             config: this._conf,
+            mojaloopSharedAgents: this._mojaloopSharedAgents,
         };
 
         await this._consumer.init();

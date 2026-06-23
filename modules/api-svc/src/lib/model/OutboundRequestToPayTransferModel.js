@@ -55,7 +55,7 @@ class OutboundRequestToPayTransferModel {
         this._useQuoteSourceFSPAsTransferPayeeFSP = config.useQuoteSourceFSPAsTransferPayeeFSP;
         this._checkIlp = config.checkIlp;
 
-        this._requests = new MojaloopRequests({
+        const mojaloopRequestsConfig = {
             logger: this._logger,
             peerEndpoint: config.peerEndpoint,
             quotesEndpoint: config.quotesEndpoint,
@@ -72,7 +72,14 @@ class OutboundRequestToPayTransferModel {
             jwsSigningKey: config.jwsSigningKey,
             oidc: config.oidc,
             resourceVersions: config.resourceVersions,
-        });
+        };
+
+        if (config.mojaloopSharedAgents) {
+            mojaloopRequestsConfig.httpAgent = config.mojaloopSharedAgents.httpAgent;
+            mojaloopRequestsConfig.httpsAgent = config.mojaloopSharedAgents.httpsAgent;
+        }
+
+        this._requests = new MojaloopRequests(mojaloopRequestsConfig);
 
         this._ilp = Ilp.ilpFactory(Ilp.ILP_VERSIONS.v1, {
             secret: config.ilpSecret,

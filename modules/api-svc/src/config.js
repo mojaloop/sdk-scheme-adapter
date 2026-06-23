@@ -107,6 +107,7 @@ module.exports = {
     },
     outbound: {
         port: env.get('OUTBOUND_LISTEN_PORT').default('4001').asPortNumber(),
+        maxSockets: env.get('OUTBOUND_MAX_SOCKETS').default('100').asInt(),
         tls: {
             mutualTLS: {
                 enabled: env.get('OUTBOUND_MUTUAL_TLS_ENABLED').default('false').asBool(),

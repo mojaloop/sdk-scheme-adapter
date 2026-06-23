@@ -48,7 +48,7 @@ class OutboundRequestToPayModel {
         this._expirySeconds = config.expirySeconds;
         this._autoAcceptR2PParty = config.autoAcceptR2PParty;
 
-        this._requests = new MojaloopRequests({
+        const mojaloopRequestsConfig = {
             logger: this._logger,
             peerEndpoint: config.peerEndpoint,
             alsEndpoint: config.alsEndpoint,
@@ -63,7 +63,14 @@ class OutboundRequestToPayModel {
             jwsSigningKey: config.jwsSigningKey,
             oidc: config.oidc,
             resourceVersions: config.resourceVersions,
-        });
+        };
+
+        if (config.mojaloopSharedAgents) {
+            mojaloopRequestsConfig.httpAgent = config.mojaloopSharedAgents.httpAgent;
+            mojaloopRequestsConfig.httpsAgent = config.mojaloopSharedAgents.httpsAgent;
+        }
+
+        this._requests = new MojaloopRequests(mojaloopRequestsConfig);
     }
 
     /**

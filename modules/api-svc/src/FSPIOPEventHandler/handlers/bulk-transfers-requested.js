@@ -44,6 +44,7 @@ module.exports.handleBulkTransfersRequestedDmEvt = async (
             cache: options.cache,
             logger: logger,
             oidc: options.oidc,
+            mojaloopSharedAgents: options.mojaloopSharedAgents,
         });
 
         await model.initialize(event.request);

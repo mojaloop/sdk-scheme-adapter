@@ -75,7 +75,8 @@ export const CreateExpressServer =
         // API routes based on the swagger file
         const api = new OpenAPIBackend({
             definition: openApiSpecFilePath,
-            customizeAjv: ajv => addFormats(ajv),
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            customizeAjv: (ajv: any) => addFormats(ajv) as any,
             handlers: {
                 ...Handlers,
                 validationFail: async (c, _req: Express.Request, res: Express.Response) =>
