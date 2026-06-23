@@ -64,10 +64,13 @@ LABEL org.label-schema.vcs-ref=$VCS_REF
 LABEL org.label-schema.url="https://mojaloop.io/"
 LABEL org.label-schema.version=$VERSION
 
-## Create a non-root user: ml-user
-RUN adduser -D ml-user
+## Create a non-root user: ml-user and give it ownership of the app dir.
+## NX >= 17 writes its project-graph/daemon data under /opt/app/.nx at both
+## build and runtime. WORKDIR creates /opt/app owned by root, so running
+## `yarn run build`/`start` as ml-user fails with
+## "EACCES: permission denied, mkdir '/opt/app/.nx/...'" (mojaloop/#3586).
+RUN adduser -D ml-user && chown -R ml-user:ml-user /opt/app
 
-## Create ml-user
 USER ml-user
 
 ## Update permissions for ml-user
