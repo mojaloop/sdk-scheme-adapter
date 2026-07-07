@@ -1,26 +1,20 @@
-## Add a TODO comment indicating the reason for each rejected dependency upgrade added to this list, and what should be done to resolve it (i.e. handle it through a story, etc).
+## Each rejected dependency upgrade below has a comment stating the reason (exact empirical error or policy) and what unblocks it.
 reject: [
+  ## Effectively pinned to 17.10.3 via root package.json "resolutions"; 18.x changes the outbound OpenAPI snippets and empirically breaks api-svc unit tests
+  ## (8 failures "The response was not valid." in test/unit/api/{transfers,accounts} response validation against sdk-scheme-adapter-outbound-v2_1_0-openapi3-snippets.yaml, re-verified 2026-07 with 18.4.0).
+  '@mojaloop/api-snippets',
   ## Between version 0.2.15-0.2.21 there is a breaking change that results in a segmentation fault.
-  ## TODO: Investigate.
   '@mojaloop/platform-shared-lib-nodejs-kafka-client-lib',
-  ## TODO: The kafka connectivity is not working properly and the following update is causing service crash.
+  ## The kafka connectivity is not working properly and the newer versions cause a service crash at startup.
   '@mojaloop/logging-bc-client-lib',
-  ## TODO: The new version of npm-check-updates uses new Glob v9.x and it is introducing a dependency Package "path-scurry@1.6.1" which is licensed under "BlueOak-1.0.0" which is not permitted by the Mojaloop License Policy
+  ## The new version of npm-check-updates uses new Glob v9.x and it is introducing a dependency Package "path-scurry@1.6.1" which is licensed under "BlueOak-1.0.0" which is not permitted by the Mojaloop License Policy.
   'npm-check-updates',
-  ## TODO: The new version of nx causes submodules to be broken.
+  ## nx >=17 requires an `nx migrate` workspace migration and currently breaks the module project graph; the nx upgrade is already in progress on branch chore/fix-3586-nx-upgrade and must not be duplicated here.
   "nx",
-  ## esLint 9.15.0 caused the error: TypeError: Error while loading rule '@typescript-eslint/no-unused-expressions': Cannot read properties of undefined (reading 'allowShortCircuit')
-  "eslint",
-  ## express >5 introduces breaking changes that are not compatible with the current codebase.
+  ## express 5 changes routing/middleware semantics (path-to-regexp v8 route syntax, removed API aliases) and is not compatible with the current api-svc and event-handler servers.
   "express",
-  ## jest 30 is released but libraries that work with jest have not been updated to support it yet.
-  "jest",
-  ## uuid 13.0.0 introduces breaking changes that are not compatible with the current codebase.
+  ## uuid >=12 ships as ESM-only; private-shared-lib and its consumers are compiled to CommonJS, and require('uuid') of the ESM-only build fails under the jest CJS module loader (ERR_REQUIRE_ESM).
   "uuid",
-  ## openapi-backend 5.16.x bundles its own ajv with types incompatible with the project's ajv@8.18.0, causing TS build failures in customizeAjv callback.
-  "openapi-backend",
-  ## ajv must stay at 8.17.1 to match the version openapi-backend@5.15.0 resolves (ajv@^8.6.2 -> 8.17.1). Using 8.18.0 creates two different ajv TypeScript types, causing customizeAjv callback type mismatch.
-  "ajv",
-  ## ts 6 errors on baseUrl and moduleResolution=node, need to migrate tsconfigs first
-  "typescript"
+  ## @types/node must stay on the 24.x line: its major must match the .nvmrc runtime major (24.18.0); higher majors only weaken type checking (tsc would accept Node-26-only APIs that crash at runtime - an untestable failure mode).
+  "@types/node"
 ]

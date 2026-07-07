@@ -204,10 +204,10 @@ describe('TransfersModel', () => {
             });
 
             // ensure handler wasn't called before publishing the message
-            expect(handler).not.toBeCalled();
+            expect(handler).not.toHaveBeenCalled();
 
             // ensure that cache.unsubscribe does not happened before fire the message
-            expect(cache.unsubscribe).not.toBeCalled();
+            expect(cache.unsubscribe).not.toHaveBeenCalled();
 
             // fire publication with given message
             const df = deferredJob(cache, channel);
@@ -259,10 +259,10 @@ describe('TransfersModel', () => {
             });
 
             // ensure handler wasn't called before publishing the message
-            expect(handler).not.toBeCalled();
+            expect(handler).not.toHaveBeenCalled();
 
             // ensure that cache.unsubscribe does not happened before fire the message
-            expect(cache.unsubscribe).not.toBeCalled();
+            expect(cache.unsubscribe).not.toHaveBeenCalled();
 
             // fire publication with given message
             const df = deferredJob(cache, channel);
