@@ -1,6 +1,7 @@
 scan-type: source
 
 ignore:
+  # --- Base image / OS-level findings (only relevant to the Docker image scan, not fixable via application dependencies) ---
   - vulnerability: CVE-2025-3277
   - vulnerability: CVE-2024-9410
   - vulnerability: GHSA-4hjh-wcwx-xvwj
@@ -13,9 +14,9 @@ ignore:
   - vulnerability: GHSA-r6q2-hw4h-h46w
   - vulnerability: GHSA-34x7-hfp2-rc4v
   - vulnerability: CVE-2026-22184
-    reason: No fixes available as of 2026-01-14 on Dockerfile base image 22.21.1-alpine3.23
+    reason: No fixes available as of 2026-01-14 on Dockerfile Node.js base image
   - vulnerability: CVE-2025-64718
-    reason: No fixes available as of 2026-01-14 on Dockerfile base image 22.21.1-alpine3.23
+    reason: No fixes available as of 2026-01-14 on Dockerfile Node.js base image
   - vulnerability: GHSA-8qq5-rm4j-mr97
     package:
       name: tar
@@ -44,83 +45,17 @@ ignore:
   - vulnerability: CVE-2026-27171
     include-aliases: true
     reason: "Alpine base image package (apk): zlib - no npm fix available as of 2026-02-23 (moderate severity)"
-  - vulnerability: GHSA-7r86-cg39-jmmj
+  # --- Application dependency findings with no non-breaking fix ---
+  - vulnerability: GHSA-52v5-jr5w-gjxr
     include-aliases: true
-    reason: "Unfixable npm transitive vulnerability: minimatch ReDoS (high severity) as of 2026-02-27"
-  - vulnerability: GHSA-23c5-xmqv-rm74
-    include-aliases: true
-    reason: "Unfixable npm transitive vulnerability: minimatch ReDoS (high severity) as of 2026-02-27"
-  - vulnerability: GHSA-2g4f-4pwh-qvx6
-    include-aliases: true
-    reason: "Unfixable npm transitive vulnerability: ajv (moderate severity) as of 2026-02-27"
-  - vulnerability: GHSA-3p68-rc4w-qgx5
-    reason: "axios"
-  - vulnerability: GHSA-fvcv-3m26-pcqx
-    reason: "axios"
-  - vulnerability: GHSA-f886-m6hf-6m8v
-    reason: "brace-expansion"
-  - vulnerability: GHSA-44fc-8fm5-q62h
-    reason: "convict"
-  - vulnerability: GHSA-hf2r-9gf9-rwch
-    reason: "convict"
-  - vulnerability: GHSA-8gc5-j5rx-235r
-    reason: "fast-xml-parser"
-  - vulnerability: GHSA-jp2q-39xq-3w4g
-    reason: "fast-xml-parser"
-  - vulnerability: GHSA-25h7-pfq9-p65f
-    reason: "flatted"
-  - vulnerability: GHSA-rf6f-7fwh-wjgh
-    reason: "flatted"
-  - vulnerability: GHSA-r4q5-vmmm-2653
-    reason: "follow-redirects"
-  - vulnerability: GHSA-2qvq-rjwj-gvw9
-    reason: "handlebars"
-  - vulnerability: GHSA-2w6w-674q-4c4q
-    reason: "handlebars"
-  - vulnerability: GHSA-3mfm-83xf-c92r
-    reason: "handlebars"
-  - vulnerability: GHSA-7rx3-28cr-v5wh
-    reason: "handlebars"
-  - vulnerability: GHSA-9cx6-37pm-9jff
-    reason: "handlebars"
-  - vulnerability: GHSA-xhpv-hc6g-r9c6
-    reason: "handlebars"
-  - vulnerability: GHSA-xjpj-3mr7-gcpf
-    reason: "handlebars"
-  - vulnerability: GHSA-jg4p-7fhp-p32p
-    reason: "@hapi/content"
-  - vulnerability: GHSA-wf6x-7x77-mvgw
-    reason: "immutable"
-  - vulnerability: GHSA-f23m-r3pf-42rh
-    reason: "lodash / lodash-es"
-  - vulnerability: GHSA-r5fr-rjxr-66jc
-    reason: "lodash / lodash-es"
-  - vulnerability: GHSA-37ch-88jc-xwx2
-    reason: "path-to-regexp"
-  - vulnerability: GHSA-3v7f-55p6-f55p
-    reason: "picomatch"
-  - vulnerability: GHSA-c2c7-rcm5-vvqj
-    reason: "picomatch"
-  - vulnerability: GHSA-xq3m-2v4x-88gg
-    reason: "@mojaloop/event-sdk > protobufjs"
-  - vulnerability: GHSA-9ppj-qmqm-q256
-    reason: "tar"
-  - vulnerability: GHSA-qffp-2rhf-9h96
-    reason: "tar"
-  - vulnerability: GHSA-2mjp-6q6p-2qxm
-    reason: "undici"
-  - vulnerability: GHSA-4992-7rv2-5pvq
-    reason: "undici"
-  - vulnerability: GHSA-f269-vfmq-vjvj
-    reason: "undici"
-  - vulnerability: GHSA-phc3-fgpg-7m6h
-    reason: "undici"
-  - vulnerability: GHSA-v9p9-hfj2-hcw8
-    reason: "undici"
-  - vulnerability: GHSA-vrm6-8vpv-qv8q
-    reason: "undici"
-  - vulnerability: GHSA-48c2-rrv3-qjmp
-    reason: "yaml"
+    package:
+      name: sigstore
+      versions:
+        - 1.9.0
+    reason: >-
+      sigstore 1.9.0 comes only via the dev-only chain yarn-audit-fix > pacote@15 (declares sigstore ^1.0.0); the only
+      fixed release is sigstore 4.1.1, which pacote 15 cannot take - no non-breaking fix available as of 2026-07-07
+      (high severity, devDependencies only, never shipped in the runtime image)
 output:
   - table
   - json

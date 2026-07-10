@@ -28,7 +28,7 @@
 
 'use strict';
 import { IDomainEventProducer } from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
-import { ICommandEventHandlerConfig } from 'src/shared/config';
+import { ICommandEventHandlerConfig } from '../shared/config';
 import { IBulkTransactionEntityRepo }  from '@mojaloop/sdk-scheme-adapter-private-shared-lib';
 
 export type ICommandEventHandlerOptions = {
