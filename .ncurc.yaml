@@ -17,5 +17,10 @@ reject: [
   ## uuid >=12 ships as ESM-only; private-shared-lib and its consumers are compiled to CommonJS, and require('uuid') of the ESM-only build fails under the jest CJS module loader (ERR_REQUIRE_ESM).
   "uuid",
   ## @types/node must stay on the 24.x line: its major must match the .nvmrc runtime major (24.18.0); higher majors only weaken type checking (tsc would accept Node-26-only APIs that crash at runtime - an untestable failure mode).
-  "@types/node"
+  "@types/node",
+  ## typescript 7.x is the native compiler port and drops lib/_tsc.js, which breaks Yarn's builtin
+  ## compat/typescript patch at install time (ENOENT ...typescript/lib/_tsc.js). It is also outside the peer
+  ## range of @typescript-eslint 8.63 (typescript <6.1.0) and ts-jest 29. Revisit when @typescript-eslint
+  ## and ts-jest publish TypeScript 7 support.
+  "typescript"
 ]

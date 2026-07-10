@@ -1744,9 +1744,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@eslint/eslintrc@npm:3.3.5":
-  version: 3.3.5
-  resolution: "@eslint/eslintrc@npm:3.3.5"
+"@eslint/eslintrc@npm:3.3.6":
+  version: 3.3.6
+  resolution: "@eslint/eslintrc@npm:3.3.6"
   dependencies:
     ajv: "npm:^6.14.0"
     debug: "npm:^4.3.2"
@@ -1754,10 +1754,10 @@ __metadata:
     globals: "npm:^14.0.0"
     ignore: "npm:^5.2.0"
     import-fresh: "npm:^3.2.1"
-    js-yaml: "npm:^4.1.1"
+    js-yaml: "npm:^4.3.0"
     minimatch: "npm:^3.1.5"
     strip-json-comments: "npm:^3.1.1"
-  checksum: 10/edabb65693d82a88cac3b2cf932a0f825e986b5e0a21ef08782d07e3a61ad87d39db67cfd5aeb146fd5053e5e24e389dbe5649ab22936a71d633c7b32a7e6d86
+  checksum: 10/8d1d501069faf7c1c73e37181ec403dd2d1509f8da85f226531f6a7fdd9a9326fc6d2ea2e8192515992578cf9e7ed87f9d7ce3f1bfc6d0f0e77796d18e0e8ef6
   languageName: node
   linkType: hard
 
@@ -1814,21 +1814,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@grpc/proto-loader@npm:0.8.0":
-  version: 0.8.0
-  resolution: "@grpc/proto-loader@npm:0.8.0"
-  dependencies:
-    lodash.camelcase: "npm:^4.3.0"
-    long: "npm:^5.0.0"
-    protobufjs: "npm:^7.5.3"
-    yargs: "npm:^17.7.2"
-  bin:
-    proto-loader-gen-types: build/bin/proto-loader-gen-types.js
-  checksum: 10/216813bdca52cd3a84ac355ad93c2c3f54252be47327692fe666fd85baa5b1d50aa681ebc5626ab08926564fb2deae3b2ea435aa5bd883197650bbe56f2ae108
-  languageName: node
-  linkType: hard
-
-"@grpc/proto-loader@npm:^0.8.0":
+"@grpc/proto-loader@npm:0.8.1, @grpc/proto-loader@npm:^0.8.0":
   version: 0.8.1
   resolution: "@grpc/proto-loader@npm:0.8.1"
   dependencies:
@@ -2689,6 +2675,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@mojaloop/central-services-error-handling@npm:13.1.7":
+  version: 13.1.7
+  resolution: "@mojaloop/central-services-error-handling@npm:13.1.7"
+  dependencies:
+    fast-safe-stringify: "npm:2.1.1"
+    lodash: "npm:4.18.1"
+  checksum: 10/08d66dd1aa24019e87fee57fe93b40f2b984c75a2ee34f303fbb67c39079334a04ab47efd148c4774100d9098c60622cf7f338370b5ef988942e31153665049f
+  languageName: node
+  linkType: hard
+
 "@mojaloop/central-services-logger@npm:11.10.4":
   version: 11.10.4
   resolution: "@mojaloop/central-services-logger@npm:11.10.4"
@@ -2717,12 +2713,26 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/central-services-metrics@npm:12.8.6":
-  version: 12.8.6
-  resolution: "@mojaloop/central-services-metrics@npm:12.8.6"
+"@mojaloop/central-services-logger@npm:11.10.6":
+  version: 11.10.6
+  resolution: "@mojaloop/central-services-logger@npm:11.10.6"
+  dependencies:
+    "@opentelemetry/api": "npm:1.9.1"
+    parse-strings-in-object: "npm:2.0.0"
+    rc: "npm:1.2.8"
+    safe-stable-stringify: "npm:^2.5.0"
+    triple-beam: "npm:1.4.1"
+    winston: "npm:3.19.0"
+  checksum: 10/841fc4525586b128e83c87b99730f86fb3daeecf970204c2cf7e958dd3c7886e681625fcf8dd5120ae110e12b67a67d5b6013e07de447909e639433400e9a4b0
+  languageName: node
+  linkType: hard
+
+"@mojaloop/central-services-metrics@npm:12.8.7":
+  version: 12.8.7
+  resolution: "@mojaloop/central-services-metrics@npm:12.8.7"
   dependencies:
     prom-client: "npm:15.1.3"
-  checksum: 10/fd242e4ba76cacb877fe2b95c7b88e903fd0419566a0a5371bd361c8a1bab7c74389ecbd6f322008c4d3a9bd2d8789a47a00f1e4a3aeff3cf1ddb87b14b090ba
+  checksum: 10/737cdefeff849a6f017c07710a6c146daa83818512c3c978b992e5875e163ba38d0a5eb1faf81f728b66a2dd4b68f998ae88816ed20fad5a1cbd50c6031f0a63
   languageName: node
   linkType: hard
 
@@ -2790,21 +2800,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/event-sdk@npm:14.8.4":
-  version: 14.8.4
-  resolution: "@mojaloop/event-sdk@npm:14.8.4"
+"@mojaloop/event-sdk@npm:14.8.5":
+  version: 14.8.5
+  resolution: "@mojaloop/event-sdk@npm:14.8.5"
   dependencies:
-    "@grpc/grpc-js": "npm:1.14.3"
-    "@grpc/proto-loader": "npm:0.8.0"
+    "@grpc/grpc-js": "npm:1.14.4"
+    "@grpc/proto-loader": "npm:0.8.1"
     brototype: "npm:0.0.6"
     error-callsites: "npm:2.0.4"
     lodash: "npm:4.18.1"
     moment: "npm:2.30.1"
     parse-strings-in-object: "npm:2.0.0"
-    protobufjs: "npm:8.0.3"
+    protobufjs: "npm:8.7.0"
     rc: "npm:1.2.8"
     safe-stable-stringify: "npm:2.5.0"
-    serialize-error: "npm:8.1.0"
+    serialize-error: "npm:13.0.1"
     traceparent: "npm:1.0.0"
     tslib: "npm:2.8.1"
     winston: "npm:3.19.0"
@@ -2816,7 +2826,7 @@ __metadata:
       optional: false
     "@mojaloop/central-services-stream":
       optional: true
-  checksum: 10/10cf68e89be0d1a1a810558e8dd115a19ea9d527e4d720cb7857bfd98f623807b271b3b4afc5aebb560d0ebbc692af83115a4756b177c7d00c60ba84b1d9b60d
+  checksum: 10/af27124447eea20e6f3d9647c3476f7a21ed7e0be0a7c96ecbdb232a3198e64b92a548dfed3a953463abc72c61347a3573e6d0290a0c0e0fab2210b3da3886e4
   languageName: node
   linkType: hard
 
@@ -2851,12 +2861,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/ml-number@npm:^11.4.3":
-  version: 11.4.3
-  resolution: "@mojaloop/ml-number@npm:11.4.3"
+"@mojaloop/ml-number@npm:^11.4.4":
+  version: 11.4.5
+  resolution: "@mojaloop/ml-number@npm:11.4.5"
   dependencies:
-    bignumber.js: "npm:9.3.1"
-  checksum: 10/513a6d3542307bef07c43878ba0ee914a3e09eda29898c3e5b9fd45b436b2986b6cb9763157e46d6aed82e83a90a7524be925285cbb9f85bf585a66f1b2bd2fb
+    bignumber.js: "npm:11.1.5"
+  checksum: 10/658ddf991a36987628482e023bf3bfc6022c91561f3c9ec0cc6274dea29fd13d3aff851834bac9a5fdc858800fb316a114838efd50989323e99d8e7acfed9538
   languageName: node
   linkType: hard
 
@@ -2926,19 +2936,19 @@ __metadata:
   dependencies:
     "@babel/core": "npm:8.0.1"
     "@babel/preset-env": "npm:8.0.2"
-    "@eslint/eslintrc": "npm:3.3.5"
+    "@eslint/eslintrc": "npm:3.3.6"
     "@eslint/js": "npm:10.0.1"
     "@koa/cors": "npm:5.0.0"
     "@mojaloop/api-snippets": "npm:18.3.2"
-    "@mojaloop/central-services-error-handling": "npm:13.1.6"
-    "@mojaloop/central-services-logger": "npm:11.10.5"
-    "@mojaloop/central-services-metrics": "npm:12.8.6"
+    "@mojaloop/central-services-error-handling": "npm:13.1.7"
+    "@mojaloop/central-services-logger": "npm:11.10.6"
+    "@mojaloop/central-services-metrics": "npm:12.8.7"
     "@mojaloop/central-services-shared": "npm:18.37.0"
-    "@mojaloop/event-sdk": "npm:14.8.4"
+    "@mojaloop/event-sdk": "npm:14.8.5"
     "@mojaloop/logging-bc-client-lib": "npm:0.5.8"
-    "@mojaloop/ml-schema-transformer-lib": "npm:2.10.0"
+    "@mojaloop/ml-schema-transformer-lib": "npm:2.10.1"
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^"
-    "@mojaloop/sdk-standard-components": "npm:19.19.0"
+    "@mojaloop/sdk-standard-components": "npm:19.19.1"
     "@redocly/openapi-cli": "npm:1.0.0-beta.95"
     "@types/jest": "npm:30.0.0"
     "@types/retry": "npm:^0"
@@ -2950,7 +2960,7 @@ __metadata:
     co-body: "npm:6.2.0"
     dotenv: "npm:17.4.2"
     env-var: "npm:7.5.0"
-    eslint: "npm:10.6.0"
+    eslint: "npm:10.7.0"
     eslint-config-airbnb-base: "npm:15.0.0"
     eslint-plugin-import: "npm:2.32.0"
     eslint-plugin-jest: "npm:29.15.4"
@@ -2994,7 +3004,7 @@ __metadata:
   resolution: "@mojaloop/sdk-scheme-adapter-outbound-command-event-handler@workspace:modules/outbound-command-event-handler"
   dependencies:
     "@eslint/compat": "npm:2.1.0"
-    "@eslint/eslintrc": "npm:3.3.5"
+    "@eslint/eslintrc": "npm:3.3.6"
     "@eslint/js": "npm:10.0.1"
     "@mojaloop/api-snippets": "npm:18.3.2"
     "@mojaloop/central-services-shared": "npm:18.37.0"
@@ -3015,7 +3025,7 @@ __metadata:
     ajv-formats: "npm:3.0.1"
     convict: "npm:6.2.5"
     copyfiles: "npm:2.4.1"
-    eslint: "npm:10.6.0"
+    eslint: "npm:10.7.0"
     eslint-plugin-import-x: "npm:4.17.1"
     express: "npm:4.21.2"
     jest: "npm:30.4.2"
@@ -3038,7 +3048,7 @@ __metadata:
   resolution: "@mojaloop/sdk-scheme-adapter-outbound-domain-event-handler@workspace:modules/outbound-domain-event-handler"
   dependencies:
     "@eslint/compat": "npm:2.1.0"
-    "@eslint/eslintrc": "npm:3.3.5"
+    "@eslint/eslintrc": "npm:3.3.6"
     "@eslint/js": "npm:10.0.1"
     "@mojaloop/api-snippets": "npm:18.3.2"
     "@mojaloop/logging-bc-client-lib": "npm:0.5.8"
@@ -3057,7 +3067,7 @@ __metadata:
     ajv-formats: "npm:3.0.1"
     convict: "npm:6.2.5"
     copyfiles: "npm:2.4.1"
-    eslint: "npm:10.6.0"
+    eslint: "npm:10.7.0"
     eslint-plugin-import-x: "npm:4.17.1"
     express: "npm:4.21.2"
     jest: "npm:30.4.2"
@@ -3080,7 +3090,7 @@ __metadata:
   resolution: "@mojaloop/sdk-scheme-adapter-private-shared-lib@workspace:modules/private-shared-lib"
   dependencies:
     "@eslint/compat": "npm:2.1.0"
-    "@eslint/eslintrc": "npm:3.3.5"
+    "@eslint/eslintrc": "npm:3.3.6"
     "@eslint/js": "npm:10.0.1"
     "@mojaloop/api-snippets": "npm:18.3.2"
     "@mojaloop/central-services-shared": "npm:18.37.0"
@@ -3092,7 +3102,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": "npm:8.63.0"
     "@typescript-eslint/parser": "npm:8.63.0"
     ajv: "npm:8.20.0"
-    eslint: "npm:10.6.0"
+    eslint: "npm:10.7.0"
     eslint-plugin-import-x: "npm:4.17.1"
     jest: "npm:30.4.2"
     npm-check-updates: "npm:16.7.10"
@@ -3116,7 +3126,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": "npm:8.63.0"
     "@typescript-eslint/parser": "npm:8.63.0"
     audit-ci: "npm:7.1.0"
-    eslint: "npm:10.6.0"
+    eslint: "npm:10.7.0"
     eslint-config-airbnb-typescript: "npm:18.0.0"
     eslint-plugin-import: "npm:2.32.0"
     husky: "npm:9.1.7"
@@ -3135,14 +3145,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@mojaloop/sdk-standard-components@npm:19.19.0":
-  version: 19.19.0
-  resolution: "@mojaloop/sdk-standard-components@npm:19.19.0"
+"@mojaloop/sdk-standard-components@npm:19.19.1":
+  version: 19.19.1
+  resolution: "@mojaloop/sdk-standard-components@npm:19.19.1"
   dependencies:
-    "@mojaloop/central-services-logger": "npm:11.10.4"
-    "@mojaloop/ml-number": "npm:^11.4.3"
-    "@mojaloop/ml-schema-transformer-lib": "npm:2.9.0"
-    axios: "npm:1.16.0"
+    "@mojaloop/central-services-logger": "npm:11.10.5"
+    "@mojaloop/ml-number": "npm:^11.4.4"
+    "@mojaloop/ml-schema-transformer-lib": "npm:2.10.0"
+    axios: "npm:1.18.1"
     axios-retry: "npm:4.5.0"
     base64url: "npm:3.0.1"
     ilp-packet: "npm:3.1.3"
@@ -3150,7 +3160,7 @@ __metadata:
     jsonwebtoken: "npm:9.0.3"
     jws: "npm:4.0.1"
     safe-stable-stringify: "npm:2.5.0"
-  checksum: 10/2728718f6e2150673fb4622642833e29da4725569a0a43b44493535de1f71da8343f70c4bc6ebbcfd324445f1d9ad1eb45c87c697ba810df94a28dfc6718ea82
+  checksum: 10/fbe3dac70e42930e0e1bf4e7f0b5ae2d4dd49c93eb59a50ed8b323324dd679625a8974d01fbcefed0113c51498ec3ff45e16a2bbfe6438395c92c5da4749c060
   languageName: node
   linkType: hard
 
@@ -5423,10 +5433,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bignumber.js@npm:9.3.1":
-  version: 9.3.1
-  resolution: "bignumber.js@npm:9.3.1"
-  checksum: 10/1be0372bf0d6d29d0a49b9e6a9cefbd54dad9918232ad21fcd4ec39030260773abf0c76af960c6b3b98d3115a3a71e61c6a111812d1395040a039cfa178e0245
+"bignumber.js@npm:11.1.5":
+  version: 11.1.5
+  resolution: "bignumber.js@npm:11.1.5"
+  checksum: 10/79a5ff40e2459497f4e4023a305ac134cda2ff97f2f4c97847b55f552ea2dae1e9e2330df0f05c2f3fcf63f469bbff35dabe44ca444a23ecb3c900779672c30f
   languageName: node
   linkType: hard
 
@@ -7767,9 +7777,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint@npm:10.6.0":
-  version: 10.6.0
-  resolution: "eslint@npm:10.6.0"
+"eslint@npm:10.7.0":
+  version: 10.7.0
+  resolution: "eslint@npm:10.7.0"
   dependencies:
     "@eslint-community/eslint-utils": "npm:^4.8.0"
     "@eslint-community/regexpp": "npm:^4.12.2"
@@ -7808,7 +7818,7 @@ __metadata:
       optional: true
   bin:
     eslint: bin/eslint.js
-  checksum: 10/36d02cdbe37668e601f255917c605d10a5d06d278648dc72cec21fe23b7b60a53453241b32c382ba8107533cacba70aeec97581cc4f4bb591544b1ada2516335
+  checksum: 10/51cb70fbdd0de6586f0cb12625388faab18eb679cbdb523ecb631cae9f47fd9171d9ff02f570dc4d2e5700017908a81477511025ccb2a6603c5928fbfddcaebf
   languageName: node
   linkType: hard
 
@@ -10654,7 +10664,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"js-yaml@npm:^4.1.0, js-yaml@npm:^4.1.1":
+"js-yaml@npm:^4.1.0, js-yaml@npm:^4.1.1, js-yaml@npm:^4.3.0":
   version: 4.3.0
   resolution: "js-yaml@npm:4.3.0"
   dependencies:
