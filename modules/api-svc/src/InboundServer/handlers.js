@@ -606,8 +606,8 @@ const getQuoteById = async (ctx) => {
     })();
 
     // Note that we will have passed request validation, JWS etc... by this point
-    // so it is safe to return 200
-    ctx.response.status = ReturnCodes.OK.CODE;
+    // so it is safe to return 202
+    ctx.response.status = ReturnCodes.ACCEPTED.CODE;
 
 };
 

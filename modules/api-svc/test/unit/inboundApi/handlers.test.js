@@ -104,7 +104,7 @@ describe('Inbound API handlers:', () => {
 
             expect(getQuoteRequestSpy).toHaveBeenCalledTimes(1);
             expect(getQuoteRequestSpy.mock.calls[0][1]).toBe(mockContext.request.headers['fspiop-source']);
-
+            expect(mockContext.response.status).toBe(202);
         });
     });
 
