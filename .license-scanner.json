@@ -10,6 +10,8 @@
     "@nx/nx-linux-x64-gnu@16.5.0": { "reason": "NX binary, safe to allow", "expires": "2027-01-01" },
     "@nx/nx-linux-x64-musl@16.5.0": { "reason": "NX binary, safe to allow", "expires": "2027-01-01" },
     "@nx/nx-win32-arm64-msvc@16.5.0": { "reason": "NX binary, safe to allow", "expires": "2027-01-01" },
-    "@nx/nx-win32-x64-msvc@16.5.0": { "reason": "NX binary, safe to allow", "expires": "2027-01-01" }
+    "@nx/nx-win32-x64-msvc@16.5.0": { "reason": "NX binary, safe to allow", "expires": "2027-01-01" },
+    "@mojaloop/sdk-scheme-adapter@0.0.0-use.local": { "reason": "Internal Mojaloop package, licensed under Apache 2.0", "expires": "2027-01-01" },
+    "@mojaloop/sdk-scheme-adapter-private-shared-lib@0.0.0-use.local": { "reason": "Internal Mojaloop workspace package, licensed under Apache 2.0", "expires": "2027-01-01" }
   }
 }
