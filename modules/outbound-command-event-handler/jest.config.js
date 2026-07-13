@@ -26,5 +26,13 @@ module.exports = {
       "statements": -525
     }
   },
-  moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, { prefix: '<rootDir>/' })
+  moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, { prefix: '<rootDir>/' }),
+
+  transform: {
+    "^.+\\.(ts|tsx)$": "ts-jest",
+    "^.+\\.(js|jsx|mjs)$": "ts-jest"
+  },
+  transformIgnorePatterns: [
+    "/node_modules/(?!serialize-error|non-error|@mojaloop/central-services-shared|@mojaloop/event-sdk|uuid).+\\.js$"
+  ]
 }

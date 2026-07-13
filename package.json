@@ -84,7 +84,6 @@
   "devDependencies": {
     "@types/jest": "30.0.0",
     "@types/node": "26.1.1",
-    "@types/node-cache": "4.2.5",
     "@typescript-eslint/eslint-plugin": "8.63.0",
     "@typescript-eslint/parser": "8.63.0",
     "audit-ci": "7.1.0",

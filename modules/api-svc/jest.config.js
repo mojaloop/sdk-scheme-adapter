@@ -14,5 +14,8 @@ module.exports = {
     clearMocks: true,
     moduleNameMapper: {
         "^~/(.*)$": "<rootDir>/src/$1"
-    }
+    },
+    transformIgnorePatterns: [
+        "/node_modules/(?!serialize-error|non-error|@mojaloop/central-services-shared|@mojaloop/event-sdk)"
+    ]
 };
