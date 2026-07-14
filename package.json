@@ -140,8 +140,10 @@
     "fast-xml-parser": "5.8.0",
     "uuid": "11.1.1",
     "protobufjs": "8.6.0",
-    "linkify-it": "4.0.0",
-    "sigstore": "2.0.0"
+    "linkify-it": "4.0.1",
+    "sigstore": "3.0.0",
+    "markdown-it": "14.1.2",
+    "@sigstore/core": "2.0.0"
   },
   "standard-version": {
     "scripts": {
