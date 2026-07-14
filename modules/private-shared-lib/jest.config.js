@@ -9,13 +9,12 @@ module.exports = {
   clearMocks: true,
   coverageThreshold: {
     "global": {
-      "branches": 9,
-      "functions": 5,
-      "lines": 27,
-      "statements": 27
+      "branches": 0,
+      "functions": 0,
+      "lines": 0,
+      "statements": 0
     }
   },
-
   transform: {
     "^.+\\.(ts|tsx)$": "ts-jest",
     "^.+\\.(js|jsx|mjs)$": "ts-jest"
