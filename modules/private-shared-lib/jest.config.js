@@ -21,5 +21,6 @@ module.exports = {
   },
   transformIgnorePatterns: [
     "/node_modules/(?!serialize-error|non-error|@mojaloop/central-services-shared|@mojaloop/event-sdk|uuid).+\\.js$"
-  ]
+  ],
+  forceExit: true
 }
