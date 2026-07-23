@@ -2800,6 +2800,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@mojaloop/license-scanner-tool@npm:1.1.1":
+  version: 1.1.1
+  resolution: "@mojaloop/license-scanner-tool@npm:1.1.1"
+  dependencies:
+    spdx-expression-parse: "npm:4.0.0"
+    spdx-license-ids: "npm:3.0.23"
+  bin:
+    license-scanner-tool: src/cli.js
+  checksum: 10/a940f65f89e30d997eaeb1e1fd9bc4ac8dadc710044a73fbf976cd84d7066f53457fe990fbdf8467d1eafe3346443768df2d29ed67f6a8e3278e769524607dfb
+  languageName: node
+  linkType: hard
+
 "@mojaloop/logging-bc-client-lib@npm:0.5.8":
   version: 0.5.8
   resolution: "@mojaloop/logging-bc-client-lib@npm:0.5.8"
@@ -2811,7 +2823,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/logging-bc-public-types-lib@npm:0.5.7, @mojaloop/logging-bc-public-types-lib@npm:~0.5.3, @mojaloop/logging-bc-public-types-lib@npm:~0.5.4, @mojaloop/logging-bc-public-types-lib@npm:~0.5.7":
+"@mojaloop/logging-bc-public-types-lib@npm:0.5.7, @mojaloop/logging-bc-public-types-lib@npm:~0.5.3, @mojaloop/logging-bc-public-types-lib@npm:~0.5.7":
   version: 0.5.7
   resolution: "@mojaloop/logging-bc-public-types-lib@npm:0.5.7"
   checksum: 10/fb1c4687f7ccab92eb88c890e995c8171fecaf4837a365e4cbe74d3b5e82c0c6aa92c906d6f81ae9ab9ef7dde5e05748c361e5397cd07438203680ac8be2a57b
@@ -2882,25 +2894,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/platform-shared-lib-messaging-types-lib@npm:~0.6.2":
-  version: 0.6.2
-  resolution: "@mojaloop/platform-shared-lib-messaging-types-lib@npm:0.6.2"
-  checksum: 10/c6029e76a70a08237f5f9e05e13b12fb187cd39084cc01fc736fb12da3b5446b22111754516b6abeccefff9753393a33a26d3e0d1c06fb9cf6a0bac8f7125d57
-  languageName: node
-  linkType: hard
-
-"@mojaloop/platform-shared-lib-nodejs-kafka-client-lib@npm:0.5.18":
-  version: 0.5.18
-  resolution: "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib@npm:0.5.18"
-  dependencies:
-    "@mojaloop/logging-bc-public-types-lib": "npm:~0.5.4"
-    "@mojaloop/platform-shared-lib-messaging-types-lib": "npm:~0.6.2"
-    node-rdkafka: "npm:~3.0.1"
-  checksum: 10/d6c84e6a5f02bf65bd6f7f5e38f0bd928b2d60c090b150783cf130fa52d35bae87bf55deed985abb925fed0cd4929f764897eeabba3e9e8b817467b0aa92457d
-  languageName: node
-  linkType: hard
-
-"@mojaloop/platform-shared-lib-nodejs-kafka-client-lib@npm:~0.5.7":
+"@mojaloop/platform-shared-lib-nodejs-kafka-client-lib@npm:0.5.21, @mojaloop/platform-shared-lib-nodejs-kafka-client-lib@npm:~0.5.7":
   version: 0.5.21
   resolution: "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib@npm:0.5.21"
   dependencies:
@@ -3065,7 +3059,7 @@ __metadata:
     "@mojaloop/central-services-shared": "npm:18.37.0"
     "@mojaloop/logging-bc-public-types-lib": "npm:0.5.7"
     "@mojaloop/platform-shared-lib-messaging-types-lib": "npm:0.7.4"
-    "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib": "npm:0.5.18"
+    "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib": "npm:0.5.21"
     "@types/node": "npm:26.1.1"
     "@types/uuid": "npm:10.0.0"
     "@typescript-eslint/eslint-plugin": "npm:8.65.0"
@@ -3088,6 +3082,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mojaloop/sdk-scheme-adapter@workspace:."
   dependencies:
+    "@mojaloop/license-scanner-tool": "npm:1.1.1"
     "@types/jest": "npm:30.0.0"
     "@types/node": "npm:26.1.1"
     "@types/node-cache": "npm:4.2.5"
@@ -11731,7 +11726,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nan@npm:^2.19.0, nan@npm:^2.24.0":
+"nan@npm:^2.24.0":
   version: 2.28.0
   resolution: "nan@npm:2.28.0"
   dependencies:
@@ -11918,17 +11913,6 @@ __metadata:
   version: 0.4.0
   resolution: "node-int64@npm:0.4.0"
   checksum: 10/b7afc2b65e56f7035b1a2eec57ae0fbdee7d742b1cdcd0f4387562b6527a011ab1cbe9f64cc8b3cca61e3297c9637c8bf61cec2e6b8d3a711d4b5267dfafbe02
-  languageName: node
-  linkType: hard
-
-"node-rdkafka@npm:~3.0.1":
-  version: 3.0.1
-  resolution: "node-rdkafka@npm:3.0.1"
-  dependencies:
-    bindings: "npm:^1.3.1"
-    nan: "npm:^2.19.0"
-    node-gyp: "npm:latest"
-  checksum: 10/3b15c1e4bfafe7f8d109518693f821f53b7a1eb3ea284fd3281ac950b3bd20fae100088fbaf412329cd4660b65afdf23fa42c32640de1697558e6a2c4b6dd5af
   languageName: node
   linkType: hard
 
@@ -14594,6 +14578,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"spdx-expression-parse@npm:4.0.0":
+  version: 4.0.0
+  resolution: "spdx-expression-parse@npm:4.0.0"
+  dependencies:
+    spdx-exceptions: "npm:^2.1.0"
+    spdx-license-ids: "npm:^3.0.0"
+  checksum: 10/936be681fbf5edeec3a79c023136479f70d6edb3fd3875089ac86cd324c6c8c81add47399edead296d1d0af17ae5ce88c7f88885eb150b62c2ff6e535841ca6a
+  languageName: node
+  linkType: hard
+
 "spdx-expression-parse@npm:^3.0.0":
   version: 3.0.1
   resolution: "spdx-expression-parse@npm:3.0.1"
@@ -14604,7 +14598,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"spdx-license-ids@npm:^3.0.0":
+"spdx-license-ids@npm:3.0.23, spdx-license-ids@npm:^3.0.0":
   version: 3.0.23
   resolution: "spdx-license-ids@npm:3.0.23"
   checksum: 10/fead6be44478e4dd73a0721ae569f4a04f358846d8d82e8d92efae64aca928592e380cf17e8b84c25c948f3a7d8a0b4fc781a1830f3911ca87d52733265176b5
