@@ -76,7 +76,7 @@
     "@mojaloop/ml-schema-transformer-lib": "2.10.1",
     "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^",
     "@mojaloop/sdk-standard-components": "19.19.1",
-    "ajv": "8.17.1",
+    "ajv": "8.20.0",
     "axios": "1.18.1",
     "body-parser": "2.3.0",
     "co-body": "6.2.0",
