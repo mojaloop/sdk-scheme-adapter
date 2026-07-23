@@ -83,7 +83,7 @@
     "tslib": "2.8.1"
   },
   "devDependencies": {
-    "@mojaloop/license-scanner-tool": "1.1.1",
+    "@mojaloop/license-scanner-tool": "1.1.2",
     "@types/jest": "30.0.0",
     "@types/node": "26.1.1",
     "@types/node-cache": "4.2.5",
