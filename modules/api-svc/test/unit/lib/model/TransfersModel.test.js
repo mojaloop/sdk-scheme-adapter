@@ -519,7 +519,7 @@ describe('TransfersModel', () => {
         it('should handle input validation for lack of transferId param', async () => {
             const model = await Model.create(data, cacheKey, modelConfig);
 
-            expect(() => model.run({}))
+            await expect(model.run({}))
                 .rejects.toEqual(
                     new Error('TransfersModel args requires \'transferId\' is nonempty string and mandatory property')
                 );
@@ -529,7 +529,7 @@ describe('TransfersModel', () => {
             const transferId = uuid();
             const model = await Model.create(data, cacheKey, modelConfig);
 
-            expect(() => model.run({transferId, transfer: { transferId: uuid()}}))
+            await expect(model.run({transferId, transfer: { transferId: uuid()}}))
                 .rejects.toEqual(
                     new Error('TransfersModel args requires properties \'transfer.transferId\' and \'transferId\' to be the equal in value')
                 );
@@ -539,7 +539,7 @@ describe('TransfersModel', () => {
             const transferId = uuid();
             const model = await Model.create(data, cacheKey, modelConfig);
 
-            expect(() => model.run({transferId, fspId:'' }))
+            await expect(model.run({transferId, fspId:'' }))
                 .rejects.toEqual(
                     new Error('TransfersModel args requires \'fspId\' to be nonempty string')
                 );
