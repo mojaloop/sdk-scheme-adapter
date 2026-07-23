@@ -92,7 +92,8 @@ describe('Inbound API handlers transforming incoming ISO20022 message bodies', (
                     },
                     logger,
                     cache: {
-                        publish: jest.fn(() => Promise.resolve(true))
+                        publish: jest.fn(() => Promise.resolve(true)),
+                        set: jest.fn(() => Promise.resolve())
                     }
                 }
             };
