@@ -42,7 +42,7 @@ const uuid = require('@mojaloop/central-services-shared').Util.id({type: 'ulid'}
 const Model = require('~/lib/model').TransfersModel;
 const PSM = require('~/lib/model/common').PersistentStateMachine;
 const { SDKStateEnum } = require('~/lib/model/common');
-const { MojaloopRequests } = require('@mojaloop/sdk-standard-components');
+const { MojaloopRequests, Ilp } = require('@mojaloop/sdk-standard-components');
 const defaultConfig = require('./data/defaultConfig');
 const mockLogger = require('../../mockLogger');
 const deferredJob = require('~/lib/model/lib').deferredJob;
@@ -334,6 +334,75 @@ describe('TransfersModel', () => {
 
     });
 
+    describe('ISO20022 mode', () => {
+        afterEach(() => {
+            Ilp.__transactionObject = { transactionId: 'mockTransactionId' };
+        });
+
+        it('threads the cached ISO20022 quote response into postTransfers as $context', async () => {
+            const transferId = uuid();
+            const fspId = uuid();
+            const quoteId = uuid();
+            const transfer = { transferId, ilpPacket: 'mockIlpPacket' };
+            const channel = Model.channelName({ transferId });
+
+            Ilp.__transactionObject = { quoteId };
+            const isoPostQuoteResponse = { CdtTrfTxInf: { ChrgBr: 'SHAR' } };
+
+            // a preceding test permanently mutates the shared MojaloopRequests mock
+            MojaloopRequests.__postTransfers = jest.fn(() => Promise.resolve());
+
+            modelConfig.isIsoApi = true;
+            modelConfig.cache.get = jest.fn((key) => Promise.resolve(
+                key === `qt_${quoteId}` ? { originalIso20022QuoteResponse: isoPostQuoteResponse } : data
+            ));
+
+            const model = await Model.create(data, cacheKey, modelConfig);
+            const { cache } = model.context;
+            model.run = jest.fn(() => Promise.resolve());
+
+            const message = {
+                body: { ...putTransfersResponse },
+                headers: {}
+            };
+
+            const onRequestActionPromise = model.onRequestAction(model.fsm, { transferId, fspId, transfer });
+
+            const df = deferredJob(cache, channel);
+            setImmediate(() => df.trigger(message));
+
+            await onRequestActionPromise;
+
+            expect(MojaloopRequests.__postTransfers).toHaveBeenCalledWith(
+                transfer, fspId, {}, { isoPostQuoteResponse }
+            );
+        });
+
+        it('throws a clear error when no cached quote response exists for the decoded quoteId', async () => {
+            const transferId = uuid();
+            const fspId = uuid();
+            const quoteId = uuid();
+            const transfer = { transferId, ilpPacket: 'mockIlpPacket' };
+            const channel = Model.channelName({ transferId });
+
+            Ilp.__transactionObject = { quoteId };
+
+            modelConfig.isIsoApi = true;
+            modelConfig.cache.get = jest.fn((key) => Promise.resolve(
+                key === `qt_${quoteId}` ? undefined : data
+            ));
+
+            const model = await Model.create(data, cacheKey, modelConfig);
+            const { cache } = model.context;
+
+            await expect(model.onRequestAction(model.fsm, { transferId, fspId, transfer }))
+                .rejects.toThrow(`no cached ISO20022 quote response found for quoteId '${quoteId}'`);
+
+            expect(cache.unsubscribe).toHaveBeenCalledTimes(1);
+            expect(cache.unsubscribe).toHaveBeenCalledWith(channel, subId);
+        });
+    });
+
     describe('run workflow', () => {
         it('start', async () => {
             const transferId = uuid();
@@ -450,7 +519,7 @@ describe('TransfersModel', () => {
         it('should handle input validation for lack of transferId param', async () => {
             const model = await Model.create(data, cacheKey, modelConfig);
 
-            expect(() => model.run({}))
+            await expect(model.run({}))
                 .rejects.toEqual(
                     new Error('TransfersModel args requires \'transferId\' is nonempty string and mandatory property')
                 );
@@ -460,7 +529,7 @@ describe('TransfersModel', () => {
             const transferId = uuid();
             const model = await Model.create(data, cacheKey, modelConfig);
 
-            expect(() => model.run({transferId, transfer: { transferId: uuid()}}))
+            await expect(model.run({transferId, transfer: { transferId: uuid()}}))
                 .rejects.toEqual(
                     new Error('TransfersModel args requires properties \'transfer.transferId\' and \'transferId\' to be the equal in value')
                 );
@@ -470,7 +539,7 @@ describe('TransfersModel', () => {
             const transferId = uuid();
             const model = await Model.create(data, cacheKey, modelConfig);
 
-            expect(() => model.run({transferId, fspId:'' }))
+            await expect(model.run({transferId, fspId:'' }))
                 .rejects.toEqual(
                     new Error('TransfersModel args requires \'fspId\' to be nonempty string')
                 );

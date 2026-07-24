@@ -47,6 +47,7 @@ function generate({
      * @description invokes the call to switch
      * @param {object} requests - MojaloopRequests instance
      * @param {array} args - the arguments passed as object to `run` method
+     * @param {object} ctx - { cache, config } from the model's handlersContext
      */
     requestActionMethod,
 
@@ -180,7 +181,7 @@ function generate({
 
         return deferredJob(cache, channelNameMethod(args))
             .init(async (channel) => {
-                const res = await requestActionMethod(requests, args);
+                const res = await requestActionMethod(requests, args, { cache, config });
                 logger.isDebugEnabled && logger.push({ res, channel, args }).debug('RequestAction call sent to peer, listening on response');
                 return res;
             })
