@@ -67,7 +67,7 @@
     "test:integration:local": "yarn run test:integration -- --local",
     "test:integration-dev": "nx run-many --parallel --all --target=test:integration",
     "test:integration:affected": "nx affected --parallel --target=test:integration",
-    "audit:check": "yarn npm audit --all --recursive --no-deprecations --severity moderate",
+    "audit:check": "node ./scripts/audit-check.js",
     "audit:fix": "yarn-audit-fix",
     "license:check": "npx @mojaloop/license-scanner-tool .",
     "dep:check": "yarn ncu -e 2 && nx run-many --parallel --all --target=dep:check --output-style=static",
