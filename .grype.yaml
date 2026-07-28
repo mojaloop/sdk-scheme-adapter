@@ -1,6 +1,20 @@
 scan-type: source
 
 ignore:
+  # --- App-level: no patched release exists in the affected major line ---
+  - vulnerability: GHSA-mh99-v99m-4gvg
+    reason: >-
+      CVE-2026-14257 brace-expansion memory-exhaustion DoS affects <=5.0.7; the only patched
+      release is 5.0.8 (a cross-major bump). App-level 5.x is pinned to the fixed 5.0.8 via
+      resolutions; the residual 1.1.16 / 2.1.2 are pulled only by transitive minimatch 3.x-9.x
+      (glob / build tooling) that have no 1.x or 2.x fix, and forcing those CJS consumers onto
+      brace-expansion 5.x risks breakage. Not exposed to untrusted brace-pattern input. Revisit
+      if a 1.x/2.x patch ships.
+    package:
+      name: brace-expansion
+      versions:
+        - 1.1.16
+        - 2.1.2
   # --- Base image / OS-level findings (only relevant to the Docker image scan, not fixable via application dependencies) ---
   - vulnerability: CVE-2025-3277
   - vulnerability: CVE-2024-9410
@@ -56,6 +70,69 @@ ignore:
       sigstore 1.9.0 comes only via the dev-only chain yarn-audit-fix > pacote@15 (declares sigstore ^1.0.0); the only
       fixed release is sigstore 4.1.1, which pacote 15 cannot take - no non-breaking fix available as of 2026-07-07
       (high severity, devDependencies only, never shipped in the runtime image)
+  # --- Bundled-npm findings inside node:24.18.0-alpine (/usr/local/lib/node_modules/npm), surfaced by the CI image scan.
+  #     Not fixable via application deps/resolutions - only a Node release bundling a newer npm resolves them.
+  #     Scoped by location so the fixable app-level occurrences (e.g. brace-expansion 1.x/2.x) stay visible (as of 2026-07-22). ---
+  - vulnerability: GHSA-23hp-3jrh-7fpw
+    include-aliases: true
+    package:
+      name: tar
+      location: "/usr/local/lib/node_modules/**"
+    reason: "npm-base-image/tar: 7.5.15 bundled with npm in node:24.18.0-alpine - fix needs npm bundling tar>=7.5.19; not fixable via app deps (Critical, as of 2026-07-22)"
+  - vulnerability: GHSA-8x88-c5mf-7j5w
+    include-aliases: true
+    package:
+      name: tar
+      location: "/usr/local/lib/node_modules/**"
+    reason: "npm-base-image/tar: 7.5.15 bundled with npm in node:24.18.0-alpine - fix needs npm bundling tar>=7.5.18; not fixable via app deps (High, as of 2026-07-22)"
+  - vulnerability: GHSA-w8wr-v893-vjvp
+    include-aliases: true
+    package:
+      name: tar
+      location: "/usr/local/lib/node_modules/**"
+    reason: "npm-base-image/tar: 7.5.15 bundled with npm in node:24.18.0-alpine - fix needs npm bundling tar>=7.5.18; not fixable via app deps (Medium, as of 2026-07-22)"
+  - vulnerability: GHSA-gvwx-54wh-qm9j
+    include-aliases: true
+    package:
+      name: tar
+      location: "/usr/local/lib/node_modules/**"
+    reason: "npm-base-image/tar: 7.5.15 bundled with npm in node:24.18.0-alpine - fix needs npm bundling tar>=7.5.17; not fixable via app deps (Medium, as of 2026-07-22)"
+  - vulnerability: GHSA-vmf3-w455-68vh
+    include-aliases: true
+    package:
+      name: tar
+      location: "/usr/local/lib/node_modules/**"
+    reason: "npm-base-image/tar: 7.5.15 bundled with npm in node:24.18.0-alpine - fix needs npm bundling tar>=7.5.16; not fixable via app deps (Medium, as of 2026-07-22)"
+  - vulnerability: GHSA-vxpw-j846-p89q
+    include-aliases: true
+    package:
+      name: undici
+      location: "/usr/local/lib/node_modules/**"
+    reason: "npm-base-image/undici: 6.26.0 bundled with npm in node:24.18.0-alpine - fix needs npm bundling undici>=6.27.0; not fixable via app deps (High, as of 2026-07-22)"
+  - vulnerability: GHSA-p88m-4jfj-68fv
+    include-aliases: true
+    package:
+      name: undici
+      location: "/usr/local/lib/node_modules/**"
+    reason: "npm-base-image/undici: 6.26.0 bundled with npm in node:24.18.0-alpine - fix needs npm bundling undici>=6.27.0; not fixable via app deps (Medium, as of 2026-07-22)"
+  - vulnerability: GHSA-g8m3-5g58-fq7m
+    include-aliases: true
+    package:
+      name: undici
+      location: "/usr/local/lib/node_modules/**"
+    reason: "npm-base-image/undici: 6.26.0 bundled with npm in node:24.18.0-alpine - fix needs npm bundling undici>=6.27.0; not fixable via app deps (Low, as of 2026-07-22)"
+  - vulnerability: GHSA-35p6-xmwp-9g52
+    include-aliases: true
+    package:
+      name: undici
+      location: "/usr/local/lib/node_modules/**"
+    reason: "npm-base-image/undici: 6.26.0 bundled with npm in node:24.18.0-alpine - fix needs npm bundling undici>=6.27.0; not fixable via app deps (Low, as of 2026-07-22)"
+  - vulnerability: GHSA-3jxr-9vmj-r5cp
+    include-aliases: true
+    package:
+      name: brace-expansion
+      location: "/usr/local/lib/node_modules/**"
+    reason: "npm-base-image/brace-expansion: 5.0.6 bundled with npm in node:24.18.0-alpine - fix needs npm bundling brace-expansion>=5.0.7; not fixable via app deps. App-level brace-expansion 1.x/2.x fixed separately via resolutions (High, as of 2026-07-22)"
 output:
   - table
   - json
