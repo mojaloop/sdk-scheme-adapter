@@ -1,4 +1,11 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+### [24.19.7](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.19.6...v24.19.7) (2026-07-24)
+
+
+### Bug Fixes
+
+* iso transfers missing mandatory field ([#680](https://github.com/mojaloop/sdk-scheme-adapter/issues/680)) ([65f1be4](https://github.com/mojaloop/sdk-scheme-adapter/commit/65f1be431921ceb529ca382d4a099c42f54cfb96))
+
 ### [24.19.6](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.19.5...v24.19.6) (2026-06-03)
 
 

@@ -130,7 +130,8 @@ describe('Inbound API handlers:', () => {
                     },
                     logger,
                     cache: {
-                        publish: jest.fn(() => Promise.resolve(true))
+                        publish: jest.fn(() => Promise.resolve(true)),
+                        set: jest.fn(() => Promise.resolve())
                     }
                 }
             };

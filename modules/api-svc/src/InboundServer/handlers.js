@@ -529,6 +529,9 @@ const putQuoteById = async (ctx) => {
         data
     });
 
+    // persisted so it can be looked up later by quoteId (e.g. by TransfersModel)
+    await ctx.state.cache.set(`qt_${quoteId}`, data, ctx.state.conf.redisCacheTtl);
+
     // duplicate publication until legacy code refactored
     await QuotesModel.triggerDeferredJob({
         cache: ctx.state.cache,

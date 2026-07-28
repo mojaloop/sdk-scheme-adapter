@@ -26,6 +26,7 @@
  ******/
 'use strict';
 
+const { Ilp } = require('@mojaloop/sdk-standard-components');
 const Async2SyncModel = require('./Async2SyncModel');
 
 
@@ -44,6 +45,34 @@ function channelName({ transferId }) {
 }
 
 /**
+ * @name getIsoPostQuoteResponse
+ * @description decodes the quoteId out of the transfer's ilpPacket and looks up the
+ *   cached ISO20022 quote response (published by the inbound PUT /quotes/{ID} handler)
+ *   needed to populate mandatory ISO20022 fields (ChrgBr/Cdtr/Dbtr) on the outbound transfer
+ * @param {object} transfer - the transfer payload
+ * @param {object} cache - the cache instance
+ * @param {object} config - handlersContext config (ilpSecret, ilpVersion, logger)
+ */
+async function getIsoPostQuoteResponse(transfer, cache, config) {
+    const ilpVersion = config.ilpVersion === '4' ? Ilp.ILP_VERSIONS.v4 : Ilp.ILP_VERSIONS.v1;
+    const ilp = Ilp.ilpFactory(ilpVersion, { secret: config.ilpSecret, logger: config.logger });
+
+    let quoteId;
+    try {
+        ({ quoteId } = ilp.getTransactionObject(transfer.ilpPacket));
+    } catch (err) {
+        throw new Error(`Cannot send transfer via /simpleTransfers in ISO20022 API mode: failed to decode quoteId from transfer.ilpPacket: ${err.message}`, { cause: err });
+    }
+
+    const cached = await cache.get(`qt_${quoteId}`);
+    const isoPostQuoteResponse = cached?.originalIso20022QuoteResponse;
+    if (!isoPostQuoteResponse || Object.keys(isoPostQuoteResponse).length === 0) {
+        throw new Error(`Cannot send transfer via /simpleTransfers in ISO20022 API mode: no cached ISO20022 quote response found for quoteId '${quoteId}'. A PUT /quotes/${quoteId} callback must have been received by this SDK instance before calling POST /simpleTransfers.`);
+    }
+    return isoPostQuoteResponse;
+}
+
+/**
  * @name requestAction
  * @description invokes the call to switch
  * @param {object} requests - MojaloopRequests instance
@@ -51,8 +80,9 @@ function channelName({ transferId }) {
  *   @param {string} [args.transferId] - ignored if passed - the transfer I=id
  *   @param {string} args.fspId - the destination fsp id
  *   @param {string} args.transfer - the transfer payload
+ * @param {object} ctx - { cache, config } from the model's handlersContext
  */
-function requestAction(requests, { /* transferId - is not used here */ fspId, transfer }) {
+async function requestAction(requests, { /* transferId - is not used here */ fspId, transfer }, { cache, config } = {}) {
     if ( !fspId ) {
         throw new Error('TransfersModel args requires \'fspId\' to be nonempty string');
     }
@@ -60,6 +90,12 @@ function requestAction(requests, { /* transferId - is not used here */ fspId, tr
     if ( !(transfer  && typeof(transfer) === 'object') ) {
         throw new Error('TransfersModel.requestAction args requires \'transfer\' to be specified');
     }
+
+    if (config?.isIsoApi) {
+        const isoPostQuoteResponse = await getIsoPostQuoteResponse(transfer, cache, config);
+        return requests.postTransfers(transfer, fspId, {}, { isoPostQuoteResponse });
+    }
+
     return requests.postTransfers(transfer, fspId);
 }
 
