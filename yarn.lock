@@ -3141,7 +3141,7 @@ __metadata:
     knex: "npm:3.3.0"
     nodemon: "npm:3.1.14"
     npm-check-updates: "npm:16.7.10"
-    nx: "npm:22.7.5"
+    nx: "npm:23.1.0"
     replace: "npm:1.2.2"
     standard-version: "npm:9.5.0"
     ts-jest: "npm:29.4.12"
@@ -3350,72 +3350,72 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nx/nx-darwin-arm64@npm:22.7.5":
-  version: 22.7.5
-  resolution: "@nx/nx-darwin-arm64@npm:22.7.5"
+"@nx/nx-darwin-arm64@npm:23.1.0":
+  version: 23.1.0
+  resolution: "@nx/nx-darwin-arm64@npm:23.1.0"
   conditions: os=darwin & cpu=arm64
   languageName: node
   linkType: hard
 
-"@nx/nx-darwin-x64@npm:22.7.5":
-  version: 22.7.5
-  resolution: "@nx/nx-darwin-x64@npm:22.7.5"
+"@nx/nx-darwin-x64@npm:23.1.0":
+  version: 23.1.0
+  resolution: "@nx/nx-darwin-x64@npm:23.1.0"
   conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
 
-"@nx/nx-freebsd-x64@npm:22.7.5":
-  version: 22.7.5
-  resolution: "@nx/nx-freebsd-x64@npm:22.7.5"
+"@nx/nx-freebsd-x64@npm:23.1.0":
+  version: 23.1.0
+  resolution: "@nx/nx-freebsd-x64@npm:23.1.0"
   conditions: os=freebsd & cpu=x64
   languageName: node
   linkType: hard
 
-"@nx/nx-linux-arm-gnueabihf@npm:22.7.5":
-  version: 22.7.5
-  resolution: "@nx/nx-linux-arm-gnueabihf@npm:22.7.5"
+"@nx/nx-linux-arm-gnueabihf@npm:23.1.0":
+  version: 23.1.0
+  resolution: "@nx/nx-linux-arm-gnueabihf@npm:23.1.0"
   conditions: os=linux & cpu=arm
   languageName: node
   linkType: hard
 
-"@nx/nx-linux-arm64-gnu@npm:22.7.5":
-  version: 22.7.5
-  resolution: "@nx/nx-linux-arm64-gnu@npm:22.7.5"
+"@nx/nx-linux-arm64-gnu@npm:23.1.0":
+  version: 23.1.0
+  resolution: "@nx/nx-linux-arm64-gnu@npm:23.1.0"
   conditions: os=linux & cpu=arm64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@nx/nx-linux-arm64-musl@npm:22.7.5":
-  version: 22.7.5
-  resolution: "@nx/nx-linux-arm64-musl@npm:22.7.5"
+"@nx/nx-linux-arm64-musl@npm:23.1.0":
+  version: 23.1.0
+  resolution: "@nx/nx-linux-arm64-musl@npm:23.1.0"
   conditions: os=linux & cpu=arm64 & libc=musl
   languageName: node
   linkType: hard
 
-"@nx/nx-linux-x64-gnu@npm:22.7.5":
-  version: 22.7.5
-  resolution: "@nx/nx-linux-x64-gnu@npm:22.7.5"
+"@nx/nx-linux-x64-gnu@npm:23.1.0":
+  version: 23.1.0
+  resolution: "@nx/nx-linux-x64-gnu@npm:23.1.0"
   conditions: os=linux & cpu=x64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@nx/nx-linux-x64-musl@npm:22.7.5":
-  version: 22.7.5
-  resolution: "@nx/nx-linux-x64-musl@npm:22.7.5"
+"@nx/nx-linux-x64-musl@npm:23.1.0":
+  version: 23.1.0
+  resolution: "@nx/nx-linux-x64-musl@npm:23.1.0"
   conditions: os=linux & cpu=x64 & libc=musl
   languageName: node
   linkType: hard
 
-"@nx/nx-win32-arm64-msvc@npm:22.7.5":
-  version: 22.7.5
-  resolution: "@nx/nx-win32-arm64-msvc@npm:22.7.5"
+"@nx/nx-win32-arm64-msvc@npm:23.1.0":
+  version: 23.1.0
+  resolution: "@nx/nx-win32-arm64-msvc@npm:23.1.0"
   conditions: os=win32 & cpu=arm64
   languageName: node
   linkType: hard
 
-"@nx/nx-win32-x64-msvc@npm:22.7.5":
-  version: 22.7.5
-  resolution: "@nx/nx-win32-x64-msvc@npm:22.7.5"
+"@nx/nx-win32-x64-msvc@npm:23.1.0":
+  version: 23.1.0
+  resolution: "@nx/nx-win32-x64-msvc@npm:23.1.0"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
@@ -4846,7 +4846,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"agent-base@npm:6, agent-base@npm:^6.0.2":
+"agent-base@npm:6, agent-base@npm:6.0.2, agent-base@npm:^6.0.2":
   version: 6.0.2
   resolution: "agent-base@npm:6.0.2"
   dependencies:
@@ -5534,7 +5534,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bl@npm:4.1.0, bl@npm:^4.0.3":
+"bl@npm:4.1.0, bl@npm:^4.0.3, bl@npm:^4.1.0":
   version: 4.1.0
   resolution: "bl@npm:4.1.0"
   dependencies:
@@ -6934,7 +6934,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"debug@npm:4, debug@npm:^4, debug@npm:^4.1.0, debug@npm:^4.1.1, debug@npm:^4.3.1, debug@npm:^4.3.2, debug@npm:^4.3.3, debug@npm:^4.3.4, debug@npm:^4.3.6, debug@npm:^4.3.7, debug@npm:^4.4.1, debug@npm:^4.4.3":
+"debug@npm:4, debug@npm:4.4.3, debug@npm:^4, debug@npm:^4.1.0, debug@npm:^4.1.1, debug@npm:^4.3.1, debug@npm:^4.3.2, debug@npm:^4.3.3, debug@npm:^4.3.4, debug@npm:^4.3.6, debug@npm:^4.3.7, debug@npm:^4.4.1, debug@npm:^4.4.3":
   version: 4.4.3
   resolution: "debug@npm:4.4.3"
   dependencies:
@@ -9078,16 +9078,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"hasown@npm:2.0.2":
-  version: 2.0.2
-  resolution: "hasown@npm:2.0.2"
-  dependencies:
-    function-bind: "npm:^1.1.2"
-  checksum: 10/7898a9c1788b2862cf0f9c345a6bec77ba4a0c0983c7f19d610c382343d4f98fa260686b225dfb1f88393a66679d2ec58ee310c1d6868c081eda7918f32cc70a
-  languageName: node
-  linkType: hard
-
-"hasown@npm:^2.0.2, hasown@npm:^2.0.3, hasown@npm:^2.0.4":
+"hasown@npm:2.0.4, hasown@npm:^2.0.2, hasown@npm:^2.0.3, hasown@npm:^2.0.4":
   version: 2.0.4
   resolution: "hasown@npm:2.0.4"
   dependencies:
@@ -9269,6 +9260,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"https-proxy-agent@npm:5.0.1, https-proxy-agent@npm:^5.0.0, https-proxy-agent@npm:^5.0.1":
+  version: 5.0.1
+  resolution: "https-proxy-agent@npm:5.0.1"
+  dependencies:
+    agent-base: "npm:6"
+    debug: "npm:4"
+  checksum: 10/f0dce7bdcac5e8eaa0be3c7368bb8836ed010fb5b6349ffb412b172a203efe8f807d9a6681319105ea1b6901e1972c7b5ea899672a7b9aad58309f766dcbe0df
+  languageName: node
+  linkType: hard
+
 "https-proxy-agent@npm:7.0.6, https-proxy-agent@npm:^7.0.1":
   version: 7.0.6
   resolution: "https-proxy-agent@npm:7.0.6"
@@ -9276,16 +9277,6 @@ __metadata:
     agent-base: "npm:^7.1.2"
     debug: "npm:4"
   checksum: 10/784b628cbd55b25542a9d85033bdfd03d4eda630fb8b3c9477959367f3be95dc476ed2ecbb9836c359c7c698027fc7b45723a302324433590f45d6c1706e8c13
-  languageName: node
-  linkType: hard
-
-"https-proxy-agent@npm:^5.0.0, https-proxy-agent@npm:^5.0.1":
-  version: 5.0.1
-  resolution: "https-proxy-agent@npm:5.0.1"
-  dependencies:
-    agent-base: "npm:6"
-    debug: "npm:4"
-  checksum: 10/f0dce7bdcac5e8eaa0be3c7368bb8836ed010fb5b6349ffb412b172a203efe8f807d9a6681319105ea1b6901e1972c7b5ea899672a7b9aad58309f766dcbe0df
   languageName: node
   linkType: hard
 
@@ -10101,7 +10092,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"isexe@npm:^2.0.0":
+"isexe@npm:2.0.0, isexe@npm:^2.0.0":
   version: 2.0.0
   resolution: "isexe@npm:2.0.0"
   checksum: 10/7c9f715c03aff08f35e98b1fadae1b9267b38f0615d501824f9743f3aab99ef10e303ce7db3f186763a0b70a19de5791ebfc854ff884d5a8c4d92211f642ec92
@@ -10877,10 +10868,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jsonc-parser@npm:3.2.0":
-  version: 3.2.0
-  resolution: "jsonc-parser@npm:3.2.0"
-  checksum: 10/bd68b902e5f9394f01da97921f49c5084b2dc03a0c5b4fdb2a429f8d6f292686c1bf87badaeb0a8148d024192a88f5ad2e57b2918ba43fe25cf15f3371db64d4
+"jsonc-parser@npm:3.3.1":
+  version: 3.3.1
+  resolution: "jsonc-parser@npm:3.3.1"
+  checksum: 10/9b0dc391f20b47378f843ef1e877e73ec652a5bdc3c5fa1f36af0f119a55091d147a86c1ee86a232296f55c929bba174538c2bf0312610e0817a22de131cc3f4
   languageName: node
   linkType: hard
 
@@ -11358,7 +11349,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"log-symbols@npm:4.1.0, log-symbols@npm:^4.0.0":
+"log-symbols@npm:4.1.0, log-symbols@npm:^4.1.0":
   version: 4.1.0
   resolution: "log-symbols@npm:4.1.0"
   dependencies:
@@ -12614,34 +12605,35 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nx@npm:22.7.5":
-  version: 22.7.5
-  resolution: "nx@npm:22.7.5"
+"nx@npm:23.1.0":
+  version: 23.1.0
+  resolution: "nx@npm:23.1.0"
   dependencies:
     "@emnapi/core": "npm:1.4.5"
     "@emnapi/runtime": "npm:1.4.5"
     "@emnapi/wasi-threads": "npm:1.0.4"
     "@jest/diff-sequences": "npm:30.0.1"
     "@napi-rs/wasm-runtime": "npm:0.2.4"
-    "@nx/nx-darwin-arm64": "npm:22.7.5"
-    "@nx/nx-darwin-x64": "npm:22.7.5"
-    "@nx/nx-freebsd-x64": "npm:22.7.5"
-    "@nx/nx-linux-arm-gnueabihf": "npm:22.7.5"
-    "@nx/nx-linux-arm64-gnu": "npm:22.7.5"
-    "@nx/nx-linux-arm64-musl": "npm:22.7.5"
-    "@nx/nx-linux-x64-gnu": "npm:22.7.5"
-    "@nx/nx-linux-x64-musl": "npm:22.7.5"
-    "@nx/nx-win32-arm64-msvc": "npm:22.7.5"
-    "@nx/nx-win32-x64-msvc": "npm:22.7.5"
+    "@nx/nx-darwin-arm64": "npm:23.1.0"
+    "@nx/nx-darwin-x64": "npm:23.1.0"
+    "@nx/nx-freebsd-x64": "npm:23.1.0"
+    "@nx/nx-linux-arm-gnueabihf": "npm:23.1.0"
+    "@nx/nx-linux-arm64-gnu": "npm:23.1.0"
+    "@nx/nx-linux-arm64-musl": "npm:23.1.0"
+    "@nx/nx-linux-x64-gnu": "npm:23.1.0"
+    "@nx/nx-linux-x64-musl": "npm:23.1.0"
+    "@nx/nx-win32-arm64-msvc": "npm:23.1.0"
+    "@nx/nx-win32-x64-msvc": "npm:23.1.0"
     "@tybys/wasm-util": "npm:0.9.0"
     "@yarnpkg/lockfile": "npm:1.1.0"
     "@zkochan/js-yaml": "npm:0.0.7"
+    agent-base: "npm:6.0.2"
     ansi-colors: "npm:4.1.3"
     ansi-regex: "npm:5.0.1"
     ansi-styles: "npm:4.3.0"
     argparse: "npm:2.0.1"
     asynckit: "npm:0.4.0"
-    axios: "npm:1.16.0"
+    axios: "npm:1.16.1"
     balanced-match: "npm:4.0.3"
     base64-js: "npm:1.5.1"
     bl: "npm:4.1.0"
@@ -12656,6 +12648,7 @@ __metadata:
     color-convert: "npm:2.0.1"
     color-name: "npm:1.1.4"
     combined-stream: "npm:1.0.8"
+    debug: "npm:4.4.3"
     defaults: "npm:1.0.4"
     define-lazy-prop: "npm:2.0.0"
     delayed-stream: "npm:1.0.0"
@@ -12675,7 +12668,7 @@ __metadata:
     figures: "npm:3.2.0"
     flat: "npm:5.0.2"
     follow-redirects: "npm:1.16.0"
-    form-data: "npm:4.0.5"
+    form-data: "npm:4.0.6"
     fs-constants: "npm:1.0.0"
     function-bind: "npm:1.1.2"
     get-caller-file: "npm:2.0.5"
@@ -12685,7 +12678,8 @@ __metadata:
     has-flag: "npm:4.0.0"
     has-symbols: "npm:1.1.0"
     has-tostringtag: "npm:1.0.2"
-    hasown: "npm:2.0.2"
+    hasown: "npm:2.0.4"
+    https-proxy-agent: "npm:5.0.1"
     ieee754: "npm:1.2.1"
     ignore: "npm:7.0.5"
     inherits: "npm:2.0.4"
@@ -12694,8 +12688,9 @@ __metadata:
     is-interactive: "npm:1.0.0"
     is-unicode-supported: "npm:0.1.0"
     is-wsl: "npm:2.2.0"
+    isexe: "npm:2.0.0"
     json5: "npm:2.2.3"
-    jsonc-parser: "npm:3.2.0"
+    jsonc-parser: "npm:3.3.1"
     lines-and-columns: "npm:2.0.3"
     log-symbols: "npm:4.1.0"
     math-intrinsics: "npm:1.1.0"
@@ -12704,11 +12699,12 @@ __metadata:
     mimic-fn: "npm:2.1.0"
     minimatch: "npm:10.2.5"
     minimist: "npm:1.2.8"
+    ms: "npm:2.1.3"
     npm-run-path: "npm:4.0.1"
     once: "npm:1.4.0"
     onetime: "npm:5.1.2"
     open: "npm:8.4.2"
-    ora: "npm:5.3.0"
+    ora: "npm:5.4.1"
     path-key: "npm:3.1.1"
     picocolors: "npm:1.1.1"
     proxy-from-env: "npm:2.1.0"
@@ -12717,7 +12713,7 @@ __metadata:
     resolve.exports: "npm:2.0.3"
     restore-cursor: "npm:3.1.0"
     safe-buffer: "npm:5.2.1"
-    semver: "npm:7.7.4"
+    semver: "npm:7.8.4"
     signal-exit: "npm:3.0.7"
     smol-toml: "npm:1.6.1"
     string-width: "npm:4.2.3"
@@ -12726,12 +12722,12 @@ __metadata:
     strip-bom: "npm:3.0.0"
     supports-color: "npm:7.2.0"
     tar-stream: "npm:2.2.0"
-    tmp: "npm:0.2.6"
-    tree-kill: "npm:1.2.2"
+    tmp: "npm:0.2.7"
     tsconfig-paths: "npm:4.2.0"
     tslib: "npm:2.8.1"
     util-deprecate: "npm:1.0.2"
     wcwidth: "npm:1.0.1"
+    which: "npm:3.0.1"
     wrap-ansi: "npm:7.0.0"
     wrappy: "npm:1.0.2"
     y18n: "npm:5.0.8"
@@ -12770,7 +12766,7 @@ __metadata:
   bin:
     nx: ./dist/bin/nx.js
     nx-cloud: ./dist/bin/nx-cloud.js
-  checksum: 10/a694fce9160b952896c7e0a876c2de105c3246ca2844d7c37d48a5bc22bf52736edbd12221a5d1398e776d8793b2689d4ac7ccc0fa7a95ae5984532c197ba2a2
+  checksum: 10/22070bfb43b635d85aad6f62b2626d5348ddfe32b705b99c41a56d0cdd218d17c837d634de5f6d4f7d2c5b856bde234294c67c81b62621a71ece9b2ce23abeef
   languageName: node
   linkType: hard
 
@@ -13125,19 +13121,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ora@npm:5.3.0":
-  version: 5.3.0
-  resolution: "ora@npm:5.3.0"
+"ora@npm:5.4.1":
+  version: 5.4.1
+  resolution: "ora@npm:5.4.1"
   dependencies:
-    bl: "npm:^4.0.3"
+    bl: "npm:^4.1.0"
     chalk: "npm:^4.1.0"
     cli-cursor: "npm:^3.1.0"
     cli-spinners: "npm:^2.5.0"
     is-interactive: "npm:^1.0.0"
-    log-symbols: "npm:^4.0.0"
+    is-unicode-supported: "npm:^0.1.0"
+    log-symbols: "npm:^4.1.0"
     strip-ansi: "npm:^6.0.0"
     wcwidth: "npm:^1.0.1"
-  checksum: 10/989a075b596c297acfee647010e555709bd657dedd9eee9ff99d923cbc65c68b6189c2c9ea58167675b101433509f87d1674a84047c7b766babab15d9220f1d5
+  checksum: 10/8d071828f40090a8e1c6e8f350c6eb065808e9ab2b3e57fa37e0d5ae78cb46dac00117c8f12c3c8b8da2923454afbd8265e08c10b69881170c5b269f451e7fef
   languageName: node
   linkType: hard
 
@@ -14606,12 +14603,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"semver@npm:7.7.4":
-  version: 7.7.4
-  resolution: "semver@npm:7.7.4"
+"semver@npm:7.8.4":
+  version: 7.8.4
+  resolution: "semver@npm:7.8.4"
   bin:
     semver: bin/semver.js
-  checksum: 10/26bdc6d58b29528f4142d29afb8526bc335f4fc04c4a10f2b98b217f277a031c66736bf82d3d3bb354a2f6a3ae50f18fd62b053c4ac3f294a3d10a61f5075b75
+  checksum: 10/a9c139031d4143932adfacfd2165d6489848c3b84c26d5fc2beef88c6d54c01191ef553e3f71049ccc47df85f0df30748907f84005f46f326095003171c5b673
   languageName: node
   linkType: hard
 
@@ -15878,15 +15875,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tree-kill@npm:1.2.2":
-  version: 1.2.2
-  resolution: "tree-kill@npm:1.2.2"
-  bin:
-    tree-kill: cli.js
-  checksum: 10/49117f5f410d19c84b0464d29afb9642c863bc5ba40fcb9a245d474c6d5cc64d1b177a6e6713129eb346b40aebb9d4631d967517f9fbe8251c35b21b13cd96c7
-  languageName: node
-  linkType: hard
-
 "trim-newlines@npm:^3.0.0":
   version: 3.0.1
   resolution: "trim-newlines@npm:3.0.1"
@@ -16760,6 +16748,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"which@npm:3.0.1, which@npm:^3.0.0":
+  version: 3.0.1
+  resolution: "which@npm:3.0.1"
+  dependencies:
+    isexe: "npm:^2.0.0"
+  bin:
+    node-which: bin/which.js
+  checksum: 10/adf720fe9d84be2d9190458194f814b5e9015ae4b88711b150f30d0f4d0b646544794b86f02c7ebeec1db2029bc3e83a7ff156f542d7521447e5496543e26890
+  languageName: node
+  linkType: hard
+
 "which@npm:^1.2.9":
   version: 1.3.1
   resolution: "which@npm:1.3.1"
@@ -16779,17 +16778,6 @@ __metadata:
   bin:
     node-which: ./bin/node-which
   checksum: 10/4782f8a1d6b8fc12c65e968fea49f59752bf6302dc43036c3bf87da718a80710f61a062516e9764c70008b487929a73546125570acea95c5b5dcc8ac3052c70f
-  languageName: node
-  linkType: hard
-
-"which@npm:^3.0.0":
-  version: 3.0.1
-  resolution: "which@npm:3.0.1"
-  dependencies:
-    isexe: "npm:^2.0.0"
-  bin:
-    node-which: bin/which.js
-  checksum: 10/adf720fe9d84be2d9190458194f814b5e9015ae4b88711b150f30d0f4d0b646544794b86f02c7ebeec1db2029bc3e83a7ff156f542d7521447e5496543e26890
   languageName: node
   linkType: hard
 

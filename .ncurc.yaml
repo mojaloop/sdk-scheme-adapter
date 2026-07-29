@@ -9,9 +9,6 @@ reject: [
   '@mojaloop/logging-bc-client-lib',
   ## The new version of npm-check-updates uses new Glob v9.x and it is introducing a dependency Package "path-scurry@1.6.1" which is licensed under "BlueOak-1.0.0" which is not permitted by the Mojaloop License Policy.
   'npm-check-updates',
-  ## nx is pinned to the 22.x line by this branch's NX 16 -> 22 migration (mojaloop/#3586).
-  ## nx 23 is a new major that needs a separate `nx migrate`; defer it to a follow-up story.
-  "nx",
   ## express 5 changes routing/middleware semantics (path-to-regexp v8 route syntax, removed API aliases) and is not compatible with the current api-svc and event-handler servers.
   "express",
   ## uuid >=12 ships as ESM-only; private-shared-lib and its consumers are compiled to CommonJS, and require('uuid') of the ESM-only build fails under the jest CJS module loader (ERR_REQUIRE_ESM).

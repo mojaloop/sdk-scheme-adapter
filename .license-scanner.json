@@ -107,6 +107,46 @@
     "@nx/nx-win32-x64-msvc@22.7.5": {
       "reason": "MIT per npm registry metadata (nrwl/nx monorepo); optional platform binary ships a blank package.json license field. nx 16 -> 22 upgrade (mojaloop/#3586).",
       "expires": "2027-07-29"
+    },
+    "@nx/nx-darwin-arm64@23.1.0": {
+      "reason": "MIT per npm registry metadata (nrwl/nx monorepo); optional platform binary ships a blank package.json license field. nx 23.1.0 upgrade test (mojaloop/#3586).",
+      "expires": "2027-07-29"
+    },
+    "@nx/nx-darwin-x64@23.1.0": {
+      "reason": "MIT per npm registry metadata (nrwl/nx monorepo); optional platform binary ships a blank package.json license field. nx 23.1.0 upgrade test (mojaloop/#3586).",
+      "expires": "2027-07-29"
+    },
+    "@nx/nx-freebsd-x64@23.1.0": {
+      "reason": "MIT per npm registry metadata (nrwl/nx monorepo); optional platform binary ships a blank package.json license field. nx 23.1.0 upgrade test (mojaloop/#3586).",
+      "expires": "2027-07-29"
+    },
+    "@nx/nx-linux-arm-gnueabihf@23.1.0": {
+      "reason": "MIT per npm registry metadata (nrwl/nx monorepo); optional platform binary ships a blank package.json license field. nx 23.1.0 upgrade test (mojaloop/#3586).",
+      "expires": "2027-07-29"
+    },
+    "@nx/nx-linux-arm64-gnu@23.1.0": {
+      "reason": "MIT per npm registry metadata (nrwl/nx monorepo); optional platform binary ships a blank package.json license field. nx 23.1.0 upgrade test (mojaloop/#3586).",
+      "expires": "2027-07-29"
+    },
+    "@nx/nx-linux-arm64-musl@23.1.0": {
+      "reason": "MIT per npm registry metadata (nrwl/nx monorepo); optional platform binary ships a blank package.json license field. nx 23.1.0 upgrade test (mojaloop/#3586).",
+      "expires": "2027-07-29"
+    },
+    "@nx/nx-linux-x64-gnu@23.1.0": {
+      "reason": "MIT per npm registry metadata (nrwl/nx monorepo); optional platform binary ships a blank package.json license field. nx 23.1.0 upgrade test (mojaloop/#3586).",
+      "expires": "2027-07-29"
+    },
+    "@nx/nx-linux-x64-musl@23.1.0": {
+      "reason": "MIT per npm registry metadata (nrwl/nx monorepo); optional platform binary ships a blank package.json license field. nx 23.1.0 upgrade test (mojaloop/#3586).",
+      "expires": "2027-07-29"
+    },
+    "@nx/nx-win32-arm64-msvc@23.1.0": {
+      "reason": "MIT per npm registry metadata (nrwl/nx monorepo); optional platform binary ships a blank package.json license field. nx 23.1.0 upgrade test (mojaloop/#3586).",
+      "expires": "2027-07-29"
+    },
+    "@nx/nx-win32-x64-msvc@23.1.0": {
+      "reason": "MIT per npm registry metadata (nrwl/nx monorepo); optional platform binary ships a blank package.json license field. nx 23.1.0 upgrade test (mojaloop/#3586).",
+      "expires": "2027-07-29"
     }
   }
 }
