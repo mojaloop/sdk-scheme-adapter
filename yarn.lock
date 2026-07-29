@@ -3031,7 +3031,7 @@ __metadata:
     jest: "npm:30.4.2"
     nodemon: "npm:3.1.14"
     npm-check-updates: "npm:16.7.10"
-    openapi-backend: "npm:5.19.0"
+    openapi-backend: "npm:5.20.0"
     redis: "npm:6.1.0"
     replace: "npm:1.2.2"
     standard-version: "npm:9.5.0"
@@ -3073,7 +3073,7 @@ __metadata:
     jest: "npm:30.4.2"
     nodemon: "npm:3.1.14"
     npm-check-updates: "npm:16.7.10"
-    openapi-backend: "npm:5.19.0"
+    openapi-backend: "npm:5.20.0"
     redis: "npm:6.1.0"
     replace: "npm:1.2.2"
     standard-version: "npm:9.5.0"
@@ -12865,9 +12865,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"openapi-backend@npm:5.19.0":
-  version: 5.19.0
-  resolution: "openapi-backend@npm:5.19.0"
+"openapi-backend@npm:5.20.0":
+  version: 5.20.0
+  resolution: "openapi-backend@npm:5.20.0"
   dependencies:
     "@apidevtools/json-schema-ref-parser": "npm:^11.1.0"
     ajv: "npm:^8.6.2"
@@ -12879,7 +12879,7 @@ __metadata:
     openapi-schema-validator: "npm:^12.0.0"
     openapi-types: "npm:^12.0.2"
     qs: "npm:^6.15.0"
-  checksum: 10/7845e5c8a608c535557211871392c108cc1e70c8664ed37d3c40e78d48debebcbbdd7d57ee8239a7d1c9d0118af454528f6fd94eb930ca1b9f985ab76830452c
+  checksum: 10/527700837354eb991f8f384e340a9ff8165813f8e64e418f01d24f21f3664e66294e20cb8058fbe00aa1238227de904d6fdc220ce8be09719578efe2aed89b27
   languageName: node
   linkType: hard
 
