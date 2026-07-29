@@ -16,9 +16,11 @@ module.exports = {
     }
   },
   transform: {
-    "^.+\\.(ts|tsx)$": "ts-jest"
+    "^.+\\.(ts|tsx)$": "ts-jest",
+    "^.+\\.(js|jsx|mjs)$": "ts-jest"
   },
   transformIgnorePatterns: [
-    "/node_modules/(?!serialize-error|non-error|@mojaloop/central-services-shared|@mojaloop/event-sdk|uuid).+\\.js$"
+    "/node_modules/(?!serialize-error|non-error|@mojaloop/central-services-shared|@mojaloop/event-sdk|uuid).+\\.js$",
+    "/dist/"
   ]
 }

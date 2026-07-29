@@ -27,3 +27,9 @@
 require('dotenv').config({
     path: '../../.env.example',
 });
+
+process.env.PEER_ENDPOINT = process.env.PEER_ENDPOINT || 'localhost:4000';
+process.env.BACKEND_ENDPOINT = process.env.BACKEND_ENDPOINT || 'localhost:4000';
+process.env.CACHE_URL = process.env.CACHE_URL || 'redis://localhost:6379';
+process.env.MGMT_API_WS_URL = process.env.MGMT_API_WS_URL || 'localhost';
+process.env.SUPPORTED_CURRENCIES = process.env.SUPPORTED_CURRENCIES || 'USD';
