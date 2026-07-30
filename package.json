@@ -85,7 +85,7 @@
   "devDependencies": {
     "@mojaloop/license-scanner-tool": "1.1.2",
     "@types/jest": "30.0.0",
-    "@types/node": "26.1.1",
+    "@types/node": "26.1.2",
     "@types/node-cache": "4.2.5",
     "@typescript-eslint/eslint-plugin": "8.65.0",
     "@typescript-eslint/parser": "8.65.0",
@@ -157,5 +157,9 @@
       "postchangelog": "replace '\\[mojaloop/#(\\d+)\\]\\(https://github.com/mojaloop/(.*)/issues/(\\d+)\\)' '[mojaloop/#$1](https://github.com/mojaloop/project/issues/$1)' CHANGELOG.md",
       "precommit": "git add **/*package.json"
     }
+  },
+  "overrides": {
+    "body-parser": "1.20.6",
+    "@eslint/plugin-kit": "0.3.4"
   }
 }

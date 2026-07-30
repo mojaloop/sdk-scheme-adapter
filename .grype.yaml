@@ -1,7 +1,68 @@
 scan-type: source
-
 ignore:
-
+  - vulnerability: GHSA-vxpw-j846-p89q
+    include-aliases: true
+    reason: >-
+      Base image npm package: undici - bundled in Node.js base image, not fixable via application dependencies as of
+      2026-07-30 (high severity)
+  - vulnerability: GHSA-23hp-3jrh-7fpw
+    include-aliases: true
+    reason: >-
+      Base image npm package: tar - bundled in Node.js base image, not fixable via application dependencies as of
+      2026-07-30 (critical severity)
+  - vulnerability: GHSA-8x88-c5mf-7j5w
+    include-aliases: true
+    reason: >-
+      Base image npm package: tar - bundled in Node.js base image, not fixable via application dependencies as of
+      2026-07-30 (high severity)
+  - vulnerability: GHSA-mh99-v99m-4gvg
+    include-aliases: true
+    reason: >-
+      Base image npm package: brace-expansion - bundled in Node.js base image, not fixable via application dependencies
+      as of 2026-07-30 (high severity)
+  - vulnerability: GHSA-w8wr-v893-vjvp
+    include-aliases: true
+    reason: >-
+      Base image npm package: tar - bundled in Node.js base image, not fixable via application dependencies as of
+      2026-07-30 (moderate severity)
+  - vulnerability: GHSA-3jxr-9vmj-r5cp
+    include-aliases: true
+    reason: >-
+      Base image npm package: brace-expansion - bundled in Node.js base image, not fixable via application dependencies
+      as of 2026-07-30 (high severity)
+  - vulnerability: CVE-2025-60876
+    include-aliases: true
+    reason: "Alpine base image package (apk): busybox - no npm fix available as of 2026-07-30 (moderate severity)"
+  - vulnerability: GHSA-gvwx-54wh-qm9j
+    include-aliases: true
+    reason: >-
+      Base image npm package: tar - bundled in Node.js base image, not fixable via application dependencies as of
+      2026-07-30 (moderate severity)
+  - vulnerability: GHSA-p88m-4jfj-68fv
+    include-aliases: true
+    reason: >-
+      Base image npm package: undici - bundled in Node.js base image, not fixable via application dependencies as of
+      2026-07-30 (moderate severity)
+  - vulnerability: GHSA-vmf3-w455-68vh
+    include-aliases: true
+    reason: >-
+      Base image npm package: tar - bundled in Node.js base image, not fixable via application dependencies as of
+      2026-07-30 (moderate severity)
+  - vulnerability: GHSA-g8m3-5g58-fq7m
+    include-aliases: true
+    reason: >-
+      Base image npm package: undici - bundled in Node.js base image, not fixable via application dependencies as of
+      2026-07-30 (low severity)
+  - vulnerability: GHSA-35p6-xmwp-9g52
+    include-aliases: true
+    reason: >-
+      Base image npm package: undici - bundled in Node.js base image, not fixable via application dependencies as of
+      2026-07-30 (low severity)
+  - vulnerability: GHSA-r292-9mhp-454m
+    include-aliases: true
+    reason: >-
+      Base image npm package: tar - bundled in Node.js base image, not fixable via application dependencies as of
+      2026-07-30 (moderate severity)
 output:
   - table
   - json
