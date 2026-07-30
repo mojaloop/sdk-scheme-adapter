@@ -26,7 +26,7 @@ services:
         condition: service_started
       kafka:
         condition: service_healthy
-    command: yarn nx run modules-api-svc:start
+    command: yarn workspace @mojaloop/sdk-scheme-adapter-api-svc run start
     volumes:
       - ./docker/wait4:/tmp/wait4
       - ./secrets:/opt/app/secrets

@@ -283,7 +283,7 @@ const internalTransactionRequestResponseToMojaloop = (internal) => {
  * @returns {object}
  */
 const mojaloopPrepareToInternalTransfer = (external, quote, ilp, checkILP) => {
-    let internal = null;
+    let internal;
     if(quote) {
         internal = {
             transferId: external.transferId,
@@ -326,7 +326,7 @@ const mojaloopPrepareToInternalTransfer = (external, quote, ilp, checkILP) => {
  * @returns {object}
  */
 const mojaloopTransactionRequestToInternal = (external) => {
-    let internal = null;
+    let internal;
     internal = {
         transactionRequestId: external.transactionRequestId,
         to: mojaloopPartyToInternalParty(external.payee),
@@ -616,7 +616,7 @@ const internalBulkTransfersResponseToMojaloop = (internal, fulfilments) => {
  * @returns {object}
  */
 const mojaloopBulkPrepareToInternalBulkTransfer = (external, bulkQuotes, ilp) => {
-    let internal = null;
+    let internal;
     if (bulkQuotes) {
         // In order to pass on information not contained in an FSPIOP `IndividualTransfer` to
         // FSP backend, we create mappings that can resolve an internal quote from

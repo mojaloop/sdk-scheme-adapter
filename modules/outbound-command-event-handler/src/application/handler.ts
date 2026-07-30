@@ -55,7 +55,7 @@ import {
 import { ICommandEventHandlerOptions } from '@module-types';
 
 
-import { ICommandEventHandlerConfig } from 'src/shared/config';
+import { ICommandEventHandlerConfig } from '../shared/config';
 
 export interface IOutboundEventHandlerOptions {
     bulkTransactionEntityRepo: IBulkTransactionEntityRepo

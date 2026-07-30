@@ -47,6 +47,17 @@ describe('Cache Tests -->', () => {
     let cache;
     let dummyPubMessage;
 
+    // Track timers scheduled by individual tests so afterEach can cancel any that
+    // have not fired. Real (non-fake) timers otherwise leak across test files under
+    // --runInBand and can fire during a later file, corrupting shared cache state
+    // (e.g. a stray _channelEmitter.emit reaching an InboundServer request test).
+    const scheduledTimers = [];
+    const deferEmit = (fn, ms) => {
+        const handle = setTimeout(fn, ms);
+        scheduledTimers.push(handle);
+        return handle;
+    };
+
     beforeEach(async () => {
         cache = await createCache();
         dummyPubMessage = JSON.parse(JSON.stringify({
@@ -56,6 +67,8 @@ describe('Cache Tests -->', () => {
     });
 
     afterEach(async () => {
+        scheduledTimers.forEach((handle) => clearTimeout(handle));
+        scheduledTimers.length = 0;
         await cache.disconnect();
     });
 
@@ -157,7 +170,7 @@ describe('Cache Tests -->', () => {
                     cache.publish(chan, msg1);
 
                     // wait 3 seconds and if the callback has not been called we assume a pass
-                    setTimeout(() => {
+                    deferEmit(() => {
                         expect(mockCb1.mock.calls.length).toBe(0);
                         return resolve();
                     }, 3000);
@@ -219,7 +232,7 @@ describe('Cache Tests -->', () => {
         const subscribing = cache.subscribeToOneMessageWithTimerNew(channel, requestProcessingTimeoutSeconds);
         
         // Simulate a message being published to the channel via EventEmitter
-        setTimeout(() => {
+        deferEmit(() => {
             cache._channelEmitter.emit(channel, JSON.stringify(message));
         }, 100);
 
@@ -235,7 +248,7 @@ describe('Cache Tests -->', () => {
         const subscribing = cache.subscribeToOneMessageWithTimerNew(channel, requestProcessingTimeoutSeconds, false);
         
         // Simulate a message being published to the channel via EventEmitter
-        setTimeout(() => {
+        deferEmit(() => {
             cache._channelEmitter.emit(channel, message);
         }, 100);
 
@@ -268,7 +281,7 @@ describe('Cache Tests -->', () => {
         const subscribing = cache.subscribeToOneMessageWithTimerNew(channel, requestProcessingTimeoutSeconds, true);
         
         // Simulate a message with invalid JSON
-        setTimeout(() => {
+        deferEmit(() => {
             cache._channelEmitter.emit(channel, invalidJson);
         }, 100);
 
@@ -287,7 +300,7 @@ describe('Cache Tests -->', () => {
         const subscribing2 = cache.subscribeToOneMessageWithTimerNew(channel2, requestProcessingTimeoutSeconds);
         
         // Emit messages to each channel separately
-        setTimeout(() => {
+        deferEmit(() => {
             cache._channelEmitter.emit(channel1, JSON.stringify(message1));
             cache._channelEmitter.emit(channel2, JSON.stringify(message2));
         }, 100);
@@ -309,7 +322,7 @@ describe('Cache Tests -->', () => {
         const subscribing3 = cache.subscribeToOneMessageWithTimerNew(channel, requestProcessingTimeoutSeconds);
         
         // Simulate a single party response that should resolve all subscribers
-        setTimeout(() => {
+        deferEmit(() => {
             cache._channelEmitter.emit(channel, JSON.stringify(partyResponse));
         }, 100);
 

@@ -17,7 +17,7 @@ services:
     #   - "4002:4002"
     # depends_on:
     #   - redis
-    command: yarn nx run modules-api-svc:start
+    command: yarn workspace @mojaloop/sdk-scheme-adapter-api-svc run start
     # volumes:
     #   - ./docker/wait4:/tmp/wait4
     #   - ./secrets:/opt/app/secrets

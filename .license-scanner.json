@@ -1,19 +1,32 @@
 {
   "exceptions": {
-    "@mojaloop/sdk-scheme-adapter@0.0.0-use.local": { "reason": "this repo's own workspace root package; Apache-2.0 per its package.json/LICENSE, blank in the SBOM's workspace-root metadata", "expires": "2027-07-22" },
-    "@nx/nx-darwin-arm64@16.5.0": { "reason": "MIT per npm registry metadata (nrwl/nx monorepo); optional platform binary ships a blank package.json license field", "expires": "2027-07-22" },
-    "@nx/nx-darwin-x64@16.5.0": { "reason": "MIT per npm registry metadata (nrwl/nx monorepo); optional platform binary ships a blank package.json license field", "expires": "2027-07-22" },
-    "@nx/nx-freebsd-x64@16.5.0": { "reason": "MIT per npm registry metadata (nrwl/nx monorepo); optional platform binary ships a blank package.json license field", "expires": "2027-07-22" },
-    "@nx/nx-linux-arm-gnueabihf@16.5.0": { "reason": "MIT per npm registry metadata (nrwl/nx monorepo); optional platform binary ships a blank package.json license field", "expires": "2027-07-22" },
-    "@nx/nx-linux-arm64-gnu@16.5.0": { "reason": "MIT per npm registry metadata (nrwl/nx monorepo); optional platform binary ships a blank package.json license field", "expires": "2027-07-22" },
-    "@nx/nx-linux-arm64-musl@16.5.0": { "reason": "MIT per npm registry metadata (nrwl/nx monorepo); optional platform binary ships a blank package.json license field", "expires": "2027-07-22" },
-    "@nx/nx-linux-x64-gnu@16.5.0": { "reason": "MIT per npm registry metadata (nrwl/nx monorepo); optional platform binary ships a blank package.json license field", "expires": "2027-07-22" },
-    "@nx/nx-linux-x64-musl@16.5.0": { "reason": "MIT per npm registry metadata (nrwl/nx monorepo); optional platform binary ships a blank package.json license field", "expires": "2027-07-22" },
-    "@nx/nx-win32-arm64-msvc@16.5.0": { "reason": "MIT per npm registry metadata (nrwl/nx monorepo); optional platform binary ships a blank package.json license field", "expires": "2027-07-22" },
-    "@nx/nx-win32-x64-msvc@16.5.0": { "reason": "MIT per npm registry metadata (nrwl/nx monorepo); optional platform binary ships a blank package.json license field", "expires": "2027-07-22" },
-    "@rollup/rollup-linux-x64-musl@4.62.0": { "reason": "MIT per npm registry metadata (rollup/rollup monorepo); optional platform binary ships a blank package.json license field", "expires": "2027-07-22" },
-    "@rollup/rollup-linux-x64-musl@4.62.2": { "reason": "MIT per npm registry metadata (rollup/rollup monorepo); optional platform binary ships a blank package.json license field", "expires": "2027-07-22" },
-    "ajv-draft-04@1.0.0": { "reason": "MIT per npm registry metadata (ajv-validator/ajv-draft-04); ships a blank package.json license field", "expires": "2027-07-22" },
-    "pause-stream@0.0.11": { "reason": "dual-licensed MIT/Apache2 per npm registry metadata (dominictarr/pause-stream, via event-stream); declares a non-SPDX license array the SBOM can't parse", "expires": "2027-07-22" }
+    "@mojaloop/sdk-scheme-adapter@0.0.0-use.local": {
+      "reason": "this repo's own workspace root package; Apache-2.0 per its package.json/LICENSE, blank in the SBOM's workspace-root metadata",
+      "expires": "2027-07-22"
+    },
+    "@rollup/rollup-linux-x64-musl@4.62.0": {
+      "reason": "MIT per npm registry metadata (rollup/rollup monorepo); optional platform binary ships a blank package.json license field",
+      "expires": "2027-07-22"
+    },
+    "react-is@18.3.1": {
+      "reason": "MIT licensed (React, https://github.com/facebook/react LICENSE) but syft reads the license as empty from the lock metadata. Transitive dev-only dependency (pretty-format via jest). Verified 2026-07-07.",
+      "expires": "2026-12-31"
+    },
+    "@rollup/rollup-linux-x64-musl@4.62.2": {
+      "reason": "MIT per npm registry metadata (rollup/rollup monorepo); optional platform binary ships a blank package.json license field",
+      "expires": "2027-07-22"
+    },
+    "ajv-draft-04@1.0.0": {
+      "reason": "MIT per npm registry metadata (ajv-validator/ajv-draft-04); ships a blank package.json license field",
+      "expires": "2027-07-22"
+    },
+    "pause-stream@0.0.11": {
+      "reason": "dual-licensed MIT/Apache2 per npm registry metadata (dominictarr/pause-stream, via event-stream); declares a non-SPDX license array the SBOM can't parse",
+      "expires": "2027-07-22"
+    },
+    "react-is@19.2.8": {
+      "reason": "MIT licensed (React, https://github.com/facebook/react LICENSE) but syft reads the license as empty from the lock metadata. Transitive dev-only dependency (pretty-format via jest). Verified 2026-07-30.",
+      "expires": "2026-12-31"
+    }
   }
 }

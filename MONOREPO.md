@@ -1,10 +1,11 @@
 # Monorepo Info
 
-This Monorepo is using [Nx](https://nx.dev/using-nx/nx-cli).
+This Monorepo is orchestrated with [Yarn Workspaces](https://yarnpkg.com/features/workspaces) (Yarn 4 / Berry).
 
-Reasons for this:
-
-- It supports running sub-Module commands only for Modules that have changes by using the `nx affected` runner.
+- Root scripts fan out to the modules with `yarn workspaces foreach` (the root workspace is excluded via `--exclude @mojaloop/sdk-scheme-adapter` to avoid recursion).
+- Build ordering is derived from the workspace dependency graph (`--topological`), so `private-shared-lib` builds before the modules that depend on it.
+- The `*:affected` root scripts use `yarn workspaces foreach --since`, which only includes workspaces changed relative to the default branch.
+- To run a command in a single module use `yarn workspace <package-name> run <script>`, e.g. `yarn workspace @mojaloop/sdk-scheme-adapter-api-svc run test:unit`.
 
 ## VSCode
 
