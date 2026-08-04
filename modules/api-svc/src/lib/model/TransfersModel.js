@@ -61,7 +61,7 @@ async function getIsoPostQuoteResponse(transfer, cache, config) {
     try {
         ({ quoteId } = ilp.getTransactionObject(transfer.ilpPacket));
     } catch (err) {
-        throw new Error(`Cannot send transfer via /simpleTransfers in ISO20022 API mode: failed to decode quoteId from transfer.ilpPacket: ${err.message}`);
+        throw new Error(`Cannot send transfer via /simpleTransfers in ISO20022 API mode: failed to decode quoteId from transfer.ilpPacket: ${err.message}`, { cause: err });
     }
 
     const cached = await cache.get(`qt_${quoteId}`);

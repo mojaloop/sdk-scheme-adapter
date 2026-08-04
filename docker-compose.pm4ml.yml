@@ -7,7 +7,7 @@ services:
         condition: service_healthy
       init-kafka:
         condition: service_completed_successfully
-    command: yarn nx run modules-api-svc:start
+    command: yarn workspace @mojaloop/sdk-scheme-adapter-api-svc run start
 
   mock-management-svc:
     networks:
@@ -19,7 +19,7 @@ services:
     ports:
       - "4005:4005"
       - "5005:5005"
-    command: yarn nx run modules-api-svc:test:pm4ml-run-mock-servers
+    command: yarn workspace @mojaloop/sdk-scheme-adapter-api-svc run test:pm4ml-run-mock-servers
     user: root # Set Root so we can install Curl for Healthchecks
     healthcheck:
       test: ["CMD-SHELL", "nc localhost 4005"]

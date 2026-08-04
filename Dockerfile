@@ -1,5 +1,5 @@
 # Arguments
-ARG NODE_VERSION="22.22.0-alpine3.23"
+ARG NODE_VERSION="24.18.0-alpine3.24"
 # NOTE: Ensure you set NODE_VERSION Build Argument as follows...
 #
 #  export NODE_VERSION="$(cat .nvmrc)-alpine" \
@@ -27,7 +27,6 @@ COPY ./yarn.lock .
 COPY ./.yarnrc.yml .
 COPY ./.yarn/releases/ ./.yarn/releases/
 COPY ./.nvmrc .
-COPY ./nx.json .
 COPY ./tsconfig.json .
 
 ## Copy Package.json for each module
