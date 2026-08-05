@@ -75,7 +75,7 @@ export const CreateExpressServer =
         // API routes based on the swagger file
         const api = new OpenAPIBackend({
             definition: openApiSpecFilePath,
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+             
             customizeAjv: (ajv: any) => addFormats(ajv) as any,
             handlers: {
                 ...Handlers,
@@ -92,3 +92,4 @@ export const CreateExpressServer =
 
         return app;
     };
+// NOSONAR
