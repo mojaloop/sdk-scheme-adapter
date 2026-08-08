@@ -1,4 +1,12 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+### [24.19.8](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.19.7...v24.19.8) (2026-08-08)
+
+
+### Bug Fixes
+
+* migrate monorepo from NX to Yarn 4 workspaces ([#681](https://github.com/mojaloop/sdk-scheme-adapter/issues/681)) ([e6827b3](https://github.com/mojaloop/sdk-scheme-adapter/commit/e6827b390342e4e8a4ed6ced71d0dbe7c10bc323))
+* patch security vulnerabilities and update dependencies ([#683](https://github.com/mojaloop/sdk-scheme-adapter/issues/683)) ([3cb0d36](https://github.com/mojaloop/sdk-scheme-adapter/commit/3cb0d36510e737db2e04cbb8041773e63f2a91ab))
+
 ### [24.19.7](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.19.6...v24.19.7) (2026-07-24)
 
 
