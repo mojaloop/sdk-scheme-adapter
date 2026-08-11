@@ -84,6 +84,7 @@ class SdkServer extends EventEmitter {
             this.cache,
             this.oidc,
             this.mojaloopSharedAgents,
+            this.metricsClient,
         );
         this.inboundServer.on('error', (...args) => {
             this.logger.isErrorEnabled && this.logger.push({ args }).error('Unhandled error in Inbound Server');

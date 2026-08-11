@@ -1,0 +1,185 @@
+{
+  "test_cases": [
+    {
+      "id": 1,
+      "name": "Trigger inbound party lookup metric",
+      "requests": [
+        {
+          "id": 1,
+          "description": "GET /parties/MSISDN/1234567890 - triggers partyLookupRequests counter",
+          "apiVersion": {
+            "minorVersion": 0,
+            "majorVersion": 1,
+            "type": "fspiop",
+            "asynchronous": false,
+            "specFile": "spec_files/api_definitions/fspiop_1.0/api_spec.yaml",
+            "callbackMapFile": "spec_files/api_definitions/fspiop_1.0/callback_map.json",
+            "responseMapFile": "spec_files/api_definitions/fspiop_1.0/response_map.json",
+            "jsfRefFile": "spec_files/api_definitions/fspiop_1.0/mockRef.json"
+          },
+          "operationPath": "/parties/{Type}/{ID}",
+          "path": "/parties/MSISDN/1234567890",
+          "method": "get",
+          "url": "http://sdk-scheme-adapter-api-svc:4000",
+          "headers": {
+            "Accept": "application/vnd.interoperability.parties+json;version=1",
+            "Content-Type": "application/vnd.interoperability.parties+json;version=1.0",
+            "Date": "{$function.generic.curDate}",
+            "FSPIOP-Source": "testfsp",
+            "FSPIOP-Destination": "mojaloop-sdk"
+          },
+          "tests": {
+            "assertions": [
+              {
+                "id": 1,
+                "description": "Response should be 202 Accepted",
+                "exec": [
+                  "expect(response.status).to.equal(202)"
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "fileInfo": {
+        "path": "sample-tests/inbound-metrics-trigger.json"
+      }
+    },
+    {
+      "id": 2,
+      "name": "Trigger inbound quote request metric",
+      "requests": [
+        {
+          "id": 1,
+          "description": "POST /quotes - triggers quoteRequests counter",
+          "apiVersion": {
+            "minorVersion": 0,
+            "majorVersion": 1,
+            "type": "fspiop",
+            "asynchronous": false,
+            "specFile": "spec_files/api_definitions/fspiop_1.0/api_spec.yaml",
+            "callbackMapFile": "spec_files/api_definitions/fspiop_1.0/callback_map.json",
+            "responseMapFile": "spec_files/api_definitions/fspiop_1.0/response_map.json",
+            "jsfRefFile": "spec_files/api_definitions/fspiop_1.0/mockRef.json"
+          },
+          "operationPath": "/quotes",
+          "path": "/quotes",
+          "method": "post",
+          "url": "http://sdk-scheme-adapter-api-svc:4000",
+          "headers": {
+            "Accept": "application/vnd.interoperability.quotes+json;version=1",
+            "Content-Type": "application/vnd.interoperability.quotes+json;version=1.0",
+            "Date": "{$function.generic.curDate}",
+            "FSPIOP-Source": "testfsp",
+            "FSPIOP-Destination": "mojaloop-sdk"
+          },
+          "body": {
+            "quoteId": "{$function.generic.generateUUID}",
+            "transactionId": "{$function.generic.generateUUID}",
+            "payee": {
+              "partyIdInfo": {
+                "partyIdType": "MSISDN",
+                "partyIdentifier": "1234567890",
+                "fspId": "mojaloop-sdk"
+              }
+            },
+            "payer": {
+              "partyIdInfo": {
+                "partyIdType": "MSISDN",
+                "partyIdentifier": "9876543210",
+                "fspId": "testfsp"
+              },
+              "personalInfo": {
+                "complexName": {
+                  "firstName": "Test",
+                  "lastName": "Payer"
+                }
+              }
+            },
+            "amountType": "SEND",
+            "amount": {
+              "currency": "USD",
+              "amount": "10"
+            },
+            "transactionType": {
+              "scenario": "TRANSFER",
+              "initiator": "PAYER",
+              "initiatorType": "CONSUMER"
+            }
+          },
+          "tests": {
+            "assertions": [
+              {
+                "id": 1,
+                "description": "Response should be 202 Accepted",
+                "exec": [
+                  "expect(response.status).to.equal(202)"
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "fileInfo": {
+        "path": "sample-tests/inbound-metrics-trigger.json"
+      }
+    },
+    {
+      "id": 3,
+      "name": "Trigger inbound transfer prepare metric",
+      "requests": [
+        {
+          "id": 1,
+          "description": "POST /transfers - triggers transferPrepares counter",
+          "apiVersion": {
+            "minorVersion": 0,
+            "majorVersion": 1,
+            "type": "fspiop",
+            "asynchronous": false,
+            "specFile": "spec_files/api_definitions/fspiop_1.0/api_spec.yaml",
+            "callbackMapFile": "spec_files/api_definitions/fspiop_1.0/callback_map.json",
+            "responseMapFile": "spec_files/api_definitions/fspiop_1.0/response_map.json",
+            "jsfRefFile": "spec_files/api_definitions/fspiop_1.0/mockRef.json"
+          },
+          "operationPath": "/transfers",
+          "path": "/transfers",
+          "method": "post",
+          "url": "http://sdk-scheme-adapter-api-svc:4000",
+          "headers": {
+            "Accept": "application/vnd.interoperability.transfers+json;version=1",
+            "Content-Type": "application/vnd.interoperability.transfers+json;version=1.0",
+            "Date": "{$function.generic.curDate}",
+            "FSPIOP-Source": "testfsp",
+            "FSPIOP-Destination": "mojaloop-sdk"
+          },
+          "body": {
+            "transferId": "{$function.generic.generateUUID}",
+            "payeeFsp": "mojaloop-sdk",
+            "payerFsp": "testfsp",
+            "amount": {
+              "currency": "USD",
+              "amount": "10"
+            },
+            "ilpPacket": "AQAAAAAAACasIWcuc2UubW9iaWxlbW9uZXkubXNpc2RuLjEyMzQ1Njc4OYIEIXsNCiAgICAidHJhbnNhY3Rpb25JZCI6ICI4NWZlYWMyZi0zOWIyLTQ5MWItODE3ZS00YTAzMjAzZDRmMTQiLA0KICAgICJxdW90ZUlkIjogIjdjMjNlODBjLWQwNzgtNDA3Ny04MjYzLTJjMDQ3ODc2ZmNmNiIsDQogICAgInBheWVlIjogew0KICAgICAgICAicGFydHlJZEluZm8iOiB7DQogICAgICAgICAgICAicGFydHlJZFR5cGUiOiAiTVNJU0ROIiwNCiAgICAgICAgICAgICJwYXJ0eUlkZW50aWZpZXIiOiAiMTIzNDU2Nzg5IiwNCiAgICAgICAgICAgICJmc3BJZCI6ICJNb2JpbGVNb25leSINCiAgICAgICAgfSwNCiAgICAgICAgInBlcnNvbmFsSW5mbyI6IHsNCiAgICAgICAgICAgICJjb21wbGV4TmFtZSI6IHsNCiAgICAgICAgICAgICAgICAiZmlyc3ROYW1lIjogIkhlbnJpayIsDQogICAgICAgICAgICAgICAgImxhc3ROYW1lIjogIkthcmxzc29uIg0KICAgICAgICAgICAgfQ0KICAgICAgICB9DQogICAgfSwNCiAgICAicGF5ZXIiOiB7DQogICAgICAgICJwZXJzb25hbEluZm8iOiB7DQogICAgICAgICAgICAiY29tcGxleE5hbWUiOiB7DQogICAgICAgICAgICAgICAgImZpcnN0TmFtZSI6ICJNYXRzIiwNCiAgICAgICAgICAgICAgICAibGFzdE5hbWUiOiAiSGFnbWFuIg0KICAgICAgICAgICAgfQ0KICAgICAgICB9LA0KICAgICAgICAicGFydHlJZEluZm8iOiB7DQogICAgICAgICAgICAicGFydHlJZFR5cGUiOiAiSUJBTiIsDQogICAgICAgICAgICAicGFydHlJZGVudGlmaWVyIjogIlNFNDU1MDAwMDAwMDA1ODM5ODI1NzQ2NiIsDQogICAgICAgICAgICAiZnNwSWQiOiAiQmFua05yT25lIg0KICAgICAgICB9DQogICAgfSwNCiAgICAiYW1vdW50Ijogew0KICAgICAgICAiYW1vdW50IjogIjEwMCIsDQogICAgICAgICJjdXJyZW5jeSI6ICJVU0QiDQogICAgfSwNCiAgICAidHJhbnNhY3Rpb25UeXBlIjogew0KICAgICAgICAic2NlbmFyaW8iOiAiVFJBTlNGRVIiLA0KICAgICAgICAiaW5pdGlhdG9yIjogIlBBWUVSIiwNCiAgICAgICAgImluaXRpYXRvclR5cGUiOiAiQ09OU1VNRVIiDQogICAgfSwNCiAgICAibm90ZSI6ICJGcm9tIE1hdHMiDQp9DQo=",
+            "condition": "fH9pAYDQbmoZLPbvv3CSW2RfjU4jvM4ApG_fqGnR7Xs",
+            "expiration": "2030-01-01T00:00:00.000Z"
+          },
+          "tests": {
+            "assertions": [
+              {
+                "id": 1,
+                "description": "Response should be 202 Accepted",
+                "exec": [
+                  "expect(response.status).to.equal(202)"
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "fileInfo": {
+        "path": "sample-tests/inbound-metrics-trigger.json"
+      }
+    }
+  ]
+}
