@@ -176,7 +176,7 @@ describe('Test Server', () => {
     });
 
     test('Subscribes to the keyevent set notification', async () => {
-        expect(testServer._wsapi._cache.subscribe).toBeCalledTimes(1);
+        expect(testServer._wsapi._cache.subscribe).toHaveBeenCalledTimes(1);
         expect(testServer._wsapi._cache.subscribe).toHaveBeenCalledWith(
             testServer._wsapi._cache.EVENT_SET,
             expect.any(Function),
