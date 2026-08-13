@@ -2612,13 +2612,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/central-services-error-handling@npm:13.1.7":
-  version: 13.1.7
-  resolution: "@mojaloop/central-services-error-handling@npm:13.1.7"
+"@mojaloop/central-services-error-handling@npm:13.1.8":
+  version: 13.1.8
+  resolution: "@mojaloop/central-services-error-handling@npm:13.1.8"
   dependencies:
     fast-safe-stringify: "npm:2.1.1"
     lodash: "npm:4.18.1"
-  checksum: 10/08d66dd1aa24019e87fee57fe93b40f2b984c75a2ee34f303fbb67c39079334a04ab47efd148c4774100d9098c60622cf7f338370b5ef988942e31153665049f
+  checksum: 10/e3b1ca133a2557f059b9a7587b5c7f6052c855dbace1d723fd69444bcce5981bd2158584bad6352b9f056ac52b297fa379ebaf4c4d5986ef07b3f1d0fdd12bc4
   languageName: node
   linkType: hard
 
@@ -2664,12 +2664,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/central-services-metrics@npm:12.8.7":
-  version: 12.8.7
-  resolution: "@mojaloop/central-services-metrics@npm:12.8.7"
+"@mojaloop/central-services-metrics@npm:12.8.8":
+  version: 12.8.8
+  resolution: "@mojaloop/central-services-metrics@npm:12.8.8"
   dependencies:
     prom-client: "npm:15.1.3"
-  checksum: 10/737cdefeff849a6f017c07710a6c146daa83818512c3c978b992e5875e163ba38d0a5eb1faf81f728b66a2dd4b68f998ae88816ed20fad5a1cbd50c6031f0a63
+  checksum: 10/1ba5484440ac89a61e43abdb22f6c4bcfb4425704f0ff5d0931f611463cdbe26fa9a1cc2bc15d980d0245b1beb146565b5d7927dd7dd2d4f3cf531dfb0a5d595
   languageName: node
   linkType: hard
 
@@ -2870,9 +2870,9 @@ __metadata:
     "@eslint/js": "npm:10.0.1"
     "@koa/cors": "npm:5.0.0"
     "@mojaloop/api-snippets": "npm:18.3.2"
-    "@mojaloop/central-services-error-handling": "npm:13.1.7"
+    "@mojaloop/central-services-error-handling": "npm:13.1.8"
     "@mojaloop/central-services-logger": "npm:11.10.6"
-    "@mojaloop/central-services-metrics": "npm:12.8.7"
+    "@mojaloop/central-services-metrics": "npm:12.8.8"
     "@mojaloop/central-services-shared": "npm:18.38.2"
     "@mojaloop/event-sdk": "npm:14.8.5"
     "@mojaloop/logging-bc-client-lib": "npm:0.5.8"
@@ -2893,11 +2893,11 @@ __metadata:
     eslint: "npm:10.8.1"
     eslint-config-airbnb-base: "npm:15.0.0"
     eslint-plugin-import: "npm:2.32.0"
-    eslint-plugin-jest: "npm:29.16.0"
+    eslint-plugin-jest: "npm:29.16.1"
     express: "npm:4.21.2"
     fast-json-patch: "npm:3.1.1"
     fast-safe-stringify: "npm:2.1.1"
-    globals: "npm:17.9.0"
+    globals: "npm:17.11.0"
     javascript-state-machine: "npm:3.1.0"
     jest: "npm:30.4.2"
     jest-junit: "npm:17.0.0"
@@ -2916,7 +2916,7 @@ __metadata:
     prom-client: "npm:15.1.3"
     promise-timeout: "npm:1.3.0"
     random-word-slugs: "npm:0.1.7"
-    redis: "npm:6.2.0"
+    redis: "npm:6.2.1"
     redis-mock: "npm:0.56.3"
     replace: "npm:1.2.2"
     retry: "npm:^0.13.1"
@@ -3327,6 +3327,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@redis/bloom@npm:6.2.1":
+  version: 6.2.1
+  resolution: "@redis/bloom@npm:6.2.1"
+  peerDependencies:
+    "@redis/client": ^6.2.1
+  checksum: 10/c99949d089147934d9247a6903e83c1a656693cfa24db00e2c61e6caf5d9c7803df4a1d969514f02bee0b75bbb5bc2dbf14b00a973ff16503b2cb2bb22ba0683
+  languageName: node
+  linkType: hard
+
 "@redis/client@npm:6.2.0":
   version: 6.2.0
   resolution: "@redis/client@npm:6.2.0"
@@ -3344,12 +3353,38 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@redis/client@npm:6.2.1":
+  version: 6.2.1
+  resolution: "@redis/client@npm:6.2.1"
+  dependencies:
+    cluster-key-slot: "npm:1.1.2"
+  peerDependencies:
+    "@node-rs/xxhash": ^1.1.0
+    "@opentelemetry/api": ">=1 <2"
+  peerDependenciesMeta:
+    "@node-rs/xxhash":
+      optional: true
+    "@opentelemetry/api":
+      optional: true
+  checksum: 10/ebee48006a32cf3403a5bab50d8342b868de51bfddea398dfde0566a6f63d6569f7914777e7306499eb9f4ffb7c4b6dd2f24657fc77a68dc82e4efa705ea29b4
+  languageName: node
+  linkType: hard
+
 "@redis/json@npm:6.2.0":
   version: 6.2.0
   resolution: "@redis/json@npm:6.2.0"
   peerDependencies:
     "@redis/client": ^6.2.0
   checksum: 10/22e5931c19d8e856d0c2b0cd7f9a7535f5e08ede9ae2acf19143b86cd7995313de171b6ab42b95cd477e95481d7e447c606ad99bdfdc34f50c8205b30e565cbb
+  languageName: node
+  linkType: hard
+
+"@redis/json@npm:6.2.1":
+  version: 6.2.1
+  resolution: "@redis/json@npm:6.2.1"
+  peerDependencies:
+    "@redis/client": ^6.2.1
+  checksum: 10/522bc6a750d9083944996944469f4d2111a0c87fafc64ad5d353fd7cd7b70202aec8eb7dec2b1ea7c8a100def242bd7d2d26b36c0e91d3fc2d9f98381e20a6e2
   languageName: node
   linkType: hard
 
@@ -3362,12 +3397,30 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@redis/search@npm:6.2.1":
+  version: 6.2.1
+  resolution: "@redis/search@npm:6.2.1"
+  peerDependencies:
+    "@redis/client": ^6.2.1
+  checksum: 10/1460dea8c7ab73e4f2a5c35a239b4ed80f31df01904e7eeb8942fe790120724accd7017fb02d505b754f2c6ac44ed6fb70f64373c1e11dae596f79a7c02f7bee
+  languageName: node
+  linkType: hard
+
 "@redis/time-series@npm:6.2.0":
   version: 6.2.0
   resolution: "@redis/time-series@npm:6.2.0"
   peerDependencies:
     "@redis/client": ^6.2.0
   checksum: 10/6e58d61ef6ef172dee7f49663fbad19031cc3fc871e599900c5116c2194884eabf249a314f50dff9f79af6130e2cb779f4fb778a52eda1b5405d0f18f745f420
+  languageName: node
+  linkType: hard
+
+"@redis/time-series@npm:6.2.1":
+  version: 6.2.1
+  resolution: "@redis/time-series@npm:6.2.1"
+  peerDependencies:
+    "@redis/client": ^6.2.1
+  checksum: 10/c099ecfd748879d40d00db88a662a8ba723fcfcd7e9c4bce97977336e78df26ea1045ac0dd43c8548cb7469f3329b5501cf934b6e2d182680bec7b61d43cbd2c
   languageName: node
   linkType: hard
 
@@ -7305,9 +7358,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-jest@npm:29.16.0":
-  version: 29.16.0
-  resolution: "eslint-plugin-jest@npm:29.16.0"
+"eslint-plugin-jest@npm:29.16.1":
+  version: 29.16.1
+  resolution: "eslint-plugin-jest@npm:29.16.1"
   dependencies:
     "@typescript-eslint/utils": "npm:^8.0.0"
   peerDependencies:
@@ -7322,7 +7375,7 @@ __metadata:
       optional: true
     typescript:
       optional: true
-  checksum: 10/f57ddcfe950dde5792bee08a7dfe10e7a557c35a23a7e37f7c174e17271993b9310f180d253e3f4fbe31f205ffc1cff111131b47e24471601bef50493e4403a8
+  checksum: 10/c13741296e115c757f11f912712b49ad35eac1c09323c65a88a75898244ae4c42e9b5046c0e48263321a048701d891a0a887ae7a3650752873d22e86c9d564f8
   languageName: node
   linkType: hard
 
@@ -8235,10 +8288,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"globals@npm:17.9.0":
-  version: 17.9.0
-  resolution: "globals@npm:17.9.0"
-  checksum: 10/8619386d449e8cbb81e242eced8bca0a42e5c3633a3a35996b8b1618beb17ff9fb33bfe703d60d83d4b7f6f8a996dede4faf02f9e966e50ff895e0cf6122ae15
+"globals@npm:17.11.0":
+  version: 17.11.0
+  resolution: "globals@npm:17.11.0"
+  checksum: 10/9cff5b8099b585862ab0d31e8b93dc1c3e7b59239dc58b59447a38709715751df8794ee0d28f434f8e421b01aee3cc10051e2455b5c967d960e79f882e68aa0f
   languageName: node
   linkType: hard
 
@@ -12645,6 +12698,19 @@ __metadata:
     "@redis/search": "npm:6.2.0"
     "@redis/time-series": "npm:6.2.0"
   checksum: 10/a6915e791e788a1310c55c6f4a534300500bda381f84b83a9ffccd8594718a55eb80911448dbfdb3b7ec6b5ebb0a154cc18c0d7becc8d1510a6aec517b288f33
+  languageName: node
+  linkType: hard
+
+"redis@npm:6.2.1":
+  version: 6.2.1
+  resolution: "redis@npm:6.2.1"
+  dependencies:
+    "@redis/bloom": "npm:6.2.1"
+    "@redis/client": "npm:6.2.1"
+    "@redis/json": "npm:6.2.1"
+    "@redis/search": "npm:6.2.1"
+    "@redis/time-series": "npm:6.2.1"
+  checksum: 10/b1a5afa76a0268b6f7636929f5366a8ee7d570d98f54471734ed9a4a1683216f2ea36a9a213b16154a5b90f2c018181cefc03cca77310bfc6d9330656019733e
   languageName: node
   linkType: hard
 
