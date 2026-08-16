@@ -27,6 +27,18 @@
     "react-is@19.2.8": {
       "reason": "MIT licensed (React, https://github.com/facebook/react LICENSE) but syft reads the license as empty from the lock metadata. Transitive dev-only dependency (pretty-format via jest). Verified 2026-07-30.",
       "expires": "2026-12-31"
+    },
+    "install@0.13.0": {
+      "reason": "MIT per npm registry (github.com/benjamn/install); ships a blank package.json license field. Verified 2026-08-13.",
+      "expires": "2027-08-13"
+    },
+    "murmurhash@2.0.1": {
+      "reason": "MIT per npm registry (github.com/perezd/node-murmurhash); ships a blank package.json license field. Verified 2026-08-13.",
+      "expires": "2027-08-13"
+    },
+    "utf8@3.0.0": {
+      "reason": "MIT per npm registry (github.com/mathiasbynens/utf8.js); ships a blank package.json license field. Verified 2026-08-13.",
+      "expires": "2027-08-13"
     }
   }
 }

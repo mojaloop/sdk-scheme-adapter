@@ -48,7 +48,7 @@ const _validator = new Validate({ logExcludePaths });
 let _initialize;
 
 class InboundApi extends EventEmitter {
-    constructor(conf, logger, cache, validator, oidc, mojaloopSharedAgents) {
+    constructor(conf, logger, cache, validator, oidc, mojaloopSharedAgents, metricsClient) {
         super({ captureExceptions: true });
         this._conf = conf;
         this._cache = cache;
@@ -75,6 +75,7 @@ class InboundApi extends EventEmitter {
             oidc,
             backendSharedAgents: this.backendSharedAgents,
             mojaloopSharedAgents: this.mojaloopSharedAgents,
+            metricsClient,
         });
     }
 
@@ -121,7 +122,7 @@ class InboundApi extends EventEmitter {
         }
     }
 
-    static _SetupApi({ conf, logger, validator, cache, jwsVerificationKeys, oidc, backendSharedAgents, mojaloopSharedAgents }) {
+    static _SetupApi({ conf, logger, validator, cache, jwsVerificationKeys, oidc, backendSharedAgents, mojaloopSharedAgents, metricsClient }) {
         const api = new Koa();
 
         api.use(middlewares.createErrorHandler(logger));
@@ -133,7 +134,7 @@ class InboundApi extends EventEmitter {
             api.use(middlewares.createJwsValidator(logger, jwsVerificationKeys, jwsExclusions));
         }
 
-        api.use(middlewares.applyState({ conf, cache, oidc, logExcludePaths, backendSharedAgents, mojaloopSharedAgents }));
+        api.use(middlewares.applyState({ conf: { ...conf, metricsClient }, cache, oidc, logExcludePaths, backendSharedAgents, mojaloopSharedAgents }));
         api.use(middlewares.createPingMiddleware(conf, jwsVerificationKeys));
         api.use(middlewares.createRequestValidator(validator));
         api.use(middlewares.assignFspiopIdentifier());
@@ -189,7 +190,7 @@ class InboundApi extends EventEmitter {
 }
 
 class InboundServer extends EventEmitter {
-    constructor(conf, logger, cache, oidc, mojaloopSharedAgents) {
+    constructor(conf, logger, cache, oidc, mojaloopSharedAgents, metricsClient) {
         super({ captureExceptions: true });
         this._conf = conf;
         this._logger = logger.push({ app: this.constructor.name });
@@ -200,6 +201,7 @@ class InboundServer extends EventEmitter {
             _validator,
             oidc,
             mojaloopSharedAgents,
+            metricsClient,
         );
         this._api.on('error', (...args) => {
             this.emit('error', ...args);

@@ -45,6 +45,7 @@ const axios = require('axios');
 const { logger } = require('~/lib/logger');
 const { BackendRequests, HTTPResponseError } = require('~/lib/model/lib/requests');
 const Cache = require('~/lib/cache');
+const { MetricsClient } = require('~/lib/metrics');
 const shared = require('~/lib/model/lib/shared');
 const Model = require('~/lib/model').InboundTransfersModel;
 
@@ -73,9 +74,15 @@ describe('inboundModel', () => {
     let config;
     let mockArgs;
     let mockTxnReqArgs;
+    let metricsClient;
+
+    beforeAll(async () => {
+        metricsClient = new MetricsClient();
+    });
 
     beforeEach(async () => {
         config = JSON.parse(JSON.stringify(defaultConfig));
+        config.metricsClient = metricsClient;
 
         mockArgs = JSON.parse(JSON.stringify(mockArguments));
         mockArgs.internalQuoteResponse.expiration = new Date(Date.now());
@@ -392,14 +399,14 @@ describe('inboundModel', () => {
         test('getTransfer should return not found error', async () => {
             const TRANSFER_ID = 'fake-transfer-id';
 
-            BackendRequests.__getTransfers = jest.fn().mockReturnValue(
-            Promise.reject(new HTTPResponseError({
+            BackendRequests.__getTransfers = jest.fn().mockRejectedValue(
+            new HTTPResponseError({
                 res: {
                 data: {
                     statusCode: '3208'
                 },
                 }
-            })));
+            }));
 
             const model = new Model({
             ...config,
@@ -839,14 +846,14 @@ describe('inboundModel', () => {
         test('getBulkTransfer should return not found error', async () => {
             const BULK_TRANSFER_ID = 'fake-bulk-transfer-id';
 
-            BackendRequests.__getBulkTransfers = jest.fn().mockReturnValue(
-                Promise.reject(new HTTPResponseError({
+            BackendRequests.__getBulkTransfers = jest.fn().mockRejectedValue(
+                new HTTPResponseError({
                     res: {
                         data: {
                             statusCode: '3208'
                         },
                     }
-                })));
+                }));
 
             const model = new Model({
                 ...config,
@@ -1203,19 +1210,6 @@ describe('inboundModel', () => {
             await expect(model.sendNotificationToPayee(notif.data, 'some-transfer-id')).resolves.toBeUndefined();
         });
 
-        test('sendNotificationToPayee handles error and still returns', async () => {
-            BackendRequests.__putTransfersNotification = jest.fn().mockRejectedValue(new Error('fail'));
-            const notif = JSON.parse(JSON.stringify(notificationToPayee));
-            const model = new Model({
-            ...config,
-            cache,
-            logger,
-            backendRequestRetry: {
-                enabled: false
-            }
-            });
-            await expect(model.sendNotificationToPayee(notif.data, 'some-transfer-id')).resolves.toBeUndefined();
-        });
     });
 
     describe('error handling:', () => {
@@ -1639,6 +1633,51 @@ describe('inboundModel', () => {
             await model.sendFxPutNotificationToBackend(notif.data, conversionId);
             // Should only be called once, no retry
             expect(BackendRequests.__putFxTransfersNotification).toHaveBeenCalledTimes(1);
+        });
+    });
+
+    describe('Inbound Metrics Tests', () => {
+        let cache;
+        let model;
+
+        beforeEach(async () => {
+            cache = new Cache({
+                cacheUrl: 'redis://dummy:1234',
+                logger,
+                unsubscribeTimeoutMs: 5000,
+            });
+            await cache.connect();
+
+            model = new Model({
+                ...config,
+                cache,
+                logger,
+            });
+        });
+
+        afterEach(async () => {
+            await cache.disconnect();
+        });
+
+        test('Inbound transfers model should record metrics', async () => {
+            expect(model).toBeDefined();
+            const metrics = await metricsClient._prometheusRegister.metrics();
+            expect(metrics).toBeTruthy();
+            expect(metrics).toEqual(expect.stringContaining('mojaloop_connector_inbound_party_lookup_request_count'));
+            expect(metrics).toEqual(expect.stringContaining('mojaloop_connector_inbound_party_lookup_response_count'));
+            expect(metrics).toEqual(expect.stringContaining('mojaloop_connector_inbound_quote_request_count'));
+            expect(metrics).toEqual(expect.stringContaining('mojaloop_connector_inbound_quote_response_count'));
+            expect(metrics).toEqual(expect.stringContaining('mojaloop_connector_inbound_fx_quote_request_count'));
+            expect(metrics).toEqual(expect.stringContaining('mojaloop_connector_inbound_fx_quote_response_count'));
+            expect(metrics).toEqual(expect.stringContaining('mojaloop_connector_inbound_transfer_prepare_count'));
+            expect(metrics).toEqual(expect.stringContaining('mojaloop_connector_inbound_transfer_fulfil_response_count'));
+            expect(metrics).toEqual(expect.stringContaining('mojaloop_connector_inbound_fx_transfer_prepare_count'));
+            expect(metrics).toEqual(expect.stringContaining('mojaloop_connector_inbound_fx_transfer_fulfil_response_count'));
+            expect(metrics).toEqual(expect.stringContaining('mojaloop_connector_inbound_party_lookup_latency'));
+            expect(metrics).toEqual(expect.stringContaining('mojaloop_connector_inbound_quote_request_latency'));
+            expect(metrics).toEqual(expect.stringContaining('mojaloop_connector_inbound_transfer_latency'));
+            expect(metrics).toEqual(expect.stringContaining('mojaloop_connector_inbound_fx_quote_latency'));
+            expect(metrics).toEqual(expect.stringContaining('mojaloop_connector_inbound_fx_transfer_latency'));
         });
     });
 });

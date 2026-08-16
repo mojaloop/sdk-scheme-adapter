@@ -44,6 +44,8 @@ const Cache = require('~/lib/cache');
 const InboundServer = require('~/InboundServer');
 const { logger } = require('~/lib/logger');
 const { createMockSharedAgents } = require('./api/utils');
+const { MetricsClient } = require('~/lib/metrics');
+const promClient = require('prom-client');
 
 const defaultConfig = require('./data/defaultConfig');
 const putPartiesBody = require('./data/putPartiesBody');
@@ -64,6 +66,7 @@ describe('Test Server', () => {
     let testServer, inboundServer, inboundReq, testReq, serverConfig, wsClients, testServerPort, cache;
 
     beforeEach(async () => {
+        promClient.register.clear();
         Cache.mockClear();
 
         serverConfig = {
@@ -84,7 +87,8 @@ describe('Test Server', () => {
         expect(testServer._server.listening).toBe(true);
         testReq = supertest.agent(testServer._server);
 
-        inboundServer = new InboundServer(serverConfig, logger, cache, null, createMockSharedAgents());
+        const metricsClient = new MetricsClient();
+        inboundServer = new InboundServer(serverConfig, logger, cache, null, createMockSharedAgents(), metricsClient);
         await inboundServer.start();
         inboundReq = supertest(inboundServer._server);
 
