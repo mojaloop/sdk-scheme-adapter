@@ -44,7 +44,7 @@
     "@mojaloop/platform-shared-lib-messaging-types-lib": "0.7.4",
     "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib": "0.5.18",
     "ajv": "8.20.0",
-    "redis": "6.2.0",
+    "redis": "6.2.1",
     "uuid": "11.1.1"
   },
   "devDependencies": {
@@ -53,8 +53,8 @@
     "@eslint/js": "10.0.1",
     "@types/node": "24.13.2",
     "@types/uuid": "10.0.0",
-    "@typescript-eslint/eslint-plugin": "8.66.0",
-    "@typescript-eslint/parser": "8.66.0",
+    "@typescript-eslint/eslint-plugin": "8.67.0",
+    "@typescript-eslint/parser": "8.67.0",
     "eslint": "10.8.1",
     "eslint-plugin-import-x": "4.17.1",
     "jest": "30.4.2",
