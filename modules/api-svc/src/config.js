@@ -240,7 +240,8 @@ module.exports = {
     resourceVersions: env.get('RESOURCE_VERSIONS').default(RESOURCE_VERSIONS_STRING).asResourceVersions(),
 
     metrics: {
-        port: env.get('METRICS_SERVER_LISTEN_PORT').default('4004').asPortNumber()
+        port: env.get('METRICS_SERVER_LISTEN_PORT').default('4004').asPortNumber(),
+        disabled: env.get('INSTRUMENTATION_METRICS_DISABLED').default('false').asBool()
     },
 
     // in 3PPI DFSP's generate their own `transferId` which is associated with

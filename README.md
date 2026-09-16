@@ -176,6 +176,29 @@ The trace flags field indicates trace sampling options according to the [W3C Tra
 - `01`: Sampled flag set (trace should be sampled)
 - Custom values can be used for specific observability requirements
 
+### Metrics
+
+The scheme adapter exposes [Prometheus](https://prometheus.io/) metrics on a `/metrics` endpoint.
+
+- **Environment Variable**: `METRICS_SERVER_LISTEN_PORT`
+- **Default**: `4004`
+- **Environment Variable**: `INSTRUMENTATION_METRICS_DISABLED`
+- **Default**: `false` - set to `true` to disable the `/metrics` endpoint (and default process metrics collection) entirely
+
+Alongside the default Node.js process metrics, the following are exposed:
+- `mojaloop_connector_callback_latency_seconds` (histogram, labels `operation`/`outcome`): time from receiving an inbound FSPIOP request to dispatching its resulting async callback to the switch
+- `mojaloop_connector_callback_pending_count` (gauge): number of inbound requests currently awaiting dispatch of their callback
+- `mojaloop_connector_backend_call_duration_seconds` (histogram, labels `method`/`operation`): duration of HTTP calls the SDK makes to the configured DFSP backend
+- `mojaloop_connector_http_agent_sockets` (gauge, labels `agent`/`host`/`state`): outbound HTTP agent connection pool socket counts (`active`/`free`/`pending`)
+
+## mTLS at High Throughput (TPS)
+
+When running multiple scheme-adapter replicas behind a Kubernetes ingress, avoid relying on the scheme-adapter's built-in mTLS (`INBOUND_MUTUAL_TLS_ENABLED`) for the switch-facing connection at high transaction throughput.
+
+Genuine end-to-end mTLS from the switch through to the scheme-adapter (as opposed to mTLS terminated and re-established at the ingress) requires the ingress to run in SSL passthrough mode. A passthrough ingress cannot inspect or route individual HTTP requests inside the encrypted stream - it operates at L4, forwarding an entire TCP connection to whichever backend pod it selected when that connection was established. Combined with HTTP keep-alive and connection reuse on the calling side, load ends up distributed once per TCP connection rather than once per HTTP request, which can pin a disproportionate share of traffic onto a small number of replicas as throughput increases, even with even replica counts and configured traffic shares.
+
+For high-TPS deployments, terminate mTLS at a service mesh layer (e.g. Istio-managed mTLS via sidecar) instead of relying on the scheme-adapter's built-in mTLS behind a passthrough ingress. This keeps load balancing per-request across replicas instead of per-connection.
+
 ## Testing
 
 ### Unit Tests

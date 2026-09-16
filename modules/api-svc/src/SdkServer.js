@@ -38,6 +38,9 @@ const OAuthTestServer = require('./OAuthTestServer');
 const { BackendEventHandler } = require('./BackendEventHandler');
 const { FSPIOPEventHandler } = require('./FSPIOPEventHandler');
 const { MetricsServer, MetricsClient } = require('./lib/metrics');
+const { watchAgents } = require('./lib/httpAgentMetrics');
+const { preRegister: preRegisterCallbackLatencyMetrics } = require('./lib/model/lib/callbackLatencyTracker');
+const { preRegisterBackendMetrics } = require('./lib/model/lib/requests');
 const TestServer = require('./TestServer');
 const ControlAgent = require('./ControlAgent');
 
@@ -65,13 +68,26 @@ class SdkServer extends EventEmitter {
         this.cache = createCache(conf);
 
         this.metricsClient = new MetricsClient();
-        this.metricsServer = new MetricsServer({
-            port: this.conf.metrics.port,
-            logger: this.logger
-        });
+        // metricsClient itself stays available even when disabled, since instrumented
+        // code paths call it unconditionally; only the /metrics exposition is skipped.
+        this.metricsServer = this.conf.metrics.disabled
+            ? undefined
+            : new MetricsServer({
+                port: this.conf.metrics.port,
+                logger: this.logger
+            });
+
+        // Pre-register metrics recorded from per-request objects (InboundTransfersModel,
+        // BackendRequests), so they appear on /metrics before the first matching request.
+        preRegisterCallbackLatencyMetrics(this.metricsClient);
+        preRegisterBackendMetrics(this.metricsClient);
+        this.logger.isInfoEnabled && this.logger.info(
+            'Pre-registered mojaloop_connector_callback_latency_seconds, mojaloop_connector_callback_pending_count and mojaloop_connector_backend_call_duration_seconds at startup'
+        );
 
         // Create shared Mojaloop agents for switch communication (used by both servers)
         this.mojaloopSharedAgents = this._createMojaloopSharedAgents(this.conf);
+        watchAgents('mojaloop', this.mojaloopSharedAgents);
 
         this.oidc = createAuthClient(conf, logger);
         this.oidc.auth.on('error', (msg) => {
@@ -84,6 +100,7 @@ class SdkServer extends EventEmitter {
             this.cache,
             this.oidc,
             this.mojaloopSharedAgents,
+            this.metricsClient,
         );
         this.inboundServer.on('error', (...args) => {
             this.logger.isErrorEnabled && this.logger.push({ args }).error('Unhandled error in Inbound Server');
@@ -125,6 +142,7 @@ class SdkServer extends EventEmitter {
             this.backendEventHandler = new BackendEventHandler({
                 config: this.conf,
                 logger: this.logger,
+                metricsClient: this.metricsClient,
             });
         }
 
@@ -306,7 +324,7 @@ class SdkServer extends EventEmitter {
         await Promise.all([
             this.inboundServer.start(),
             this.outboundServer.start(),
-            this.metricsServer.start(),
+            this.metricsServer?.start(),
             this.testServer?.start(),
             this.oauthTestServer?.start(),
             this.backendEventHandler?.start(),
@@ -360,6 +378,7 @@ class SdkServer extends EventEmitter {
             const oldAgents = this.mojaloopSharedAgents;
             if (shouldReplaceAgents) {
                 this.mojaloopSharedAgents = this._createMojaloopSharedAgents(newConf);
+                watchAgents('mojaloop', this.mojaloopSharedAgents);
             }
 
             if (updateInboundServer) {
@@ -374,6 +393,7 @@ class SdkServer extends EventEmitter {
                     this.cache,
                     this.oidc,
                     this.mojaloopSharedAgents,
+                    this.metricsClient,
                 );
                 this.inboundServer.on('error', (...args) => {
                     const errMessage = 'Unhandled error in Inbound Server';
@@ -532,7 +552,7 @@ class SdkServer extends EventEmitter {
             this.cache.disconnect(),
             this.inboundServer.stop(),
             this.outboundServer.stop(),
-            this.metricsServer.stop(),
+            this.metricsServer?.stop(),
             this.oauthTestServer?.stop(),
             this.testServer?.stop(),
             this.controlClient?.stop(),

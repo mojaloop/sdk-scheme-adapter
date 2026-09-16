@@ -58,7 +58,7 @@ class MetricsClient {
     }
 
 
-    getHistogram(name, description, buckets) {
+    getHistogram(name, description, buckets, labelNames) {
         const metricName = `${this._histogramPrefix}${name}`;
 
         let conf = {
@@ -68,6 +68,10 @@ class MetricsClient {
 
         if(buckets) {
             conf.buckets = buckets;
+        }
+
+        if(labelNames) {
+            conf.labelNames = labelNames;
         }
 
         if(!this._metrics[metricName]) {
@@ -92,14 +96,20 @@ class MetricsClient {
     }
 
 
-    getGauge(name, description) {
+    getGauge(name, description, labelNames) {
         const metricName = `${this._counterPrefix}${name}`;
 
         if(!this._metrics[metricName]) {
-            this._metrics[metricName] = new PrometheusClient.Gauge({
+            let conf = {
                 name: name,
                 help: description
-            });
+            };
+
+            if(labelNames) {
+                conf.labelNames = labelNames;
+            }
+
+            this._metrics[metricName] = new PrometheusClient.Gauge(conf);
         }
 
         return this._metrics[metricName];
