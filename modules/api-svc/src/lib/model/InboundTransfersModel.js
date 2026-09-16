@@ -158,7 +158,7 @@ class InboundTransfersModel {
      * Queries the backend API for the specified party and makes a callback to the originator with our dfspId if found
      */
     async getParticipants(idType, idValue, idSubValue, sourceFspId, headers) {
-        const correlationId = `${idType}:${idValue}${idSubValue ? `:${idSubValue}` : ''}`;
+        const correlationId = `${idType}:${idValue}` + (idSubValue ? `:${idSubValue}` : '');
         this._callbackLatency.start('participants', correlationId);
         try {
             // make a call to the backend to resolve the party lookup
@@ -195,7 +195,7 @@ class InboundTransfersModel {
      * Queries the backend API for the specified party and makes a callback to the originator with the result
      */
     async getParties(idType, idValue, idSubValue, sourceFspId, headers = {}) {
-        const correlationId = `${idType}:${idValue}${idSubValue ? `:${idSubValue}` : ''}`;
+        const correlationId = `${idType}:${idValue}` + (idSubValue ? `:${idSubValue}` : '');
         this._callbackLatency.start('parties', correlationId);
         try {
             // make a call to the backend to resolve the party lookup
