@@ -29,6 +29,27 @@
 const { createHttpRequester } = require('@mojaloop/sdk-standard-components').httpRequester;
 const { buildUrl, HTTPResponseError } = require('./common');
 
+// Single source of truth for this metric, shared by the eager preRegister() call and the
+// lazy per-instance construction below so the two definitions can't drift apart.
+const CALL_DURATION_HISTOGRAM_DEF = {
+    name: 'mojaloop_connector_backend_call_duration_seconds',
+    help: 'Duration of HTTP calls made by the SDK to the configured DFSP backend',
+    buckets: [0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10, 30],
+    labelNames: ['method', 'operation'],
+};
+
+/**
+ * Registers the histogram at process startup, so it appears on /metrics before the first
+ * inbound request lazily constructs a BackendRequests instance.
+ */
+const preRegister = (metricsClient) => {
+    metricsClient?.getHistogram(
+        CALL_DURATION_HISTOGRAM_DEF.name,
+        CALL_DURATION_HISTOGRAM_DEF.help,
+        CALL_DURATION_HISTOGRAM_DEF.buckets,
+        CALL_DURATION_HISTOGRAM_DEF.labelNames,
+    );
+};
 
 /**
  * A class for making requests to DFSP backend API
@@ -58,6 +79,15 @@ class BackendRequests {
             logger: this.logger,
             httpConfig
         });
+
+        // Histogram of round-trip time for calls the SDK makes out to the DFSP backend,
+        // labelled by HTTP method and backend operation (e.g. parties, quoterequests, transfers).
+        this._callDurationHistogram = config.metricsClient?.getHistogram(
+            CALL_DURATION_HISTOGRAM_DEF.name,
+            CALL_DURATION_HISTOGRAM_DEF.help,
+            CALL_DURATION_HISTOGRAM_DEF.buckets,
+            CALL_DURATION_HISTOGRAM_DEF.labelNames,
+        );
 
         // FSPID of THIS DFSP
         this.dfspId = config.dfspId;
@@ -245,7 +275,7 @@ class BackendRequests {
             headers: this._buildHeaders(),
         };
         // Note we do not JWS sign requests with no body i.e. GET requests
-        return this.sendRequest(reqOpts);
+        return this.sendRequest(reqOpts, url.split('/')[0]);
     }
 
 
@@ -256,7 +286,7 @@ class BackendRequests {
             headers: this._buildHeaders(),
             body: JSON.stringify(body)
         };
-        return this.sendRequest(reqOpts);
+        return this.sendRequest(reqOpts, url.split('/')[0]);
     }
 
 
@@ -267,7 +297,7 @@ class BackendRequests {
             headers: this._buildHeaders(),
             body: JSON.stringify(body),
         };
-        return this.sendRequest(reqOpts);
+        return this.sendRequest(reqOpts, url.split('/')[0]);
     }
 
     _patch(url, body) {
@@ -277,10 +307,18 @@ class BackendRequests {
             headers: this._buildHeaders(),
             body: JSON.stringify(body)
         };
-        return this.sendRequest(reqOpts);
+        return this.sendRequest(reqOpts, url.split('/')[0]);
     }
 
-    async sendRequest(reqOptions) {
+    /**
+     * @param {object} reqOptions
+     * @param {string} [operation] - backend resource being called, e.g. 'parties', 'quoterequests', 'transfers'
+     */
+    async sendRequest(reqOptions, operation) {
+        const endTimer = this._callDurationHistogram?.startTimer({
+            method: reqOptions?.method,
+            operation: operation || 'unknown',
+        });
         try {
             this.logger.isVerboseEnabled && this.logger.push({ reqOptions }).verbose(`Executing HTTP ${reqOptions?.method}...`);
             const res = await this.requester.sendRequest({ ...reqOptions });
@@ -297,6 +335,8 @@ class BackendRequests {
                 res: { data, headers, status },
                 msg: err?.message
             });
+        } finally {
+            endTimer?.();
         }
     }
 }
@@ -305,4 +345,5 @@ class BackendRequests {
 module.exports = {
     BackendRequests,
     HTTPResponseError,
+    preRegisterBackendMetrics: preRegister,
 };

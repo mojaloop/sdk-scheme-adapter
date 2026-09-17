@@ -47,7 +47,7 @@ const {
 const { BackendRequests } = require('../lib/model/lib/requests');
 
 class BackendEventHandler {
-    constructor({ config, logger }) {
+    constructor({ config, logger, metricsClient }) {
         this._conf = config;
 
         this._logger = logger.push({ component: this.constructor.name });
@@ -57,7 +57,8 @@ class BackendEventHandler {
             logger: this._logger,
             backendEndpoint: config.backendEndpoint,
             dfspId: config.dfspId,
-            sharedAgents: config.sharedAgents
+            sharedAgents: config.sharedAgents,
+            metricsClient,
         });
     }
 

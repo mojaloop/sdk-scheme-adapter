@@ -27,6 +27,14 @@
     "react-is@19.2.8": {
       "reason": "MIT licensed (React, https://github.com/facebook/react LICENSE) but syft reads the license as empty from the lock metadata. Transitive dev-only dependency (pretty-format via jest). Verified 2026-07-30.",
       "expires": "2026-12-31"
+    },
+    "react-is@19.3.0": {
+      "reason": "MIT licensed (React, https://github.com/facebook/react LICENSE) but syft reads the license as empty from the lock metadata. Transitive dev-only dependency (pretty-format via jest). Verified 2026-09-16.",
+      "expires": "2027-12-31"
+    },
+    "glob-promise@3.4.0": {
+      "reason": "ISC per its own package.json (installed under @redocly/openapi-cli's node_modules) but syft reads the license as empty from the lock metadata. Transitive dependency of @redocly/openapi-cli. Verified 2026-09-16.",
+      "expires": "2027-12-31"
     }
   }
 }
