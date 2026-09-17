@@ -1,4 +1,11 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+## [24.20.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.19.8...v24.20.0) (2026-09-17)
+
+
+### Features
+
+* add inbound callback, backend call, and connection-pool metrics ([#684](https://github.com/mojaloop/sdk-scheme-adapter/issues/684)) ([e2a9aff](https://github.com/mojaloop/sdk-scheme-adapter/commit/e2a9aff9dababd057782e159258be6de429eeb6b))
+
 ### [24.19.8](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.19.7...v24.19.8) (2026-08-08)
 
 
