@@ -1,0 +1,15 @@
+{
+  "reject": [
+    "@mojaloop/api-snippets",
+    "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib",
+    "@mojaloop/logging-bc-client-lib",
+    "npm-check-updates",
+    "express",
+    "uuid",
+    "typescript",
+    "@types/node",
+    "why-these: all carried over verbatim from the tracked yaml config, which this file outranks for the duration of the maintenance run; @types/node must track the Node runtime major in .nvmrc (24) and typescript 7 ships Go-built tsgo binaries that trip the Grype source scan",
+    "ts-jest",
+    "why-ts-jest: 29.4.10 started honouring moduleResolution nodeNext with per-import resolutionMode, which makes namespace-style type references resolve to a package's ESM d.ts and fail with TS2503 (reproduced 2026-09-18 in inter-scheme-proxy-adapter)"
+  ]
+}
