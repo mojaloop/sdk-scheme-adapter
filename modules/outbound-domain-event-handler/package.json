@@ -1,94 +1,94 @@
 {
-    "name": "@mojaloop/sdk-scheme-adapter-outbound-domain-event-handler",
-    "version": "0.3.0-snapshot.69",
-    "description": "mojaloop sdk scheme adapter outbound domain event handler",
-    "license": "Apache-2.0",
-    "homepage": "https://github.com/mojaloop/sdk-scheme-adapter/",
-    "bugs": {
-        "url": "https://github.com/mojaloop/sdk-scheme-adapter/issues#readme"
-    },
-    "contributors": [
-        "Shashikant Hirugade <shashikant.hirugade@mojaloop.io>"
+  "name": "@mojaloop/sdk-scheme-adapter-outbound-domain-event-handler",
+  "version": "0.3.0-snapshot.69",
+  "description": "mojaloop sdk scheme adapter outbound domain event handler",
+  "license": "Apache-2.0",
+  "homepage": "https://github.com/mojaloop/sdk-scheme-adapter/",
+  "bugs": {
+    "url": "https://github.com/mojaloop/sdk-scheme-adapter/issues#readme"
+  },
+  "contributors": [
+    "Shashikant Hirugade <shashikant.hirugade@mojaloop.io>"
+  ],
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "/dist"
+  ],
+  "scripts": {
+    "start": "yarn run service",
+    "start:debug": "yarn run service:debug",
+    "start:dev": "ts-node src/application/index.ts",
+    "service": "node dist/application/index.js",
+    "service:debug": "node --inspect=0.0.0.0:9229 dist/application/index.js",
+    "build": "tsc && yarn run copy-files",
+    "watch": "tsc -w",
+    "dev": "nodemon",
+    "clean:dist": "rm -Rf dist",
+    "pretest": "yarn run build",
+    "standard": "yarn run lint",
+    "lint": "eslint ./src/",
+    "lint:fix": "eslint ./src/ --fix",
+    "copy-files": "npx copyfiles -u 1 src/**/*.yaml dist/",
+    "test:unit": "NODE_OPTIONS=--experimental-vm-modules jest --runInBand --forceExit --passWithNoTests --testMatch '**/test/unit/**/*.test.ts'",
+    "test:xunit": "NODE_OPTIONS=--experimental-vm-modules JEST_JUNIT_OUTPUT_DIR=../../test/results/ JEST_JUNIT_OUTPUT_NAME=xunit-event.xml yarn run test:unit --reporters=jest-junit",
+    "test:integration": "NODE_OPTIONS=--experimental-vm-modules jest --runInBand --passWithNoTests --testMatch '**/test/integration/**/*.test.ts'",
+    "test:coverage": "NODE_OPTIONS=--experimental-vm-modules jest --runInBand --forceExit --passWithNoTests --coverage --testMatch '**/test/unit/**/*.test.ts'",
+    "test:coverage-check": "NODE_OPTIONS=--experimental-vm-modules jest --runInBand --forceExit --coverage --testMatch '**/test/unit/**/*.test.ts'",
+    "dep:check": "ncu -e 2",
+    "dep:update": "ncu -u",
+    "release": "standard-version --skip.changelog --releaseCommitMessageFormat 'chore(release): {{currentTag}} [skip ci]'",
+    "snapshot": "standard-version --no-verify --skip.changelog --prerelease snapshot --releaseCommitMessageFormat 'chore(snapshot): {{currentTag}}'"
+  },
+  "dependencies": {
+    "@mojaloop/api-snippets": "18.3.2",
+    "@mojaloop/logging-bc-client-lib": "0.5.8",
+    "@mojaloop/logging-bc-public-types-lib": "0.5.7",
+    "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^",
+    "ajv-formats": "3.0.1",
+    "convict": "6.2.5",
+    "express": "4.21.2",
+    "openapi-backend": "5.21.1",
+    "redis": "6.2.1",
+    "swagger-ui-express": "5.0.1",
+    "yamljs": "0.3.0"
+  },
+  "devDependencies": {
+    "@eslint/compat": "2.1.1",
+    "@eslint/eslintrc": "3.3.7",
+    "@eslint/js": "10.0.1",
+    "@types/convict": "6.1.6",
+    "@types/express": "5.0.6",
+    "@types/jest": "30.0.0",
+    "@types/node": "24.13.2",
+    "@types/node-cache": "4.2.5",
+    "@types/supertest": "7.2.1",
+    "@types/swagger-ui-express": "4.1.8",
+    "@types/yamljs": "0.2.34",
+    "@typescript-eslint/eslint-plugin": "8.70.1",
+    "@typescript-eslint/parser": "8.70.1",
+    "copyfiles": "2.4.1",
+    "eslint": "10.11.0",
+    "eslint-plugin-import-x": "4.17.1",
+    "jest": "30.5.2",
+    "nodemon": "3.1.14",
+    "npm-check-updates": "16.7.10",
+    "replace": "1.2.2",
+    "standard-version": "9.5.0",
+    "ts-jest": "29.4.12",
+    "ts-node": "10.9.2",
+    "typescript": "6.0.3"
+  },
+  "nodemonConfig": {
+    "watch": [
+      "src/**/*.ts"
     ],
-    "main": "./dist/index.js",
-    "types": "./dist/index.d.ts",
-    "files": [
-        "/dist"
-    ],
+    "ext": "ts",
+    "exec": "ts-node src/application/index.ts"
+  },
+  "standard-version": {
     "scripts": {
-        "start": "yarn run service",
-        "start:debug": "yarn run service:debug",
-        "start:dev": "ts-node src/application/index.ts",
-        "service": "node dist/application/index.js",
-        "service:debug": "node --inspect=0.0.0.0:9229 dist/application/index.js",
-        "build": "tsc && yarn run copy-files",
-        "watch": "tsc -w",
-        "dev": "nodemon",
-        "clean:dist": "rm -Rf dist",
-        "pretest": "yarn run build",
-        "standard": "yarn run lint",
-        "lint": "eslint ./src/",
-        "lint:fix": "eslint ./src/ --fix",
-        "copy-files": "npx copyfiles -u 1 src/**/*.yaml dist/",
-        "test:unit": "jest --runInBand --forceExit --passWithNoTests --testMatch '**/test/unit/**/*.test.ts'",
-        "test:xunit": "JEST_JUNIT_OUTPUT_DIR=../../test/results/ JEST_JUNIT_OUTPUT_NAME=xunit-event.xml yarn run test:unit --reporters=jest-junit",
-        "test:integration": "jest --runInBand --passWithNoTests --testMatch '**/test/integration/**/*.test.ts'",
-        "test:coverage": "jest --runInBand --forceExit --passWithNoTests --coverage --testMatch '**/test/unit/**/*.test.ts'",
-        "test:coverage-check": "jest --runInBand --forceExit --coverage --testMatch '**/test/unit/**/*.test.ts'",
-        "dep:check": "ncu -e 2",
-        "dep:update": "ncu -u",
-        "release": "standard-version --skip.changelog --releaseCommitMessageFormat 'chore(release): {{currentTag}} [skip ci]'",
-        "snapshot": "standard-version --no-verify --skip.changelog --prerelease snapshot --releaseCommitMessageFormat 'chore(snapshot): {{currentTag}}'"
-    },
-    "dependencies": {
-        "@mojaloop/api-snippets": "18.3.2",
-        "@mojaloop/logging-bc-client-lib": "0.5.8",
-        "@mojaloop/logging-bc-public-types-lib": "0.5.7",
-        "@mojaloop/sdk-scheme-adapter-private-shared-lib": "workspace:^",
-        "ajv-formats": "3.0.1",
-        "convict": "6.2.5",
-        "express": "4.21.2",
-        "openapi-backend": "5.21.1",
-        "redis": "6.2.1",
-        "swagger-ui-express": "5.0.1",
-        "yamljs": "0.3.0"
-    },
-    "devDependencies": {
-        "@eslint/compat": "2.1.1",
-        "@eslint/eslintrc": "3.3.7",
-        "@eslint/js": "10.0.1",
-        "@types/convict": "6.1.6",
-        "@types/express": "5.0.6",
-        "@types/jest": "30.0.0",
-        "@types/node": "24.13.2",
-        "@types/node-cache": "4.2.5",
-        "@types/supertest": "7.2.1",
-        "@types/swagger-ui-express": "4.1.8",
-        "@types/yamljs": "0.2.34",
-        "@typescript-eslint/eslint-plugin": "8.70.1",
-        "@typescript-eslint/parser": "8.70.1",
-        "copyfiles": "2.4.1",
-        "eslint": "10.11.0",
-        "eslint-plugin-import-x": "4.17.1",
-        "jest": "30.5.2",
-        "nodemon": "3.1.14",
-        "npm-check-updates": "16.7.10",
-        "replace": "1.2.2",
-        "standard-version": "9.5.0",
-        "ts-jest": "29.4.12",
-        "ts-node": "10.9.2",
-        "typescript": "6.0.3"
-    },
-    "nodemonConfig": {
-        "watch": [
-            "src/**/*.ts"
-        ],
-        "ext": "ts",
-        "exec": "ts-node src/application/index.ts"
-    },
-    "standard-version": {
-        "scripts": {
-            "postchangelog": "replace '\\[mojaloop/#(\\d+)\\]\\(https://github.com/mojaloop/(.*)/issues/(\\d+)\\)' '[mojaloop/#$1](https://github.com/mojaloop/project/issues/$1)' CHANGELOG.md"
-        }
+      "postchangelog": "replace '\\[mojaloop/#(\\d+)\\]\\(https://github.com/mojaloop/(.*)/issues/(\\d+)\\)' '[mojaloop/#$1](https://github.com/mojaloop/project/issues/$1)' CHANGELOG.md"
     }
+  }
 }
