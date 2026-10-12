@@ -19,7 +19,9 @@ For information on the background and context of this project please see the pre
 
 DFSP backends must implement the [DFSP Inbound API](docs/dfspInboundApi.yaml) in order for the scheme adapter to make incoming transfers i.e. to receive funds to a customer account.
 
-DFSP backends can call the [DFSP Outbound API](https://github.com/mojaloop/api-snippets/blob/master/docs/sdk-scheme-adapter-outbound-v2_0_0-openapi3-snippets.yaml) in order to make outgoing transfers i.e. to send funds from a customer account.
+DFSP backends can call the [DFSP Outbound API](https://github.com/mojaloop/api-snippets/blob/master/docs/sdk-scheme-adapter-outbound-v2_0_0-openapi3-snippets.yaml) (from api-snippets repo) in order to make outgoing transfers i.e. to send funds from a customer account.
+
+_You should use the corresponding tag version of api-snippets defined in the package.json_
 
 ## Docker Image
 
