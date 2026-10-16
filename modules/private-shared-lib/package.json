@@ -39,12 +39,12 @@
   },
   "dependencies": {
     "@mojaloop/api-snippets": "18.3.2",
-    "@mojaloop/central-services-shared": "18.39.3",
+    "@mojaloop/central-services-shared": "18.39.4",
     "@mojaloop/logging-bc-public-types-lib": "0.5.7",
     "@mojaloop/platform-shared-lib-messaging-types-lib": "0.7.4",
     "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib": "0.5.18",
     "ajv": "8.20.0",
-    "redis": "6.2.1",
+    "redis": "6.3.0",
     "uuid": "11.1.1"
   },
   "devDependencies": {
@@ -53,9 +53,9 @@
     "@eslint/js": "10.0.1",
     "@types/node": "24.13.2",
     "@types/uuid": "10.0.0",
-    "@typescript-eslint/eslint-plugin": "8.70.1",
-    "@typescript-eslint/parser": "8.70.1",
-    "eslint": "10.11.0",
+    "@typescript-eslint/eslint-plugin": "8.71.2",
+    "@typescript-eslint/parser": "8.71.2",
+    "eslint": "10.13.0",
     "eslint-plugin-import-x": "4.17.1",
     "jest": "30.5.2",
     "npm-check-updates": "16.7.10",
