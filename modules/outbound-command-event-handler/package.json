@@ -74,7 +74,7 @@
     "eslint-plugin-import-x": "4.17.1",
     "jest": "30.5.2",
     "nodemon": "3.1.14",
-    "npm-check-updates": "16.7.10",
+    "npm-check-updates": "23.1.1",
     "replace": "1.2.2",
     "standard-version": "9.5.0",
     "ts-jest": "29.4.15",
