@@ -160,7 +160,6 @@
     "@grpc/grpc-js": "1.14.6",
     "joi": "18.3.0",
     "convict": "6.2.5",
-    "@mojaloop/central-services-shared": "18.38.2",
     "@mojaloop/inter-scheme-proxy-cache-lib": "2.10.0",
     "@mojaloop/ml-schema-transformer-lib": "2.10.0",
     "@types/node": "24.13.2",
