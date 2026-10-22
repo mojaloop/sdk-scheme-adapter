@@ -186,6 +186,9 @@ ignore:
       braces 3.0.3 stack-exhaustion ReDoS - dev-only transitive via @mojaloop/api-snippets > ts-auto-mock > micromatch;
       no patched release of braces 3.x exists as of 2026-10-16; also ignored in .yarnrc.yml npmAuditIgnoreAdvisories
       (1240992)
+  - vulnerability: CVE-2026-107891
+    include-aliases: true
+    reason: 'Alpine base image package (apk): musl - no npm fix available as of 2026-10-22 (info severity)'
 output:
   - table
   - json
