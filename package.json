@@ -121,9 +121,9 @@
     "path-to-regexp": "0.1.13",
     "serve-static": "1.16.2",
     "shins/ejs": "3.1.10",
-    "shins/sanitize-html": "2.17.7",
+    "shins/sanitize-html": "2.18.1",
     "shins/jsonpointer": "5.0.0",
-    "shins/markdown-it": "14.3.1",
+    "shins/markdown-it": "14.3.3",
     "shins/yargs-parser": "21.1.1",
     "shins/postcss": "8.5.26",
     "shins/path-to-regexp": "0.1.13",
@@ -132,7 +132,7 @@
     "serve-static/send": "0.19.0",
     "tar": "7.5.21",
     "widdershins/yargs-parser": "21.1.1",
-    "widdershins/markdown-it": "14.3.1",
+    "widdershins/markdown-it": "14.3.3",
     "widdershins/swagger2openapi": "7.0.8",
     "yargs-parser": "21.1.1",
     "fast-xml-parser": "5.10.1",
@@ -174,7 +174,10 @@
     "http-cache-semantics": "4.3.0",
     "moment": "2.31.0",
     "argparse@^1.0.7": "2.0.1",
-    "argparse@^3.0.3": "3.0.0"
+    "argparse@^3.0.3": "3.0.0",
+    "follow-redirects": "1.16.1",
+    "markdown-it": "14.3.3",
+    "sanitize-html": "2.18.1"
   },
   "standard-version": {
     "scripts": {
