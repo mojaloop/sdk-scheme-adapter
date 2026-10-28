@@ -1,0 +1,13 @@
+{
+  "reject": [
+    "@mojaloop/api-snippets",
+    "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib",
+    "@mojaloop/logging-bc-client-lib",
+    "npm-check-updates",
+    "express",
+    "uuid",
+    "typescript",
+    "@types/node",
+    "why-these: all carried over verbatim from the tracked yaml config, which this file outranks for the duration of the maintenance run; @types/node must track the Node runtime major in .nvmrc (24) and typescript 7.0.2 installs under yarn but its Go-built tsgo binaries add 46 Go stdlib findings to the Grype scan and break lint and the licence scan (re-tested 2026-10-20);"
+  ]
+}
