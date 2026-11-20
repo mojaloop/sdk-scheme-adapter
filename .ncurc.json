@@ -8,6 +8,8 @@
     "uuid",
     "typescript",
     "@types/node",
-    "why-these: all carried over verbatim from the tracked yaml config, which this file outranks for the duration of the maintenance run; @types/node must track the Node runtime major in .nvmrc (24) and typescript 7.0.2 installs under yarn but its Go-built tsgo binaries add 46 Go stdlib findings to the Grype scan and break lint and the licence scan (re-tested 2026-10-20);"
+    "why-these: all carried over verbatim from the tracked yaml config, which this file outranks for the duration of the maintenance run; @types/node must track the Node runtime major in .nvmrc (24) and typescript 7.0.2 installs under yarn but its Go-built tsgo binaries add 46 Go stdlib findings to the Grype scan and break lint and the licence scan (re-tested 2026-10-20);",
+    "eslint-plugin-import-x",
+    "why-eslint-plugin-import-x: 4.18.1 changed the import-x/extensions options schema and rejects the workspaces' {js,ts,json} config, so yarn lint fails in three workspaces; held at 4.17.1 until the eslint config is migrated (2026-11-20)"
   ]
 }

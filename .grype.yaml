@@ -213,6 +213,34 @@ ignore:
     reason: >-
       Base image npm package: undici - bundled in Node.js base image, not fixable via application dependencies as of
       2026-10-28 (high severity)
+  - vulnerability: CVE-2026-95692
+    include-aliases: true
+    reason: 'Alpine base image package (apk): libcrypto3 - no npm fix available as of 2026-11-20 (high severity)'
+  - vulnerability: CVE-2026-4738
+    include-aliases: true
+    reason: 'Alpine base image package (apk): zlib - no npm fix available as of 2026-11-20 (critical severity)'
+  - vulnerability: CVE-2026-107496
+    include-aliases: true
+    reason: 'Alpine base image package (apk): libcrypto3 - no npm fix available as of 2026-11-20 (high severity)'
+  - vulnerability: CVE-2026-95691
+    include-aliases: true
+    reason: 'Alpine base image package (apk): libcrypto3 - no npm fix available as of 2026-11-20 (high severity)'
+  - vulnerability: CVE-2026-88823
+    include-aliases: true
+    reason: 'Alpine base image package (apk): libcrypto3 - no npm fix available as of 2026-11-20 (high severity)'
+  - vulnerability: GHSA-3g3m-2fjr-6pw4
+    include-aliases: true
+    reason: >-
+      Base image npm package: glob - bundled in Node.js base image, not fixable via application dependencies as of
+      2026-11-20 (moderate severity)
+  - vulnerability: GHSA-g3hv-75wg-m249
+    include-aliases: true
+    reason: >-
+      Base image npm package: minimatch - bundled in Node.js base image, not fixable via application dependencies as of
+      2026-11-20 (moderate severity)
+  - vulnerability: CVE-2026-88822
+    include-aliases: true
+    reason: 'Alpine base image package (apk): libcrypto3 - no npm fix available as of 2026-11-20 (moderate severity)'
 output:
   - table
   - json
