@@ -109,7 +109,7 @@
     "validator": "13.15.35",
     "undici": "7.30.1",
     "qs": "6.16.1",
-    "@mojaloop/api-snippets": "17.10.3",
+    "@mojaloop/api-snippets": "18.3.2",
     "axios": "1.20.0",
     "cacache/tar": "7.5.21",
     "cookie": "1.0.2",
@@ -180,7 +180,8 @@
     "sanitize-html": "2.18.1",
     "zod": "4.6.6",
     "@hapi/content": "6.0.3",
-    "body-parser": "2.4.0"
+    "body-parser": "2.4.0",
+    "brace-expansion": "2.1.6"
   },
   "standard-version": {
     "scripts": {

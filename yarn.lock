@@ -3047,20 +3047,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/api-snippets@npm:17.10.3":
-  version: 17.10.3
-  resolution: "@mojaloop/api-snippets@npm:17.10.3"
+"@mojaloop/api-snippets@npm:18.3.2":
+  version: 18.3.2
+  resolution: "@mojaloop/api-snippets@npm:18.3.2"
   dependencies:
     "@apidevtools/json-schema-ref-parser": "npm:^9.1.2"
     "@redocly/openapi-core": "npm:^1.5.0"
-    commander: "npm:^13.1.0"
+    commander: "npm:^14.0.3"
     jest-ts-auto-mock: "npm:^2.1.0"
-    js-yaml: "npm:^4.1.0"
+    js-yaml: "npm:4.1.1"
     json-refs: "npm:^3.0.15"
     openapi-types: "npm:^12.1.3"
-    openapi-typescript: "npm:^7.8.0"
+    openapi-typescript: "npm:^7.13.0"
     ts-auto-mock: "npm:^3.7.4"
-  checksum: 10/7a6f66a874043c62339325d7e08e5e4f8ce27600081cbfceebcb318c0dfce20479493e5a914af268714886212b55a031e78e5527c7f6a9a65be2847813dc343d
+  checksum: 10/74d4b682df2aa65a97d8939bb42d1f58c631d65ffa863adc0e9e5e6a3699f3ddde9d6fc86b1052e2afc00db8453b6fc375d3f2233ab58c749f8f4ae554bb1888
   languageName: node
   linkType: hard
 
@@ -3421,7 +3421,7 @@ __metadata:
     eslint-plugin-import: "npm:2.32.0"
     eslint-plugin-jest: "npm:29.17.1"
     express: "npm:4.21.2"
-    fast-json-patch: "npm:3.1.1"
+    fast-json-patch: "npm:3.1.2"
     fast-safe-stringify: "npm:2.1.1"
     globals: "npm:17.14.0"
     javascript-state-machine: "npm:3.1.0"
@@ -3442,7 +3442,7 @@ __metadata:
     prom-client: "npm:15.1.3"
     promise-timeout: "npm:1.3.0"
     random-word-slugs: "npm:0.1.7"
-    redis: "npm:6.3.1"
+    redis: "npm:6.4.0"
     redis-mock: "npm:0.56.3"
     replace: "npm:1.2.2"
     retry: "npm:^0.13.1"
@@ -3487,8 +3487,8 @@ __metadata:
     jest: "npm:30.5.2"
     nodemon: "npm:3.1.14"
     npm-check-updates: "npm:23.1.1"
-    openapi-backend: "npm:5.25.0"
-    redis: "npm:6.3.1"
+    openapi-backend: "npm:5.26.0"
+    redis: "npm:6.4.0"
     replace: "npm:1.2.2"
     standard-version: "npm:9.5.0"
     swagger-ui-express: "npm:5.0.1"
@@ -3529,8 +3529,8 @@ __metadata:
     jest: "npm:30.5.2"
     nodemon: "npm:3.1.14"
     npm-check-updates: "npm:23.1.1"
-    openapi-backend: "npm:5.25.0"
-    redis: "npm:6.3.1"
+    openapi-backend: "npm:5.26.0"
+    redis: "npm:6.4.0"
     replace: "npm:1.2.2"
     standard-version: "npm:9.5.0"
     swagger-ui-express: "npm:5.0.1"
@@ -3562,7 +3562,7 @@ __metadata:
     eslint-plugin-import-x: "npm:4.17.1"
     jest: "npm:30.5.2"
     npm-check-updates: "npm:23.1.1"
-    redis: "npm:6.3.1"
+    redis: "npm:6.4.0"
     replace: "npm:1.2.2"
     standard-version: "npm:9.5.0"
     ts-jest: "npm:29.4.15"
@@ -3850,18 +3850,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@redis/bloom@npm:6.3.1":
-  version: 6.3.1
-  resolution: "@redis/bloom@npm:6.3.1"
+"@redis/bloom@npm:6.4.0":
+  version: 6.4.0
+  resolution: "@redis/bloom@npm:6.4.0"
   peerDependencies:
-    "@redis/client": ^6.3.1
-  checksum: 10/f8fd490cce2cf9b86275f12be0086e7f437617055f408e203487a82a74456e1ea33408098ab7ee6776f39a0dded75f58d570d35b8fdde63c4bd8dde3dda167f0
+    "@redis/client": ^6.4.0
+  checksum: 10/857f76eac1748b61c4977b7fb709021d7991c624c0cf3f24491f22d9f54dbf9f928e0d2a46d6beb1cff47f2f563097abee4ff0778af7721092bf2bf474306fd1
   languageName: node
   linkType: hard
 
-"@redis/client@npm:6.3.1":
-  version: 6.3.1
-  resolution: "@redis/client@npm:6.3.1"
+"@redis/client@npm:6.4.0":
+  version: 6.4.0
+  resolution: "@redis/client@npm:6.4.0"
   peerDependencies:
     "@node-rs/xxhash": ^1.1.0
     "@opentelemetry/api": ">=1 <2"
@@ -3870,34 +3870,34 @@ __metadata:
       optional: true
     "@opentelemetry/api":
       optional: true
-  checksum: 10/a1c9073e9aa0bdf794780fd50a153aabbb8c558e98432a10a20884040bc8a6ae1d9155da4c4337e6649022f389de5ff397c4e3b3202a3f6847caf56a843d5715
+  checksum: 10/c7199e271cdb591e1d46dd08cac9d22499f6daceaa56b845574eed12b6bd7b00e7bd5e9a09c3f6bfbe6204dfe751bd9c5b244b422423008d6f70da99db1d81e2
   languageName: node
   linkType: hard
 
-"@redis/json@npm:6.3.1":
-  version: 6.3.1
-  resolution: "@redis/json@npm:6.3.1"
+"@redis/json@npm:6.4.0":
+  version: 6.4.0
+  resolution: "@redis/json@npm:6.4.0"
   peerDependencies:
-    "@redis/client": ^6.3.1
-  checksum: 10/be10c0dfd24fe8aa09d36df01cc41605b903660e4b854bcd7188126b99494c32f42522c3b788c14a045b96b82e458d86be838f63e10bfe4f18fffc1c1e8efd29
+    "@redis/client": ^6.4.0
+  checksum: 10/3c40c7e010255b41fa244d45fd60831f04c5087fec73cdec51df99dc1bb5b1496a521dd54e5371d326ee5f36a6d76a88d83ff332b1e2c8774ce70876224cf1c5
   languageName: node
   linkType: hard
 
-"@redis/search@npm:6.3.1":
-  version: 6.3.1
-  resolution: "@redis/search@npm:6.3.1"
+"@redis/search@npm:6.4.0":
+  version: 6.4.0
+  resolution: "@redis/search@npm:6.4.0"
   peerDependencies:
-    "@redis/client": ^6.3.1
-  checksum: 10/91761d5a50f08302cd9c5f7f0374d4ec17b6e2f7a75f3bf717f55d5a4539245995eba08d16dd553eb642b1fa530fa4d8956a625e164ff66923e47fff906c7d1f
+    "@redis/client": ^6.4.0
+  checksum: 10/d699f1636e067d7605988b64bde82c7f879eb062f0a63c994bc4d37575e98ccee5a5f303cd29c2f4b31916399beb087c0c4c0bd75fafd6c1c7ec1c0db26e183d
   languageName: node
   linkType: hard
 
-"@redis/time-series@npm:6.3.1":
-  version: 6.3.1
-  resolution: "@redis/time-series@npm:6.3.1"
+"@redis/time-series@npm:6.4.0":
+  version: 6.4.0
+  resolution: "@redis/time-series@npm:6.4.0"
   peerDependencies:
-    "@redis/client": ^6.3.1
-  checksum: 10/3301b5fbf88d891a5579bd66dfec6e4ccaa27ab8473c1ddef4fc14b6a7abbb2e0767d843ee003b47645119a4989807816aa37d6efde2baa59ac1748d57acd97f
+    "@redis/client": ^6.4.0
+  checksum: 10/3877c9afacafe8042b9aef8d0216ac57a029114cd6485bc57c7b9e5d2e783647fa06f7917abe956fad5e341555b9fcb40da0fdb26e7c9fe5dd3041e7856b5829
   languageName: node
   linkType: hard
 
@@ -5735,6 +5735,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"brace-expansion@npm:2.1.6":
+  version: 2.1.6
+  resolution: "brace-expansion@npm:2.1.6"
+  dependencies:
+    balanced-match: "npm:^1.0.0"
+  checksum: 10/79a562c3438fd716dd5640f6d232101a0f46514b75959a0e31bac4e4fff8425e5c1bbd61e9bacb2270b1af02f0711e7cae077bb52c588d0a7d118109972f3a23
+  languageName: node
+  linkType: hard
+
 "brace-expansion@npm:2.1.7":
   version: 2.1.7
   resolution: "brace-expansion@npm:2.1.7"
@@ -5750,15 +5759,6 @@ __metadata:
   dependencies:
     balanced-match: "npm:^4.0.2"
   checksum: 10/65b550f1836e3b43f512f12afbc3be96616eee5c353e16d70181b7dffec8c08beabffb51d69a3bbdb27d675840725cbab025fda9d10716b5cda7dd864dc7bc4a
-  languageName: node
-  linkType: hard
-
-"brace-expansion@npm:^5.0.12":
-  version: 5.0.13
-  resolution: "brace-expansion@npm:5.0.13"
-  dependencies:
-    balanced-match: "npm:^4.0.2"
-  checksum: 10/a2c4dc2481b7161c0c24875d23c38da209942a32cef4aad6fcab93da8f9bdd8b204f2777f7a803d7199f97507bf1d78c5664c17062d179aeda5f222b1d2bfbae
   languageName: node
   linkType: hard
 
@@ -6278,10 +6278,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"commander@npm:^13.1.0":
-  version: 13.1.0
-  resolution: "commander@npm:13.1.0"
-  checksum: 10/d3b4b79e6be8471ddadacbb8cd441fe82154d7da7393b50e76165a9e29ccdb74fa911a186437b9a211d0fc071db6051915c94fb8ef16d77511d898e9dbabc6af
+"commander@npm:^14.0.3":
+  version: 14.0.3
+  resolution: "commander@npm:14.0.3"
+  checksum: 10/dfa9ebe2a433d277de5cb0252d23b10a543d245d892db858d23b516336a835c50fd4f52bee4cd13c705cc8acb6f03dc632c73dd806f7d06d3353eb09953dd17a
   languageName: node
   linkType: hard
 
@@ -7993,10 +7993,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fast-json-patch@npm:3.1.1":
-  version: 3.1.1
-  resolution: "fast-json-patch@npm:3.1.1"
-  checksum: 10/3e56304e1c95ad1862a50e5b3f557a74c65c0ff2ba5b15caab983b43e70e86ddbc5bc887e9f7064f0aacfd0f0435a29ab2f000fe463379e72b906486345e6671
+"fast-json-patch@npm:3.1.2":
+  version: 3.1.2
+  resolution: "fast-json-patch@npm:3.1.2"
+  checksum: 10/cde213746a3a306e1b775f87a65c5f3fa26a8ed4f8da99ac6d9dd76abe418328c07661118d9bf4bf9e9f2a19a49aa0ec5f08cc352402400e30ed27a5733836b2
   languageName: node
   linkType: hard
 
@@ -10293,6 +10293,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"js-yaml@npm:4.1.1":
+  version: 4.1.1
+  resolution: "js-yaml@npm:4.1.1"
+  dependencies:
+    argparse: "npm:^2.0.1"
+  bin:
+    js-yaml: bin/js-yaml.js
+  checksum: 10/a52d0519f0f4ef5b4adc1cde466cb54c50d56e2b4a983b9d5c9c0f2f99462047007a6274d7e95617a21d3c91fde3ee6115536ed70991cd645ba8521058b78f77
+  languageName: node
+  linkType: hard
+
 "js-yaml@npm:4.3.2, js-yaml@npm:^4.3.2":
   version: 4.3.2
   resolution: "js-yaml@npm:4.3.2"
@@ -11971,9 +11982,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"openapi-backend@npm:5.25.0":
-  version: 5.25.0
-  resolution: "openapi-backend@npm:5.25.0"
+"openapi-backend@npm:5.26.0":
+  version: 5.26.0
+  resolution: "openapi-backend@npm:5.26.0"
   dependencies:
     "@apidevtools/json-schema-ref-parser": "npm:^16.0.2"
     ajv: "npm:^8.6.2"
@@ -11985,7 +11996,7 @@ __metadata:
     openapi-schema-validator: "npm:^12.0.0"
     openapi-types: "npm:^12.0.2"
     qs: "npm:^6.15.0"
-  checksum: 10/b625c274aa35efa3d78b44eee6b64e41d5252144bd9c5cb0435c7b875ffa44aea7b4fc06659b890a81cb3fcdae836b9d95e930a19f37c690e82954b7d13e2f18
+  checksum: 10/f9c7c747b73e9c180c6016dc752662a575825eb8d83c3b22a8e1e78328091294636bcedefac4a7e84511d6f12f6d80c2615232840c6313c72310b92ac9f2748c
   languageName: node
   linkType: hard
 
@@ -12038,7 +12049,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"openapi-typescript@npm:7.13.0, openapi-typescript@npm:^7.8.0":
+"openapi-typescript@npm:7.13.0, openapi-typescript@npm:^7.13.0":
   version: 7.13.0
   resolution: "openapi-typescript@npm:7.13.0"
   dependencies:
@@ -12926,16 +12937,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"redis@npm:6.3.1":
-  version: 6.3.1
-  resolution: "redis@npm:6.3.1"
+"redis@npm:6.4.0":
+  version: 6.4.0
+  resolution: "redis@npm:6.4.0"
   dependencies:
-    "@redis/bloom": "npm:6.3.1"
-    "@redis/client": "npm:6.3.1"
-    "@redis/json": "npm:6.3.1"
-    "@redis/search": "npm:6.3.1"
-    "@redis/time-series": "npm:6.3.1"
-  checksum: 10/e2a250f59c3e0fa3aa61ff071f6966826e324505b0135f9ad29642d1709d299415e1fcd758fb7eacd1f4dd7f4165c43dbd42793d495d0b7f5086380880ce8b2f
+    "@redis/bloom": "npm:6.4.0"
+    "@redis/client": "npm:6.4.0"
+    "@redis/json": "npm:6.4.0"
+    "@redis/search": "npm:6.4.0"
+    "@redis/time-series": "npm:6.4.0"
+  checksum: 10/3859ac81d4b3b93f28c9d0ef94045d736bae434324a647438e76e395a46a992a91e324cfff1580c4564ba382342d1449c68ac05b363793911a643621807f31f2
   languageName: node
   linkType: hard
 
