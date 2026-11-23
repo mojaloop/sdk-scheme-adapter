@@ -3112,17 +3112,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/central-services-logger@npm:12.0.0":
-  version: 12.0.0
-  resolution: "@mojaloop/central-services-logger@npm:12.0.0"
+"@mojaloop/central-services-logger@npm:11.10.7":
+  version: 11.10.7
+  resolution: "@mojaloop/central-services-logger@npm:11.10.7"
   dependencies:
-    "@opentelemetry/api": "npm:1.10.0"
+    "@opentelemetry/api": "npm:1.9.1"
     parse-strings-in-object: "npm:2.0.0"
     rc: "npm:1.2.8"
-    safe-stable-stringify: "npm:^3.0.1"
+    safe-stable-stringify: "npm:^2.5.0"
     triple-beam: "npm:1.4.1"
     winston: "npm:3.19.0"
-  checksum: 10/eeed22b7a6973b706b14c9c7152f24d11a943febf7ff97b299153275d06772cbc57fbe4e4ce1cc3acd742465c28e45e69da9ec958d0bde9fd905e50c7aeb3603
+  checksum: 10/7d8d15cf2f7f393ee983a5528626228e542870b2155ba14a2200347dfc460d4026704aad307565d63aaf4f01f0b32642e5160af3e5c2b0f04f7848f4eec86ab3
   languageName: node
   linkType: hard
 
@@ -3397,7 +3397,7 @@ __metadata:
     "@koa/cors": "npm:5.0.0"
     "@mojaloop/api-snippets": "npm:18.3.2"
     "@mojaloop/central-services-error-handling": "npm:13.2.1"
-    "@mojaloop/central-services-logger": "npm:12.0.0"
+    "@mojaloop/central-services-logger": "npm:11.10.7"
     "@mojaloop/central-services-metrics": "npm:12.8.9"
     "@mojaloop/central-services-shared": "npm:19.0.0"
     "@mojaloop/event-sdk": "npm:14.8.6"
@@ -3669,13 +3669,6 @@ __metadata:
     "@nodelib/fs.scandir": "npm:2.1.5"
     fastq: "npm:^1.6.0"
   checksum: 10/40033e33e96e97d77fba5a238e4bba4487b8284678906a9f616b5579ddaf868a18874c0054a75402c9fbaaa033a25ceae093af58c9c30278e35c23c9479e79b0
-  languageName: node
-  linkType: hard
-
-"@opentelemetry/api@npm:1.10.0":
-  version: 1.10.0
-  resolution: "@opentelemetry/api@npm:1.10.0"
-  checksum: 10/630356af2c4caa2e15a102060360fac708651a9e21f45a9035a6c846dd01e51ff4cc2d28fadc471d4dcdf6997561163631ab69c2efa7604ad2307529e22b593f
   languageName: node
   linkType: hard
 
@@ -13256,13 +13249,6 @@ __metadata:
   version: 2.5.0
   resolution: "safe-stable-stringify@npm:2.5.0"
   checksum: 10/2697fa186c17c38c3ca5309637b4ac6de2f1c3d282da27cd5e1e3c88eca0fb1f9aea568a6aabdf284111592c8782b94ee07176f17126031be72ab1313ed46c5c
-  languageName: node
-  linkType: hard
-
-"safe-stable-stringify@npm:^3.0.1":
-  version: 3.0.1
-  resolution: "safe-stable-stringify@npm:3.0.1"
-  checksum: 10/02f0c7d0b4d77fee2331146204a6a30fee6124d6098da29161746ce1c2a33478746bf97976d502d48197727dc2b995310f8929f2e72ffe49155c34d2bfdddc55
   languageName: node
   linkType: hard
 

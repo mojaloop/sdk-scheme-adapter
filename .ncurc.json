@@ -10,6 +10,8 @@
     "@types/node",
     "why-these: all carried over verbatim from the tracked yaml config, which this file outranks for the duration of the maintenance run; @types/node must track the Node runtime major in .nvmrc (24) and typescript 7.0.2 installs under yarn but its Go-built tsgo binaries add 46 Go stdlib findings to the Grype scan and break lint and the licence scan (re-tested 2026-10-20);",
     "eslint-plugin-import-x",
-    "why-eslint-plugin-import-x: 4.18.1 changed the import-x/extensions options schema and rejects the workspaces' {js,ts,json} config, so yarn lint fails in three workspaces; held at 4.17.1 until the eslint config is migrated (2026-11-20)"
+    "why-eslint-plugin-import-x: 4.18.1 changed the import-x/extensions options schema and rejects the workspaces' {js,ts,json} config, so yarn lint fails in three workspaces; held at 4.17.1 until the eslint config is migrated (2026-11-20)",
+    "@mojaloop/central-services-logger",
+    "why-central-services-logger: @mojaloop/central-services-shared 19.0.0 (latest) still declares a central-services-logger 11.x.x peer, so logger 12 installs an untested pair (yarn only warns; npm refuses it), and logger 12 no longer keeps the process alive after an uncaught exception while api-svc has no handler of its own. Held at 11.x until a shared release accepts 12 (review on #685, 2026-11-23)"
   ]
 }
