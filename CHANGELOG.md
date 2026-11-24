@@ -1,4 +1,11 @@
 # Changelog: [mojaloop/sdk-scheme-adapter](https://github.com/mojaloop/sdk-scheme-adapter)
+### [24.20.1](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.20.0...v24.20.1) (2026-11-24)
+
+
+### Bug Fixes
+
+* **security:** patch 1 vulnerability + update deps, orb, docker ([#685](https://github.com/mojaloop/sdk-scheme-adapter/issues/685)) ([98483f0](https://github.com/mojaloop/sdk-scheme-adapter/commit/98483f0ba364718557e056c3b73c4b9cbe18e419))
+
 ## [24.20.0](https://github.com/mojaloop/sdk-scheme-adapter/compare/v24.19.8...v24.20.0) (2026-09-17)
 
 
